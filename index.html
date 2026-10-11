@@ -1937,9 +1937,9 @@ window.KOKUM_CONFIG = {
     } else if (t.name === 'keluar' && t.closest('.kiraan')) {
       S.f.status = t.checked ? 'semua' : 'aktif'; isiSenaraiMurid();
     } else if (t.closest('#pilihan-cetak')) {
-      const f = new FormData(t.closest('#pilihan-cetak'));
-      const modBaru = f.get('mod');
-      S.cetak = { mod: modBaru, pilih: modBaru === S.cetak.mod ? f.get('pilih') : '', mykad: f.get('mykad') === 'on' };
+      const kotak = t.closest('#pilihan-cetak');
+      const modBaru = kotak.querySelector('[name=mod]').value;
+      S.cetak = { mod: modBaru, pilih: modBaru === S.cetak.mod ? kotak.querySelector('[name=pilih]').value : '', mykad: kotak.querySelector('[name=mykad]').checked };
       tetapLokasi('#/cetak'); S.kekalSkrol = true; render();
     }
   });
