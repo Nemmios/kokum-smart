@@ -80,7 +80,7 @@ p { margin: 0 0 .75rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
 /* ---------- Rangka ---------- */
-.rangka { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+.rangka { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
 .rel {
   position: sticky; top: 0; height: 100vh; padding: 22px 14px; border-right: 1px solid var(--garis);
   background: var(--permukaan); display: flex; flex-direction: column; gap: 4px;
@@ -97,11 +97,11 @@ p { margin: 0 0 .75rem; }
 .nav a:hover { background: var(--kertas); }
 .nav a[aria-current="page"] { background: var(--hijau-latar); color: var(--hijau); font-weight: 700; }
 .rel .bawah { margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--garis); font-size: .85rem; }
-.isi { padding: 28px clamp(16px, 4vw, 44px) 80px; max-width: 1180px; width: 100%; }
+.isi { padding: 28px clamp(16px, 4vw, 44px) 80px; max-width: 1180px; width: 100%; min-width: 0; }
 .atas-mudah { display: none; }
 
 @media (max-width: 860px) {
-  .rangka { grid-template-columns: 1fr; }
+  .rangka { grid-template-columns: minmax(0, 1fr); }
   .rel { display: none; }
   .atas-mudah {
     display: flex; align-items: center; gap: 10px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; padding: 10px 16px;
@@ -318,7 +318,8 @@ dialog .dt { padding: 12px 20px; border-top: 1px solid var(--garis); display: fl
 .lencana-demo { display: inline-block; background: var(--amaran-latar); color: var(--amaran); font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 5px; }
 
 /* ---------- Cetak ---------- */
-.kertas-cetak { background: #fff; color: #000; padding: 24px; border: 1px solid var(--garis); border-radius: 8px; }
+.kertas-cetak { background: #fff; color: #000; padding: 24px; border: 1px solid var(--garis); border-radius: 8px; overflow-x: auto; }
+@media (max-width: 600px) { .kertas-cetak { padding: 14px; } .kertas-cetak table { font-size: 8.5pt; } }
 .kertas-cetak .halaman + .halaman { margin-top: 40px; padding-top: 30px; border-top: 2px dashed #ccc; }
 .kertas-cetak h3 { text-align: center; font-size: 13pt; }
 .kertas-cetak .sub { text-align: center; font-size: 10pt; margin: 2px 0; }
@@ -334,7 +335,7 @@ dialog .dt { padding: 12px 20px; border-top: 1px solid var(--garis); display: fl
   .rel, .atas-mudah, .nav-bawah, .tanpa-cetak, .roti { display: none !important; }
   .rangka { display: block; }
   .isi { padding: 0; max-width: none; }
-  .kertas-cetak { border: 0; padding: 0; }
+  .kertas-cetak { border: 0; padding: 0; overflow: visible; }
   .kertas-cetak .halaman + .halaman { border-top: 0; margin-top: 0; padding-top: 0; break-before: page; }
   .kertas-cetak tr { break-inside: avoid; }
 }
