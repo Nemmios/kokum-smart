@@ -714,9 +714,8 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .takwim-sekolah th { font-size: .72rem; color: var(--kabus); font-weight: 700; background: var(--kertas); position: sticky; top: 0; white-space: nowrap; }
 .takwim-sekolah td.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .takwim-sekolah td:nth-child(2), .takwim-sekolah td:nth-child(4) { white-space: nowrap; }
-.takwim-sekolah td:nth-child(6) { min-width: 150px; }
-.takwim-sekolah td:nth-child(7) { min-width: 220px; }
-.takwim-sekolah td:nth-child(8) { min-width: 150px; }
+.takwim-sekolah td:nth-child(6) { min-width: 260px; }
+.takwim-sekolah td:nth-child(7) { min-width: 160px; }
 .takwim-sekolah tr.tentatif td { background: var(--amaran-latar); }
 .takwim-sekolah tr.lepas td { opacity: .62; }
 .takwim-sekolah tr.cuti td { background: var(--bahaya-latar); color: var(--bahaya); font-weight: 700; text-align: center; font-size: .74rem; letter-spacing: .03em; padding: 4px 8px; }
@@ -737,6 +736,14 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .kertas-cetak .takwim-sekolah .tent { color: #6b4a00; }
 .kertas-cetak .takwim-sekolah tr { break-inside: avoid; }
 @media print { .takwim-sekolah tr.tentatif td, .takwim-sekolah tr.cuti td, .takwim-sekolah th { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+.takwim-sekolah th.tengah, .takwim-sekolah th.tanda, .takwim-sekolah td.tanda { text-align: center; }
+.takwim-sekolah td.tanda { width: 34px; min-width: 34px; font-size: .95rem; color: var(--kabus); }
+.takwim-sekolah td.tanda.bintang.UB { color: var(--ub); } .takwim-sekolah td.tanda.bintang.KP { color: var(--kp); } .takwim-sekolah td.tanda.bintang.SP { color: var(--sp); }
+.takwim-sekolah tfoot td { border-top: 2px solid var(--garis-kuat); font-weight: 700; font-size: .78rem; }
+.takwim-sekolah tfoot td.jumlah { text-align: right; }
+.kertas-cetak .takwim-sekolah th.ulasan { width: 13%; }
+.kertas-cetak .takwim-sekolah td.tanda { color: #000; width: 22px; }
+.kertas-cetak .takwim-sekolah tfoot td { border: 1px solid #555; }
 
 </style>
 </head>
@@ -3277,51 +3284,66 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       ['2027-12-04', '2027-12-31', 'Cuti Akhir Persekolahan', 'cuti', ''],
     ],
   };
-  // Draf Takwim Kokum SMKUSR (format sekolah: Takwim Kokum 2024 + Kalendar Akademik KPM). Dipersetujui SU Kokum untuk dimuatkan.
-  // [tarikh, program sekolah, [[bidang, tema]], tindakan, tentatif]. Baris tanpa bidang dimasukkan sebagai aktiviti sekolah.
+  // Draf Takwim Kokum SMKUSR 2027 ikut corak Takwim Kokum 2025 (dan Kalendar Akademik KPM 2027).
+  // [tarikh, program, [[bidang, tema]], tindakan, tentatif]. Baris tanpa bidang dimasukkan sebagai aktiviti sekolah (semua unit menyokong).
   const DRAF_TAKWIM = {
     2027: [
-      ["2027-01-13", "", [["UB", "MESYUARAT AGUNG"]], "GURU PENYELARAS UB", 0],
-      ["2027-01-20", "", [["KP", "MESYUARAT AGUNG"]], "GURU PENYELARAS KP", 0],
-      ["2027-01-27", "", [["SP", "MESYUARAT AGUNG"]], "GURU PENYELARAS SP", 0],
-      ["2027-02-03", "", [["UB", "TUGAS AJK & UNDANG-UNDANG"]], "UNIT UB MASING-MASING", 0],
-      ["2027-02-17", "", [["KP", "TUGAS AJK & PROGRAM/AKTIVITI"]], "KP MASING-MASING", 0],
-      ["2027-02-24", "", [["UB", "ASAS KAWAD KAKI"]], "UNIT UB MASING-MASING", 0],
-      ["2027-03-03", "", [["KP", "PERTANDINGAN REKA CIPTA / INOVASI DALAM KUMPULAN"]], "UNIT KP MASING-MASING", 0],
-      ["2027-03-17", "", [["UB", "ASAS PERKHEMAHAN"]], "UNIT UB MASING-MASING", 0],
-      ["2027-03-23", "SAMBUTAN HARI RAYA AIDILFITRI SMKUSR", [["UB", "MEMUPUK PERPADUAN - SAMBUTAN AIDILFITRI"]], "PENGARAH PROGRAM & UNIT UB MASING-MASING", 1],
-      ["2027-03-24", "", [["KP", "PERSEMBAHAN HASIL REKA CIPTA / INOVASI DALAM KUMPULAN"]], "UNIT KP MASING-MASING", 0],
-      ["2027-03-31", "", [["UB", "ASAS BELAJAR MASAKAN"]], "UNIT UB MASING-MASING", 0],
-      ["2027-04-03", "KEJOHANAN MERENTAS DESA SEKOLAH", [["SP", "MERENTAS DESA"]], "GURU SU SUKAN / MERENTAS DESA", 1],
-      ["2027-04-21", "MSS SMKUSR 2027", [["SP", "MSS SMKUSR"]], "GURU SU SUKAN & KETUA-KETUA RUMAH", 1],
-      ["2027-04-22", "MSS SMKUSR 2027", [["SP", "MSS SMKUSR"]], "GURU SU SUKAN & KETUA-KETUA RUMAH", 1],
-      ["2027-04-23", "MSS SMKUSR 2027", [["SP", "MSS SMKUSR"]], "GURU SU SUKAN & KETUA-KETUA RUMAH", 1],
-      ["2027-05-05", "", [["KP", "CARA MENGHARGAI GURU"]], "KP MASING-MASING", 0],
-      ["2027-05-11", "SAMBUTAN TADAU KAAMATAN SMKUSR", [["SP", "SUKAN & PERMAINAN TRADISIONAL KAAMATAN"]], "PENGARAH PROGRAM & UNIT SP MASING-MASING", 1],
-      ["2027-05-13", "SAMBUTAN HARI GURU PERINGKAT SEKOLAH", [["KP", "MAJLIS SAMBUTAN HARI GURU"]], "PENGARAH PROGRAM & KP MASING-MASING", 1],
-      ["2027-06-09", "", [["UB", "KECEMASAN / KEBUDAYAAN"]], "UNIT UB MASING-MASING", 0],
-      ["2027-06-16", "", [["SP", "UNDANG-UNDANG / PERATURAN PERMAINAN SIRI 1"]], "UNIT SP MASING-MASING", 0],
-      ["2027-06-23", "", [["KP", "PERTANDINGAN KUIZ PERDANA"]], "PENGARAH PROGRAM / SU KOKUM", 0],
-      ["2027-07-07", "", [["SP", "PRAKTIKAL UNDANG-UNDANG PERMAINAN SIRI 2"]], "UNIT SP MASING-MASING", 0],
-      ["2027-07-28", "", [["UB", "SEMANGAT MERDEKA - PASANG/KIBAR BENDERA"]], "PENGARAH PROGRAM & UNIT UB MASING-MASING", 0],
-      ["2027-08-23", "SAMBUTAN KEMERDEKAAN 2027", [["KP", "KHIDMAT SUMBANGAN - MENGHIAS KELAS/BILIK"]], "PENGARAH PROGRAM & GURU-GURU KELAS", 1],
-      ["2027-08-24", "SAMBUTAN KEMERDEKAAN 2027", [["SP", "PESTA BOLA-BOLA: SEPAK/TAMPAR/JARING/BALING"]], "PENGARAH PROGRAM & GURU PENYELARAS SP", 1],
-      ["2027-08-25", "SAMBUTAN KEMERDEKAAN 2027", [["UB", "PERTANDINGAN PIDATO MERDEKA"]], "PENGARAH PROGRAM & UNIT UB MASING-MASING", 1],
-      ["2027-08-26", "SAMBUTAN KEMERDEKAAN 2027", [["KP", "MENYERTAI MANA-MANA PERTANDINGAN KOIR/VIDEO/POSTER VISUAL/DLL (BUKAN PERMAINAN)"]], "PENGARAH PROGRAM & UNIT KP MASING-MASING", 1],
-      ["2027-08-27", "SAMBUTAN KEMERDEKAAN 2027", [["UB", "MENYERTAI MAJLIS SAMBUTAN KEMERDEKAAN"], ["KP", "MENYERTAI MAJLIS SAMBUTAN KEMERDEKAAN"], ["SP", "MENYERTAI MAJLIS SAMBUTAN KEMERDEKAAN"]], "PENGARAH PROGRAM & UNIT UB/KP/SP MASING-MASING", 1],
-      ["2027-09-22", "PENUTUPAN BULAN KEMERDEKAAN / PERKHEMAHAN PERDANA", [["UB", "PERKHEMAHAN PERDANA"]], "KRS", 1],
-      ["2027-09-23", "PERKHEMAHAN PERDANA", [["UB", "PERKHEMAHAN PERDANA"]], "KRS", 1],
-      ["2027-09-24", "PERKHEMAHAN PERDANA", [["UB", "PERKHEMAHAN PERDANA"]], "KRS", 1],
-      ["2027-10-06", "", [["SP", "SUKAN TARA / ACARA 1 SUKAN 1 MURID"]], "GURU PENYELARAS SP", 0],
-      ["2027-10-13", "", [["KP", "SEMINAR CEGAH JENAYAH"]], "GURU PENYELARAS KP DENGAN UNIT DISIPLIN", 0],
-      ["2027-10-20", "", [["UB", "MAKE-KOKUM"], ["KP", "MAKE-KOKUM"], ["SP", "MAKE-KOKUM"]], "KRS", 0],
-      ["2027-11-03", "", [["UB", "PAJSK"]], "PENYELARAS PAJSK & PENYELARAS UB", 0],
-      ["2027-11-10", "", [["KP", "PAJSK"]], "PENYELARAS PAJSK & PENYELARAS KP", 0],
-      ["2027-11-17", "", [["SP", "PAJSK"]], "PENYELARAS PAJSK & PENYELARAS SP", 0],
-      ["2027-11-24", "PAJSK EKSTRA KOKURIKULUM", [], "PENYELARAS PAJSK & GURU-GURU KELAS", 0],
-      ["2027-12-01", "PENGISIAN SKOR PAJSK DALAM SISTEM IDME (NOV-DIS)", [], "PENYELARAS PAJSK, PK KOKUM & GURU-GURU KELAS", 0],
+      ["2027-01-06", "MENYOKONG PROGRAM MINGGU PERTAMA SESI PERSEKOLAHAN 2027", [["UB", "MINGGU PERTAMA PERSEKOLAHAN"], ["KP", "MINGGU PERTAMA PERSEKOLAHAN"], ["SP", "MINGGU PERTAMA PERSEKOLAHAN"]], "SEMUA GURU DAN MURID", 0],
+      ["2027-01-13", "TAKLIMAT KOKUM UNTUK SEMUA TINGKATAN", [["UB", "TAKLIMAT KOKUM"], ["KP", "TAKLIMAT KOKUM"], ["SP", "TAKLIMAT KOKUM"]], "PK KOKUM / SU KOKUM / PENYELARAS", 0],
+      ["2027-01-20", "", [["UB", "PENDAFTARAN AHLI BAHARU & TAKLIMAT UNIT"]], "UNIT UB MASING-MASING", 0],
+      ["2027-01-27", "", [["KP", "PENDAFTARAN AHLI BAHARU & TAKLIMAT UNIT"]], "UNIT KP MASING-MASING", 0],
+      ["2027-02-03", "", [["SP", "PENDAFTARAN AHLI BAHARU & TAKLIMAT UNIT"]], "UNIT SP MASING-MASING", 0],
+      ["2027-02-17", "PROGRAM JOM PUASA DAN MESYUARAT KOKUM BIL 1/2027", [], "SEMUA GURU DAN MURID ISLAM / PK KOKUM / SU KOKUM", 1],
+      ["2027-02-24", "PROGRAM JOM PUASA", [], "SEMUA GURU DAN MURID ISLAM", 1],
+      ["2027-03-03", "PROGRAM JOM PUASA DAN MAJLIS BERBUKA PUASA UNIT KOKUM", [["UB", "MAJLIS BERBUKA PUASA UNIT KOKUM"], ["KP", "MAJLIS BERBUKA PUASA UNIT KOKUM"], ["SP", "MAJLIS BERBUKA PUASA UNIT KOKUM"]], "P. PUTERI ISLAM MALAYSIA", 1],
+      ["2027-03-17", "", [["KP", "BENGKEL AMALAN MESYUARAT 1"]], "UNIT KP MASING-MASING", 0],
+      ["2027-03-23", "SAMBUTAN HARI RAYA AIDILFITRI SMKUSR", [], "PENGARAH PROGRAM / SEMUA GURU DAN MURID", 1],
+      ["2027-03-24", "", [["SP", "MESYUARAT RUMAH SUKAN"]], "GURU SU SUKAN & KETUA-KETUA RUMAH SUKAN", 0],
+      ["2027-03-31", "", [["SP", "PEMILIHAN ATLET RUMAH SUKAN"]], "GURU SU SUKAN & KETUA-KETUA RUMAH SUKAN", 0],
+      ["2027-04-07", "", [["SP", "LATIHAN RUMAH SUKAN"]], "GURU SU SUKAN & KETUA-KETUA RUMAH SUKAN", 0],
+      ["2027-04-14", "PROGRAM LATIHAN SUKAN AKHIR", [["SP", "LATIHAN SUKAN AKHIR"]], "GURU SU SUKAN & KETUA-KETUA RUMAH SUKAN", 1],
+      ["2027-04-19", "MERENTAS DESA", [["SP", "MERENTAS DESA"]], "PENGARAH PROGRAM / SU SUKAN / AJK", 1],
+      ["2027-04-20", "MSS SMK USR 2027", [["SP", "MSS SMK USR"]], "GURU SU SUKAN & AJK", 1],
+      ["2027-04-21", "MSS SMK USR 2027", [["SP", "MSS SMK USR"]], "GURU SU SUKAN & AJK", 1],
+      ["2027-04-22", "MSS SMK USR 2027", [["SP", "MSS SMK USR"]], "GURU SU SUKAN & AJK", 1],
+      ["2027-04-23", "MSS SMK USR 2027", [["SP", "MSS SMK USR"]], "GURU SU SUKAN & AJK", 1],
+      ["2027-04-28", "", [["UB", "KURSUS KEPIMPINAN UB 1"]], "PENGARAH PROGRAM / GURU PENYELARAS UB", 1],
+      ["2027-05-05", "", [["UB", "MAJLIS TAMAT KURSUS KEPIMPINAN UB"]], "PENGARAH PROGRAM / GURU PENYELARAS UB", 1],
+      ["2027-05-11", "SAMBUTAN TADAU KAAMATAN SMKUSR", [], "PENGARAH PROGRAM / SEMUA GURU DAN MURID", 1],
+      ["2027-05-12", "", [["KP", "MENYOKONG HARI GURU - PENULISAN BERTEMAKAN GURU"]], "UNIT KP MASING-MASING", 0],
+      ["2027-05-13", "SAMBUTAN HARI GURU PERINGKAT SEKOLAH", [], "PENGARAH PROGRAM / SEMUA GURU DAN MURID", 1],
+      ["2027-06-09", "", [["KP", "SIMULASI MESYUARAT DALAM PERSATUAN"]], "GURU PENASIHAT DAN AJK KP MASING-MASING", 0],
+      ["2027-06-30", "", [["UB", "LATIHAN KAWAD 1"]], "UNIT UB MASING-MASING", 0],
+      ["2027-07-07", "", [["UB", "LATIHAN KAWAD 2"]], "UNIT UB MASING-MASING", 0],
+      ["2027-07-14", "", [["SP", "UNDANG-UNDANG PERMAINAN-SUKAN"]], "UNIT SP MASING-MASING", 0],
+      ["2027-07-19", "MENYOKONG-MENYERTAI PROGRAM FIESTA KO-AKADEMIK", [["KP", "FIESTA KO-AKADEMIK"]], "PENGARAH PROGRAM & UNIT KP MASING-MASING", 1],
+      ["2027-07-20", "MENYOKONG-MENYERTAI PROGRAM FIESTA KO-AKADEMIK", [["KP", "FIESTA KO-AKADEMIK"]], "PENGARAH PROGRAM & UNIT KP MASING-MASING", 1],
+      ["2027-07-21", "MENYOKONG-MENYERTAI PROGRAM FIESTA KO-AKADEMIK", [["KP", "FIESTA KO-AKADEMIK"]], "PENGARAH PROGRAM & UNIT KP MASING-MASING", 1],
+      ["2027-07-22", "MENYOKONG-MENYERTAI PROGRAM FIESTA KO-AKADEMIK", [["KP", "FIESTA KO-AKADEMIK"]], "PENGARAH PROGRAM & UNIT KP MASING-MASING", 1],
+      ["2027-07-23", "MENYOKONG-MENYERTAI PROGRAM FIESTA KO-AKADEMIK", [["KP", "FIESTA KO-AKADEMIK"]], "PENGARAH PROGRAM & UNIT KP MASING-MASING", 1],
+      ["2027-08-03", "MENYERTAI DAN MENYOKONG MAJLIS PELANCARAN SAMBUTAN HARI KEBANGSAAN", [["UB", "PELANCARAN SAMBUTAN HARI KEBANGSAAN"], ["KP", "PELANCARAN SAMBUTAN HARI KEBANGSAAN"], ["SP", "PELANCARAN SAMBUTAN HARI KEBANGSAAN"]], "UNIT UB, KP DAN SP MASING-MASING", 1],
+      ["2027-08-04", "", [["UB", "MEMASANG-MEMACAK BENDERA"]], "PENYELARAS UB", 0],
+      ["2027-08-11", "", [["SP", "PENILAIAN PAJSK SP"]], "UNIT SP MASING-MASING", 0],
+      ["2027-08-18", "", [["KP", "PENILAIAN PAJSK KP"]], "UNIT KP MASING-MASING", 0],
+      ["2027-08-24", "MENYOKONG-MENYERTAI SAMBUTAN BULAN KEMERDEKAAN", [["KP", "SAMBUTAN BULAN KEMERDEKAAN"]], "PENGARAH PROGRAM & GURU PENYELARAS KP", 1],
+      ["2027-08-25", "MENYOKONG-MENYERTAI SAMBUTAN BULAN KEMERDEKAAN", [["SP", "SAMBUTAN BULAN KEMERDEKAAN"]], "PENGARAH PROGRAM & GURU PENYELARAS SP", 1],
+      ["2027-08-26", "MENYOKONG-MENYERTAI SAMBUTAN BULAN KEMERDEKAAN", [["UB", "SAMBUTAN BULAN KEMERDEKAAN"]], "PENGARAH PROGRAM & GURU PENYELARAS UB", 1],
+      ["2027-08-27", "MENYOKONG-MENYERTAI SAMBUTAN BULAN KEMERDEKAAN", [["UB", "SAMBUTAN BULAN KEMERDEKAAN"], ["KP", "SAMBUTAN BULAN KEMERDEKAAN"], ["SP", "SAMBUTAN BULAN KEMERDEKAAN"]], "PENGARAH PROGRAM & GURU PENYELARAS UB, KP DAN SP", 1],
+      ["2027-09-08", "TAKLIMAT PENILAIAN PAJSK EKSTRA KOKURIKULUM", [], "PENYELARAS PAJSK / SEMUA MURID", 0],
+      ["2027-09-15", "MESYUARAT PEMBENTANGAN KERTAS KERJA PERKHEMAHAN PERDANA DAN MAKE KOKUM", [], "PK KOKUM / PENGARAH PROGRAM", 0],
+      ["2027-10-06", "", [["UB", "MESYUARAT PENYERTAAN PERKHEMAHAN MENGIKUT UNIT"]], "GURU PENYELARAS UB DAN GURU PENASIHAT MASING-MASING", 0],
+      ["2027-10-13", "MENYOKONG DAN MENYERTAI KEMPEN SAMBUTAN BULAN KAUNSELING PERINGKAT SEKOLAH", [], "UBK KERJASAMA DENGAN UNIT KOKUM / SU KOKUM", 1],
+      ["2027-10-20", "", [["UB", "PERKHEMAHAN PERDANA"]], "PENGARAH PROGRAM DAN AJK", 1],
+      ["2027-10-21", "", [["UB", "PERKHEMAHAN PERDANA"]], "PENGARAH PROGRAM DAN AJK", 1],
+      ["2027-10-22", "", [["UB", "PERKHEMAHAN PERDANA DAN MAKE KOKUM"]], "PENGARAH PROGRAM / MAKE KOKUM DAN AJK", 1],
+      ["2027-11-03", "", [["UB", "PENILAIAN PAJSK UB"]], "PENYELARAS PAJSK & PENYELARAS UB", 0],
+      ["2027-11-10", "", [["UB", "MESYUARAT AGUNG"], ["KP", "MESYUARAT AGUNG"]], "PENYELARAS UB DAN KP", 0],
+      ["2027-11-17", "", [["SP", "MESYUARAT AGUNG"]], "PENYELARAS SP", 0],
+      ["2027-11-24", "PENGISIAN SISTEM IDME-PAJSK", [], "SEMUA GURU TERLIBAT", 0],
     ],
   };
+  const DRAF_CATATAN = 'Draf takwim kokum';
+  const DRAF_LAMA = ['PAJSK EKSTRA KOKURIKULUM', 'PENGISIAN SKOR PAJSK DALAM SISTEM IDME (NOV-DIS)'];  // aktiviti draf versi awal
   const URUT_S = ['UB', 'KP', 'SP'];
   const BLN_S = ['JAN', 'FEB', 'MAC', 'APRIL', 'MEI', 'JUN', 'JULAI', 'OGOS', 'SEPT', 'OKT', 'NOV', 'DIS'];
 
@@ -3519,28 +3541,37 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       while (i < cuti.length) out.push({ cuti: cuti[i++] });
       return out;
     }
+    const kodP = (l) => l.map((p) => `${p.kategori}${p.bil}`).join(' / ');
     function teksKokum(ps) {
       const g = new Map();
       ps.forEach((p) => { const k = p.tema || ''; if (!g.has(k)) g.set(k, []); g.get(k).push(p); });
-      return Array.from(g, ([tema, l]) => { const no = l.map((p) => `${p.kategori} ${p.bil}`).join(' / ');
-        return /^PAJSK$/i.test(tema) ? `PAJSK ${no}` : `PERJUMPAAN ${no}${tema ? ` (${tema})` : ''}`; }).join('; ');
+      return Array.from(g, ([tema, l]) => (!tema ? `PERJUMPAAN ${kodP(l)}` : l.length === 1 ? `PERJUMPAAN ${l[0].kategori}: ${tema} (${kodP(l)})` : `${tema} (${kodP(l)})`)).join('; ');
     }
-    const teksProgram = (x) => uniq([...x.ps.map((p) => p.program), ...x.akt.map((a) => a.tajuk.toUpperCase() + (a.tarikh_tamat && a.tarikh_tamat !== a.tarikh_mula ? ` (${tarikhDM(a)})` : '')),
-      ...(x.ps.some((p) => p.program) ? [] : x.ol.map((k) => k.nama.toUpperCase()))]).join(' / ');
+    // satu lajur seperti Takwim Kokum 2025: program/aktiviti sekolah diikuti kod perjumpaan
+    function teksBaris(x) {
+      const prog = uniq(x.ps.map((p) => p.program)), l = x.akt.map((a) => a.tajuk.toUpperCase() + (a.tarikh_tamat && a.tarikh_tamat !== a.tarikh_mula ? ` (${tarikhDM(a)})` : ''));
+      if (!prog.length) x.ol.forEach((k) => l.push(k.nama.toUpperCase()));
+      if (prog.length) l.push(`${prog.join(' / ')} (${kodP(x.ps)})`); else if (x.ps.length) l.push(teksKokum(x.ps));
+      return uniq(l).join(' / ');
+    }
+    // ★ perjumpaan unit (dikira), √ unit menyokong program sekolah (tidak dikira)
+    const tanda = (x, k) => (x.ps.some((p) => p.kategori === k) ? '★' : x.akt.length || x.ol.length || x.ps.some((p) => p.program) ? '√' : '');
     const teksTindakan = (x) => uniq([...x.ps.map((p) => p.tindakan), ...x.akt.map((a) => a.tindakan)]).join(' / ');
     const kiraanBidang = () => Object.fromEntries(URUT_S.map((k) => [k, perjumpaanKat(k).length]));
     function jadualSekolah(b, skrin) {
-      const ubah = skrin && penyelaras(), kol = ubah ? 9 : 8, hi = hariIniIso();
-      return `<table class="takwim-sekolah"><thead><tr><th>BIL</th><th>BULAN</th><th>M</th><th>HARI</th><th>TARIKH</th><th>PROGRAM SEKOLAH</th><th>PROGRAM AKTIVITI KOKURIKULUM</th><th>TINDAKAN</th>${ubah ? '<th><span class="sr-only">Ubah</span></th>' : ''}</tr></thead><tbody>
+      const ubah = skrin && penyelaras(), kol = 7 + (skrin ? 0 : 1) + 3 + (ubah ? 1 : 0), hi = hariIniIso(), C = kiraanBidang();
+      return `<table class="takwim-sekolah"><thead><tr><th rowspan="2">BIL</th><th rowspan="2">BULAN</th><th rowspan="2">M</th><th rowspan="2">HARI</th><th rowspan="2">TARIKH</th><th rowspan="2">PROGRAM AKTIVITI KOKURIKULUM</th><th rowspan="2">TINDAKAN</th>${skrin ? '' : '<th rowspan="2" class="ulasan">ULASAN PERLAKSANAAN</th>'}<th colspan="3" class="tengah">★ UNIT PERJUMPAAN ★</th>${ubah ? '<th rowspan="2"><span class="sr-only">Ubah</span></th>' : ''}</tr>
+        <tr>${URUT_S.map((k) => `<th class="tanda">${k}</th>`).join('')}</tr></thead><tbody>
         ${b.map((x) => {
           if (x.cuti) return `<tr class="cuti"><td colspan="${kol}"><span>${e(x.cuti.tajuk.toUpperCase())}</span> <b>${tarikhDM(x.cuti)}</b></td></tr>`;
-          const d = tk(x.tarikh), tent = x.ps.some((p) => p.tentatif), prog = teksProgram(x);
+          const d = tk(x.tarikh), tent = x.ps.some((p) => p.tentatif);
           const act = x.ps.length ? `data-act="f2-baris" data-tarikh="${x.tarikh}"` : x.akt.length ? `data-act="f2-aktiviti" data-id="${x.akt[0].id}"` : '';
           return `<tr class="${tent ? 'tentatif' : ''}${skrin && x.tarikh < hi ? ' lepas' : ''}"><td class="n">${x.bil}</td><td>${BLN_S[d.getMonth()]}</td><td class="n">${mingguIso(x.tarikh)}</td><td>${HARI[d.getDay()].toUpperCase()}</td><td class="n">${tarikhSlash(x.tarikh)}</td>
-            <td>${e(prog)}${tent ? ` <em class="tent">tentatif</em>` : ''}</td>
-            <td>${skrin && x.ps.length ? `<span class="cip-baris">${x.ps.map((p) => cipKat(p.kategori)).join('')}</span>` : ''}${e(teksKokum(x.ps))}</td><td>${e(teksTindakan(x))}</td>
+            <td>${e(teksBaris(x))}${tent ? ' <em class="tent">tentatif</em>' : ''}</td><td>${e(teksTindakan(x))}</td>${skrin ? '' : '<td></td>'}
+            ${URUT_S.map((k) => { const t = tanda(x, k); return `<td class="tanda ${t === '★' ? 'bintang ' + k : ''}">${t}</td>`; }).join('')}
             ${ubah ? `<td>${act ? `<button class="btn kosong kecil" ${act}>Ubah</button>` : ''}</td>` : ''}</tr>`;
-        }).join('')}</tbody></table>`;
+        }).join('')}</tbody>
+        <tfoot><tr><td colspan="${skrin ? 7 : 8}" class="jumlah">JUMLAH PERJUMPAAN IKUT UNIT</td>${URUT_S.map((k) => `<td class="tanda"><b>${C[k]}</b></td>`).join('')}${ubah ? '<td></td>' : ''}</tr></tfoot></table>`;
     }
     const amaranFormat = () => (F().adaFormat === false && penyelaras() ? '<div class="mesej amaran" style="margin-bottom:14px">Jalankan <b>takwim_format.sql</b> di Supabase dahulu supaya tema, program sekolah, tindakan dan perjumpaan gabungan boleh disimpan.</div>' : '');
     const butangDraf = () => (penyelaras() && DRAF_TAKWIM[F().tahun] ? `<button class="btn ${F().perjumpaan.length ? '' : 'utama'}" data-act="f2-draf">Muat draf Takwim Kokum ${F().tahun} (${DRAF_TAKWIM[F().tahun].length} baris)</button>` : '');
@@ -3553,7 +3584,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       return `${amaranFormat()}<div class="panel" style="margin-bottom:14px">
           <div class="ringkas-takwim"><span><b>${b.filter((x) => !x.cuti).length}</b> baris</span>${URUT_S.map((k) => `<span>${cipKat(k)} <b>${C[k]}</b> perjumpaan</span>`).join('')}</div>
           <div class="baris-btn" style="margin-top:10px">${boleh ? `<button class="btn utama" data-act="f2-baris">${IKON.tambah} Tambah baris</button>` : ''}<a class="btn" href="#/takwim/cetak?doc=takwim&tahun=${F().tahun}">${IKON.cetak} Cetak format sekolah</a></div>
-          <p class="pudar kecil" style="margin:8px 0 0">Baris kuning: tarikh tentatif. Jalur merah: cuti. M: minggu ke- dalam tahun.${boleh ? ' Tekan Ubah untuk menukar tarikh, tema, program sekolah atau tindakan. Nombor perjumpaan disusun semula ikut tarikh secara automatik.' : ''}</p></div>
+          <p class="pudar kecil" style="margin:8px 0 0">★ perjumpaan unit (dikira) · √ menyokong program (tidak dikira). Baris kuning: tarikh tentatif. Jalur merah: cuti. M: minggu ke- dalam tahun.${boleh ? ' Tekan Ubah untuk menukar tarikh, tema, program sekolah atau tindakan. Nombor perjumpaan disusun semula ikut tarikh secara automatik.' : ''}</p></div>
         <div class="panel" style="padding:0"><div class="skrol-x">${jadualSekolah(b, true)}</div></div>`;
     }
     function bukaBaris(tarikh) {
@@ -3566,12 +3597,12 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         <div class="db"><form class="borang" id="borang-f2-baris" data-tarikh="${tarikh || ''}">
           <div class="dua"><label class="medan">Tarikh<input type="date" name="tarikh" value="${e(tarikh || '')}" min="${t}-01-01" max="${t}-12-31" required></label>
             <label class="medan">Masa<input type="text" name="masa_mula" value="${e(p0.masa_mula || '')}" placeholder="2.30 ptg"></label></div>
-          <label class="medan">Program sekolah<input type="text" name="program" value="${e(p0.program || '')}" placeholder="Contoh: MSS SMKUSR, Sambutan Hari Guru"><span class="bantu">Kosongkan jika perjumpaan biasa.</span></label>
+          <label class="medan">Program sekolah<input type="text" name="program" value="${e(p0.program || '')}" placeholder="Contoh: MSS SMKUSR, Sambutan Hari Guru"><span class="bantu">Kosongkan jika perjumpaan biasa. Jika diisi, baris dipaparkan sebagai program ini dan unit lain ditanda √ (menyokong).</span></label>
           <label class="cek"><input type="checkbox" name="tentatif" ${p0.tentatif ? 'checked' : ''}> Tarikh tentatif (belum muktamad)</label>
           <fieldset class="bidang-set"><legend>Perjumpaan</legend>
             ${URUT_S.map((k) => { const p = ps.find((x) => x.kategori === k); return `<div class="bidang-baris"><label class="cek"><input type="checkbox" name="ada_${k}" ${p ? 'checked' : ''}> ${cipKat(k)} <span class="pudar kecil">${p ? `ke-${p.bil}` : 'baharu'}</span></label>
               <input type="text" name="tema_${k}" value="${e((p && p.tema) || '')}" placeholder="Tema / aktiviti" aria-label="Tema ${KAT[k]}"></div>`; }).join('')}
-            <p class="bantu" style="margin:6px 0 0">Tanda lebih daripada satu bidang untuk perjumpaan gabungan. Tema yang kosong mengikut tema bidang pertama. Tema <b>PAJSK</b> untuk sesi pengisian PAJSK.</p></fieldset>
+            <p class="bantu" style="margin:6px 0 0">Tanda lebih daripada satu bidang untuk perjumpaan gabungan. Tema yang kosong mengikut tema bidang pertama.</p></fieldset>
           <label class="medan">Tindakan<input type="text" name="tindakan" value="${e(p0.tindakan || '')}" placeholder="Contoh: UNIT UB MASING-MASING"></label>
           ${akt.length ? `<p class="kecil" style="margin:0">Aktiviti sekolah pada tarikh ini: ${akt.map((a) => `<button type="button" class="pautan" data-act="f2-aktiviti" data-id="${a.id}">${e(a.tajuk)}</button>`).join(', ')}</p>` : ''}
         </form></div>
@@ -3626,18 +3657,20 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (F().adaFormat === false) { roti('Jalankan takwim_format.sql di Supabase dahulu.', true); return; }
       const per = Object.fromEntries(URUT_S.map((k) => [k, []])), akt = [];
       draf.forEach(([t, prog, ps, tind, tent]) => {
-        if (!ps.length) { akt.push({ tahun, tarikh_mula: t, tarikh_tamat: null, tajuk: prog, jenis: 'sekolah', unit_kod: null, peringkat: null, tempat: null, catatan: null, tindakan: tind || null }); return; }
+        if (!ps.length) { akt.push({ tahun, tarikh_mula: t, tarikh_tamat: null, tajuk: prog, jenis: 'sekolah', unit_kod: null, peringkat: null, tempat: null, catatan: DRAF_CATATAN, tindakan: tind || null }); return; }
         ps.forEach(([k, tema]) => per[k].push({ tahun, kategori: k, bil: per[k].length + 1, tarikh: t, tema: tema || null, program: prog || null, tindakan: tind || null, tentatif: !!tent }));
       });
       const rows = URUT_S.flatMap((k) => per[k]);
       const lebih = F().perjumpaan.filter((p) => p.bil > per[p.kategori].length);
       const aktBaru = akt.filter((a) => !F().aktiviti.some((x) => x.tajuk === a.tajuk && x.tarikh_mula === a.tarikh_mula));
+      const aktLama = F().aktiviti.filter((x) => x.jenis === 'sekolah' && (x.catatan === DRAF_CATATAN || DRAF_LAMA.includes(x.tajuk)) && !akt.some((a) => a.tajuk === x.tajuk && a.tarikh_mula === x.tarikh_mula));
       const kpm = kpmBaki(), ada = F().perjumpaan.length;
-      if (!(await sahkan(`Muat draf Takwim Kokum ${tahun}?\n\n• ${rows.length} perjumpaan: ${URUT_S.map((k) => `${k} ${per[k].length}`).join(', ')}\n• ${aktBaru.length} aktiviti sekolah\n• ${kpm.length} tarikh Kalendar Akademik KPM (cuti)${ada ? `\n\n${ada} perjumpaan sedia ada akan dikemas kini ikut nombor perjumpaan. Kehadiran yang sudah direkod kekal pada nombor yang sama.${lebih.length ? ` ${lebih.length} perjumpaan berlebihan dipadam.` : ''}` : ''}\n\nSemua tarikh boleh diubah selepas ini.`, { ok: 'Muat draf' }))) return;
+      if (!(await sahkan(`Muat draf Takwim Kokum ${tahun}?\n\n• ${rows.length} perjumpaan: ${URUT_S.map((k) => `${k} ${per[k].length}`).join(', ')}\n• ${aktBaru.length} aktiviti sekolah (semua unit menyokong)\n• ${kpm.length} tarikh Kalendar Akademik KPM (cuti)${ada ? `\n\n${ada} perjumpaan sedia ada akan dikemas kini ikut nombor perjumpaan. Kehadiran yang sudah direkod kekal pada nombor yang sama.${lebih.length ? ` ${lebih.length} perjumpaan berlebihan dipadam.` : ''}${aktLama.length ? ` ${aktLama.length} aktiviti draf lama dibuang.` : ''}` : ''}\n\nSemua tarikh boleh diubah selepas ini.`, { ok: 'Muat draf' }))) return;
       await S.db.f2SimpanPerjumpaan(rows);
       if (lebih.length) await S.db.f2PadamPerjumpaan(lebih.map((p) => p.id));
       for (const [m, t2, t, j, c] of kpm) await S.db.f2SimpanAktiviti({ tahun, tarikh_mula: m, tarikh_tamat: t2, tajuk: t, jenis: j, unit_kod: null, peringkat: null, tempat: null, catatan: c || null });
       for (const a of aktBaru) await S.db.f2SimpanAktiviti(a);
+      for (const a of aktLama) await S.db.f2PadamAktiviti(a.id);
       await muat(tahun, true);
       roti(`Draf Takwim Kokum ${tahun} dimuatkan`); tetapLokasi(`#/takwim/senarai?tahun=${tahun}`); render();
     }
@@ -4333,8 +4366,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (!b.length) return '<section class="halaman dok"><p>Takwim kosong.</p></section>';
       return `<section class="halaman dok landskap takwim-dok">${kepalaDok(`TAKWIM KOKURIKULUM ${F().tahun}`)}
         ${jadualSekolah(b, false)}
-        <p class="nota-borang">M = minggu ke-. Jumlah perjumpaan: Unit Beruniform ${C.UB}, Kelab & Persatuan ${C.KP}, Sukan & Permainan ${C.SP}. Tarikh bertanda tentatif tertakluk kepada perubahan.</p>
-        ${ttd(ttdKokum().map((x, i) => `${i ? 'Disahkan oleh' : 'Disediakan oleh'},<br>${x.nama ? `<b>(${e(x.nama)})</b><br>` : '<br>'}${e(x.jawatan || '')}`))}</section>`;
+        <p class="nota-borang">M = minggu ke-. ★ perjumpaan unit (dikira untuk PAJSK) · √ menyokong program (tidak dikira). Jumlah perjumpaan: UB ${C.UB}, KP ${C.KP}, SP ${C.SP}. Tarikh bertanda tentatif tertakluk kepada perubahan.</p>
+        ${ttd(ttdKokum().map((x, i) => `${i ? 'Disahkan oleh' : 'Disediakan oleh'},<br>${x.nama ? `<b>(${e(x.nama)})</b><br>` : '<br>'}${e(x.jawatan || '')}<br>Tarikh:`))}</section>`;
     }
     function dokTakwimBulan() {
       const sem = entri(), ikut = new Map();
@@ -4457,10 +4490,11 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
 
     /* ============================================================ excel */
     function eksportTakwim() {
-      const sekolah = [['BIL', 'BULAN', 'M', 'HARI', 'TARIKH', 'PROGRAM SEKOLAH', 'PROGRAM AKTIVITI KOKURIKULUM', 'TINDAKAN', 'TENTATIF']].concat(barisSekolah().map((x) => {
-        if (x.cuti) return ['', '', '', '', tarikhDM(x.cuti), x.cuti.tajuk.toUpperCase(), '', '', ''];
-        const d = tk(x.tarikh); return [x.bil, BLN_S[d.getMonth()], mingguIso(x.tarikh), HARI[d.getDay()].toUpperCase(), tarikhSlash(x.tarikh), teksProgram(x), teksKokum(x.ps), teksTindakan(x), x.ps.some((p) => p.tentatif) ? 'YA' : ''];
-      }));
+      const C = kiraanBidang();
+      const sekolah = [['BIL', 'BULAN', 'M', 'HARI', 'TARIKH', 'PROGRAM AKTIVITI KOKURIKULUM', 'TINDAKAN', 'ULASAN PERLAKSANAAN', 'UB', 'KP', 'SP', 'TENTATIF']].concat(barisSekolah().map((x) => {
+        if (x.cuti) return ['', '', '', '', tarikhDM(x.cuti), x.cuti.tajuk.toUpperCase(), '', '', '', '', '', ''];
+        const d = tk(x.tarikh); return [x.bil, BLN_S[d.getMonth()], mingguIso(x.tarikh), HARI[d.getDay()].toUpperCase(), tarikhSlash(x.tarikh), teksBaris(x), teksTindakan(x), '', ...URUT_S.map((k) => tanda(x, k)), x.ps.some((p) => p.tentatif) ? 'YA' : ''];
+      }), [['', '', '', '', '', 'JUMLAH PERJUMPAAN IKUT UNIT', '', '', C.UB, C.KP, C.SP, '']]);
       const rows = [['TARIKH MULA', 'TARIKH TAMAT', 'HARI', 'PERKARA', 'JENIS']].concat(entri().map((x) => [x.mula, x.tamat || '', HARI[tk(x.mula).getDay()], teksEntri(x, false), x.jenis === 'perjumpaan' ? 'PERJUMPAAN' : x.olahraga ? 'OLAHRAGA' : JENIS[x.jenis].toUpperCase()]));
       const tajuk = [[`TAKWIM KOKURIKULUM ${F().tahun}`], [T().nama_sekolah || ''], []];
       return eksport(`TAKWIM-KOKUM-${F().tahun}.xlsx`, [['Takwim', tajuk.concat(sekolah)], ['Ikut tarikh', tajuk.concat(rows)]]).then((ok) => { if (ok) roti('Fail Excel disediakan'); });
@@ -4569,7 +4603,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     function selepasRender() { if ($('#borang-f2-jana')) pratontonJana(); if ($('#borang-f2-hadir')) kiraHadirBorang(); }
 
     return { papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel,
-      _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, barisSekolah } };
+      _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, teksBaris, tanda, barisSekolah } };
   };
 })();
 
