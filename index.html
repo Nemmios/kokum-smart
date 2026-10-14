@@ -828,6 +828,43 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .surat-kem .ks-tengah b { font-size: 10.5pt; } .surat-kem .ks-tengah span { font-size: 9.5pt; }
 @media print { .surat-rasmi { min-height: 272mm; } }
 
+/* ---------------- Mesyuarat kokurikulum */
+.msy-bahagian { margin-bottom: 12px; }
+.msy-bahagian h2 { font-size: 1rem; margin: 0 0 8px; }
+.msy-item { display: grid; grid-template-columns: 40px 1fr auto; gap: 8px; padding: 8px 0; border-top: 1px solid var(--garis); align-items: start; }
+.msy-item .no { color: var(--kabus); font-variant-numeric: tabular-nums; font-size: .85rem; padding-top: 1px; }
+.msy-item .isi-item { display: grid; gap: 3px; }
+.msy-tambah { display: grid; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--garis-kuat); }
+.msy-tambah textarea { width: 100%; }
+.msy-tambah select, .msy-tambah input { width: auto; min-height: 36px; padding: 4px 8px; font-size: .85rem; }
+.msy-tambah input[name=oleh] { flex: 1; min-width: 150px; }
+.msy-tindakan { display: grid; }
+.msy-tb { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--garis); flex-wrap: wrap; }
+.msy-tb > div:first-child { flex: 1; min-width: 220px; display: grid; gap: 2px; }
+.seg-status { display: flex; gap: 4px; flex-wrap: wrap; }
+.lencana-status { font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 6px; background: var(--amaran-latar); color: var(--amaran); white-space: nowrap; }
+.lencana-status.s-selesai { background: var(--hijau-latar); color: var(--hijau); } .lencana-status.s-belum { background: var(--bahaya-latar); color: var(--bahaya); }
+.msy-hadir { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 4px 14px; font-size: .86rem; max-height: 420px; overflow: auto; }
+.msy-data h3 { font-size: .98rem; margin: 16px 0 6px; } .msy-data h3:first-child { margin-top: 0; }
+.msy-data table { margin-bottom: 8px; }
+.memo-dok, .minit-dok { font-family: "Times New Roman", Times, serif; font-size: 11.5pt; line-height: 1.4; }
+.memo-dok p, .minit-dok p { margin: 0 0 9px; text-align: justify; }
+.memo-kepala { display: grid; justify-items: center; text-align: center; gap: 1px; margin-bottom: 14px; }
+.memo-kepala img { width: 92px; margin-bottom: 8px; } .memo-kepala b { font-size: 11pt; }
+.memo-kotak { border: 1.5px solid #000; width: 46%; margin: 4px auto 16px; padding: 6px; text-align: center; font-weight: 700; }
+.kertas-cetak .memo-dok table, .kertas-cetak .minit-dok table { width: auto; border: 0; margin: 0 0 10px; font-size: 11.5pt; }
+.kertas-cetak .memo-dok td, .kertas-cetak .minit-dok td { border: 0; padding: 0 12px 0 0; vertical-align: top; }
+.memo-info td:first-child, .memo-butiran td:first-child { font-weight: 700; white-space: nowrap; }
+.kertas-cetak .memo-butiran, .kertas-cetak .memo-agenda { margin-left: 48px !important; }
+.memo-tajuk, .minit-tajuk { font-weight: 700; text-decoration: underline; }
+.minit-tajuk { text-align: center; font-size: 12pt; }
+.memo-no { display: inline-block; width: 48px; }
+.minit-nama { margin: 0 0 10px; padding-left: 28px; }
+.minit-bahagian { font-size: 11.5pt; margin: 14px 0 6px; }
+.minit-item { display: grid; grid-template-columns: 1fr 150px; gap: 12px; margin-bottom: 8px; break-inside: avoid; }
+.minit-teks { display: grid; grid-template-columns: 42px 1fr; text-align: justify; }
+.minit-tindakan { font-weight: 700; font-size: 10.5pt; }
+
 </style>
 </head>
 <body>
@@ -1106,6 +1143,8 @@ window.KOKUM_CONFIG = {
   const MEDAN_UNIT = ['kod', 'kategori', 'nama_penuh', 'bilik_operasi', 'guru_penasihat', 'jantina', 'had_ahli', 'susunan', 'aktif'];
   const MEDAN_PJ = ['tahun', 'kategori', 'bil', 'tarikh', 'masa_mula', 'masa_tamat', 'catatan', 'tema', 'program', 'tindakan', 'tentatif'];
   const MEDAN_AK = ['tahun', 'tarikh_mula', 'tarikh_tamat', 'tajuk', 'jenis', 'unit_kod', 'peringkat', 'tempat', 'catatan', 'tindakan'];
+  const MEDAN_MSY = ['tahun', 'bil', 'tarikh', 'masa', 'masa_tamat', 'tempat', 'agenda', 'kehadiran', 'memo', 'status'];
+  const MEDAN_MP = ['mesyuarat_id', 'bahagian', 'susunan', 'teks', 'jenis', 'oleh', 'tarikh_akhir', 'status', 'susulan'];
   const MEDAN_LG = ['tahun', 'nama', 'gelaran', 'ub', 'ub_peranan', 'kp', 'kp_peranan', 'sp', 'sp_peranan', 'rumah', 'rumah_peranan', 'lain'];
   const MEDAN_KEM = ['tahun', 'nama', 'kali_ke', 'tarikh_mula', 'tarikh_tamat', 'tempat', 'penganjur', 'tingkatan', 'kuota_l', 'kuota_p', 'kuota_ajk', 'yuran', 'tarikh_tutup', 'dibuka', 'maklumat', 'pajsk_pada'];
   const MEDAN_KP = ['kem_id', 'murid_id', 'unit_kod', 'peranan', 'jawatan', 'borang', 'yuran', 'hadir', 'catatan'];
@@ -1274,6 +1313,25 @@ window.KOKUM_CONFIG = {
         const data = Object.fromEntries(medan.filter((x) => x in k).map((x) => [x, k[x] === '' ? null : k[x]]));
         return semak(await sb.from('ais_kejohanan').update(data).eq('id', k.id).select().single());
       },
+      // ---------------- Mesyuarat kokurikulum
+      async msyMuat(tahun) {
+        const mesyuarat = semak(await sb.from('mesyuarat').select('*').eq('tahun', tahun).order('bil'));
+        const ids = mesyuarat.map((m) => m.id);
+        const perkara = ids.length ? semak(await sb.from('mesyuarat_perkara').select('*').in('mesyuarat_id', ids).order('bahagian').order('susunan').order('id')) : [];
+        return { mesyuarat, perkara };
+      },
+      async msySimpan(m) {
+        const data = pilih(m, MEDAN_MSY);
+        if (m.id) return semak(await sb.from('mesyuarat').update(data).eq('id', m.id).select().single());
+        return semak(await sb.from('mesyuarat').insert(data).select().single());
+      },
+      async msyPadam(id) { semak(await sb.from('mesyuarat').delete().eq('id', id)); },
+      async msySimpanPerkara(p) {
+        const data = { ...pilih(p, MEDAN_MP), dikemas: new Date().toISOString() };
+        if (p.id) return semak(await sb.from('mesyuarat_perkara').update(data).eq('id', p.id).select().single());
+        return semak(await sb.from('mesyuarat_perkara').insert(data).select().single());
+      },
+      async msyPadamPerkara(id) { semak(await sb.from('mesyuarat_perkara').delete().eq('id', id)); },
       // ---------------- Surat lantikan guru
       async lgMuat(tahun) { return semak(await sb.from('lantikan_guru').select('*').eq('tahun', tahun).order('nama')); },
       async lgSimpan(rows) {
@@ -1694,6 +1752,25 @@ window.KOKUM_CONFIG = {
         A.acara.push(...A.acara.filter((a) => a.kejohanan_id === lama.id).map((a) => ({ ...a, id: ++n, kejohanan_id: kid, rasmi: false, rasmi_pada: null })));
         tulis(); return kid;
       },
+      // ---------------- Mesyuarat kokurikulum (demo)
+      _msy() { const d = baca(); if (!d.msy) d.msy = { mesyuarat: [], perkara: [], n: 1 }; return d.msy; },
+      async msyMuat(tahun) {
+        await tunda(); const M = this._msy(), m = M.mesyuarat.filter((x) => x.tahun === tahun).sort((a, b) => a.bil - b.bil), ids = new Set(m.map((x) => x.id));
+        return salin({ mesyuarat: m, perkara: M.perkara.filter((p) => ids.has(p.mesyuarat_id)).sort((a, b) => a.bahagian - b.bahagian || a.susunan - b.susunan || a.id - b.id) });
+      },
+      async msySimpan(m) {
+        const M = this._msy(); let x = m.id && M.mesyuarat.find((y) => y.id === m.id);
+        if (!x && M.mesyuarat.some((y) => y.tahun === m.tahun && y.bil === m.bil)) throw new Error('Rekod ini sudah wujud.');
+        if (!x) { x = { id: M.n++, agenda: [], kehadiran: {}, memo: {}, status: 'dirancang', dicipta: new Date().toISOString() }; M.mesyuarat.push(x); }
+        Object.assign(x, pilih(m, MEDAN_MSY)); tulis(); return salin(x);
+      },
+      async msyPadam(id) { const M = this._msy(); M.mesyuarat = M.mesyuarat.filter((x) => x.id !== id); M.perkara = M.perkara.filter((p) => p.mesyuarat_id !== id); tulis(); },
+      async msySimpanPerkara(p) {
+        const M = this._msy(); let x = p.id && M.perkara.find((y) => y.id === p.id);
+        if (!x) { x = { id: M.n++, status: 'belum', susunan: 0 }; M.perkara.push(x); }
+        Object.assign(x, pilih(p, MEDAN_MP), { dikemas: new Date().toISOString() }); tulis(); return salin(x);
+      },
+      async msyPadamPerkara(id) { const M = this._msy(); M.perkara = M.perkara.filter((p) => p.id !== id); tulis(); },
       // ---------------- Surat lantikan guru (demo)
       _lg() { const d = baca(); if (!d.lg) d.lg = { baris: [], n: 1 }; return d.lg; },
       async lgMuat(tahun) { await tunda(); return salin(this._lg().baris.filter((r) => r.tahun === tahun).sort((a, b) => a.nama.localeCompare(b.nama))); },
@@ -3636,7 +3713,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const ta = tahunAsal();
       const kepala = `<div class="kepala tanpa-cetak"><div><h1>Takwim kokurikulum ${tahun}</h1><p>Tarikh perjumpaan UB, KP dan SP, aktiviti sekolah, cuti dan peperiksaan.</p></div>
         <div class="baris-btn">${[ta - 1, ta, ta + 1].map((t) => `<a class="cip ${t === tahun ? 'pilih' : ''}" href="#/takwim/${tab === 'cetak' ? 'bulan' : tab}?tahun=${t}">${t}</a>`).join('')}
-        <a class="btn kecil" href="#/takwim/cetak?doc=takwim&tahun=${tahun}">${IKON.cetak} Cetak</a></div></div>`;
+        <a class="btn kecil" href="#/takwim/cetak?doc=takwim&tahun=${tahun}">${IKON.cetak} Cetak</a><a class="btn kecil" href="#/mesyuarat?tahun=${tahun}">Mesyuarat</a></div></div>`;
       if (tab === 'cetak') { const x = sedia(tahun); return x ? kepala + x : pCetak(q); }
       if (!tabs.some((t) => t[0] === tab)) tab = 'bulan';
       const nav = `<nav class="tab tanpa-cetak">${tabs.map(([k, l]) => `<a href="#/takwim/${k}?tahun=${tahun}" ${k === tab ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
@@ -4756,7 +4833,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     function selepasRender() { if ($('#borang-f2-jana')) pratontonJana(); if ($('#borang-f2-hadir')) kiraHadirBorang(); }
 
-    return { papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel,
+    return { papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
       _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, teksBaris, tanda, barisSekolah } };
   };
 })();
@@ -5488,6 +5565,376 @@ window.KOKUM_SURAT_ASET = {
 
 </script>
 <script>
+/* KOKUM SMART · Mesyuarat Kokurikulum
+   Memo jemputan, kehadiran guru, minit ikut agenda (format minit sekolah), tindakan susulan yang dibawa ke mesyuarat
+   berikutnya, dan Laporan Data untuk dibentangkan (keahlian, kehadiran perjumpaan, OPR, PAJSK, aktiviti, takwim). */
+(function () {
+  'use strict';
+
+  const BULAN = ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'];
+  const HARI = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+  const AGENDA_ASAS = ['UCAPAN PENGERUSI', 'PENGESAHAN MINIT DAN PERKARA BERBANGKIT', 'PENGISIAN MARKAH PAJSK', 'LAPORAN AKTIVITI', 'HAL-HAL LAIN'];
+  const JENIS = { makluman: 'Makluman', tindakan: 'Tindakan', keputusan: 'Keputusan' };
+  const STATUS = { belum: 'Belum', dalam: 'Dalam tindakan', selesai: 'Selesai' };
+  const KATS = ['UB', 'KP', 'SP'];
+  const GRED = ['A', 'B', 'C', 'D', 'E'];
+
+  window.KokumMesyuarat = function (ctx) {
+    const { S, e, $, $$, IKON, roti, sahkan, render, penyelaras, aktif, tetapLokasi, hariIni, LOGO, BINGKAI, unitKat, KAT, kiraMurid, muatF2, entri, teksEntri } = ctx;
+    const T = () => S.data.tetapan || {};
+    const P = () => (window.KokumSurat ? window.KokumSurat.pegawai(T()) : {});
+    const tahunAsal = () => +T().tahun || new Date().getFullYear();
+    const M = () => S.msy;
+    const renderLatar = () => { const d = $('#dlg'); if (d && d.open) return; S.kekalSkrol = true; render(); };
+    let memuat = null;
+    function muat(tahun, paksa) {
+      if (!paksa && S.msy && S.msy.tahun === tahun) return Promise.resolve();
+      if (memuat && memuat.tahun === tahun) return memuat.p;
+      const p = Promise.all([S.db.msyMuat(tahun), S.db.lgMuat ? S.db.lgMuat(tahun).catch(() => []) : []])
+        .then(([d, lg]) => { S.msy = { ...d, tahun, lg, ralat: null }; }, (err) => { S.msy = { tahun, mesyuarat: [], perkara: [], lg: [], ralat: err.message || String(err) }; })
+        .finally(() => { memuat = null; });
+      memuat = { tahun, p };
+      return p;
+    }
+
+    /* ============================================================ bantuan */
+    const tk = (s) => (s ? new Date(s + 'T00:00:00') : null);
+    const fmtT = (s, hari) => { const d = tk(s); if (!d) return '—'; return `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}${hari ? ` (${HARI[d.getDay()]})` : ''}`; };
+    const bilTeks = (m) => `${String(m.bil).padStart(2, '0')}/${m.tahun}`;
+    const msyId = (id) => M().mesyuarat.find((x) => x.id === +id);
+    const perkaraM = (m) => M().perkara.filter((p) => p.mesyuarat_id === m.id);
+    const sebelum = (m) => M().mesyuarat.filter((x) => x.bil < m.bil).sort((a, b) => b.bil - a.bil)[0] || null;
+    const selepas = (m) => M().mesyuarat.filter((x) => x.bil > m.bil).sort((a, b) => a.bil - b.bil)[0] || null;
+    const adalahBerbangkit = (t) => /BERBANGKIT|PENGESAHAN MINIT/i.test(t || '');
+    const norm = (s) => String(s || '').toUpperCase().replace(/\b(BIN|BINTI|BT|BTE|B)\b\.?/g, ' ').replace(/[^A-Z@ ]/g, ' ').replace(/\s+/g, ' ').trim();
+    const AKRONIM = /^(PAJSK|SEGAK|MSS|MSSD|MSSS|UB|KP|SP|PK|SU|PPD|JPN|KPM|OPR|AJK|BPL|PIBG|IDME|MOEIS|STEM|ICT|KRS|PBSM|PPIM|KBPM|KPAM|SPBT|PPKI|UASA|PAT|PPT|SPM|PT3|II|III|IV)$/;
+    const tajukKata = (s) => String(s || '').toLowerCase().replace(/(^|[\s(@-])([a-z])/g, (x, a, b) => a + b.toUpperCase())
+      .split(' ').map((w) => (AKRONIM.test(w.replace(/[^A-Za-z0-9]/g, '').toUpperCase()) ? w.toUpperCase() : w)).join(' ');
+    function senaraiGuru() {
+      const out = [], ada = new Set(), tambah = (n) => { const k = norm(n); if (k && !ada.has(k)) { ada.add(k); out.push(String(n).toUpperCase().trim()); } };
+      const p = P();
+      [p.pengetua, p.pk_kokum, p.su_kokum, p.su_data].forEach((x) => x && tambah(x));
+      (M().lg || []).forEach((r) => tambah(r.nama));
+      (S.data.profiles || []).filter((x) => x.aktif && x.nama).forEach((x) => tambah(x.nama));
+      return out;
+    }
+    const tindakanTerbuka = () => M().perkara.filter((p) => p.jenis === 'tindakan' && p.status !== 'selesai');
+
+    /* ============================================================ halaman */
+    function papar(a1, a2, q) {
+      const tahun = +(q.get('tahun')) || (a1 && S.msy && S.msy.tahun) || S.msyTahun || tahunAsal(); S.msyTahun = tahun;
+      if (!M() || M().tahun !== tahun) { muat(tahun).then(renderLatar); return '<p class="pudar">Memuatkan mesyuarat…</p>'; }
+      if (M().ralat) return `<div class="mesej ralat">${e(M().ralat)}. Pastikan fail <b>mesyuarat.sql</b> sudah dijalankan di Supabase.</div><button class="btn" data-act="msy-muat">${IKON.segar} Cuba lagi</button>`;
+      if (a1) {
+        const m = msyId(a1);
+        if (!m) return `<div class="mesej ralat">Mesyuarat tidak dijumpai.</div><a class="btn" href="#/mesyuarat">Kembali</a>`;
+        if (a2 === 'cetak') return pCetak(m, q);
+        return pMesyuarat(m, q.get('tab') || 'minit');
+      }
+      return pSenarai(tahun);
+    }
+
+    function pSenarai(tahun) {
+      const l = M().mesyuarat, terbuka = tindakanTerbuka(), chip = (t) => `<a class="cip ${t === tahun ? 'pilih' : ''}" href="#/mesyuarat?tahun=${t}">${t}</a>`;
+      return `<div class="kepala"><div><h1>Mesyuarat Kokurikulum ${tahun}</h1><p>Memo jemputan, kehadiran, minit, tindakan susulan dan laporan data untuk dibentangkan.</p></div>
+          ${penyelaras() ? `<div class="baris-btn"><button class="btn utama" data-act="msy-baru">${IKON.tambah} Mesyuarat baharu</button></div>` : ''}</div>
+        <div class="cip-set" style="margin-bottom:12px">${[tahunAsal() - 1, tahunAsal(), tahunAsal() + 1].map(chip).join('')}</div>
+        ${l.length ? `<div class="grid-opr" style="margin-bottom:14px">${l.map((m) => { const pk = perkaraM(m), tb = pk.filter((p) => p.jenis === 'tindakan');
+          return `<a class="panel kad-kem" href="#/mesyuarat/${m.id}?tahun=${tahun}"><b>Mesyuarat Kokurikulum Bil ${e(bilTeks(m))}</b>
+            <span class="kecil">${e(fmtT(m.tarikh, true))}${m.masa ? ' · ' + e(m.masa) : ''}</span><span class="kecil pudar">${pk.length} perkara · ${tb.filter((p) => p.status !== 'selesai').length}/${tb.length} tindakan belum selesai</span>
+            <span class="status-kem ${m.status === 'selesai' ? 'buka' : ''}">${m.status === 'selesai' ? 'Selesai' : 'Dirancang'}</span></a>`; }).join('')}</div>`
+          : `<div class="panel kosong-isi"><h3>Belum ada mesyuarat ${tahun}</h3><p>${penyelaras() ? 'Tekan Mesyuarat baharu untuk menyediakan memo jemputan dan minit.' : 'Penyelaras belum merekod mesyuarat.'}</p></div>`}
+        ${terbuka.length ? `<div class="panel"><h2>Tindakan belum selesai (${terbuka.length})</h2>${senaraiTindakan(terbuka)}</div>` : ''}`;
+    }
+    function senaraiTindakan(l) {
+      return `<div class="msy-tindakan">${l.map((p) => { const m = M().mesyuarat.find((x) => x.id === p.mesyuarat_id);
+        return `<div class="msy-tb"><div><span class="pudar kecil">Bil ${e(bilTeks(m))} · ${e(m.agenda[p.bahagian] || '')}</span><div>${e(p.teks)}</div>
+          <span class="kecil"><b>Tindakan:</b> ${e(p.oleh || '—')}${p.tarikh_akhir ? ` · sebelum ${e(fmtT(p.tarikh_akhir))}` : ''}${p.susulan ? ` · <i>${e(p.susulan)}</i>` : ''}</span></div>
+          ${penyelaras() ? `<div class="seg-status">${Object.entries(STATUS).map(([k, v]) => `<button type="button" class="btn kecil ${p.status === k ? 'utama' : ''}" data-act="mp-status" data-id="${p.id}" data-s="${k}">${v}</button>`).join('')}</div>` : `<span class="lencana-status s-${p.status}">${STATUS[p.status]}</span>`}</div>`; }).join('')}</div>`;
+    }
+
+    function pMesyuarat(m, tab) {
+      const tabs = [['minit', 'Minit'], ['butiran', 'Butiran & kehadiran'], ['data', 'Laporan data']];
+      const h = m.kehadiran || {};
+      return `<p class="tanpa-cetak" style="margin-bottom:12px"><a href="#/mesyuarat?tahun=${m.tahun}">← Mesyuarat ${m.tahun}</a></p>
+        <div class="kepala"><div><h1>Mesyuarat Kokurikulum Bil ${e(bilTeks(m))}</h1><p>${e(fmtT(m.tarikh, true))}${m.masa ? ' · ' + e(m.masa) : ''}${m.tempat ? ' · ' + e(m.tempat) : ''} · ${(h.hadir || []).length} hadir</p></div>
+          <div class="baris-btn"><a class="btn" href="#/mesyuarat/${m.id}/cetak?doc=memo&tahun=${m.tahun}">${IKON.cetak} Memo jemputan</a><a class="btn" href="#/mesyuarat/${m.id}/cetak?doc=minit&tahun=${m.tahun}">${IKON.cetak} Minit</a><a class="btn" href="#/mesyuarat/${m.id}/cetak?doc=data&tahun=${m.tahun}">${IKON.cetak} Laporan data</a></div></div>
+        <nav class="tab tanpa-cetak">${tabs.map(([k, l]) => `<a href="#/mesyuarat/${m.id}?tahun=${m.tahun}&tab=${k}" ${k === tab ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>
+        ${{ minit: tMinit, butiran: tButiran, data: tData }[tab] ? { minit: tMinit, butiran: tButiran, data: tData }[tab](m) : tMinit(m)}`;
+    }
+
+    /* ------------------------------------------------------------ butiran & kehadiran */
+    function tButiran(m) {
+      const boleh = penyelaras(), me = m.memo || {}, h = m.kehadiran || {};
+      if (!boleh) return `<div class="panel"><p>Agenda:</p><ol>${(m.agenda || []).map((a) => `<li>${e(a)}</li>`).join('')}</ol></div>`;
+      const hadir = new Set((h.hadir || []).map(norm)), guru = senaraiGuru();
+      (h.hadir || []).concat(h.tidak || []).forEach((n) => { if (!guru.some((g) => norm(g) === norm(n))) guru.push(n); });
+      return `<form class="panel borang" id="borang-msy" data-id="${m.id}" style="margin-bottom:14px"><h2 style="margin:0">Butiran mesyuarat</h2>
+          <div class="tiga"><label class="medan">Bil<input type="number" name="bil" value="${e(m.bil)}" min="1" max="99" required></label><label class="medan">Tarikh<input type="date" name="tarikh" value="${e(m.tarikh || '')}"></label>
+            <label class="medan">Status<select name="status"><option value="dirancang" ${m.status !== 'selesai' ? 'selected' : ''}>Dirancang</option><option value="selesai" ${m.status === 'selesai' ? 'selected' : ''}>Selesai</option></select></label></div>
+          <div class="tiga"><label class="medan">Masa mula<input type="text" name="masa" value="${e(m.masa || '')}" placeholder="11.30 pagi"></label><label class="medan">Masa ditangguhkan<input type="text" name="masa_tamat" value="${e(m.masa_tamat || '')}" placeholder="1.00 petang"></label>
+            <label class="medan">Tempat<input type="text" name="tempat" value="${e(m.tempat || '')}"></label></div>
+          <label class="medan">Agenda<textarea name="agenda" rows="6">${e((m.agenda || []).join('\n'))}</textarea><span class="bantu">Satu agenda setiap baris, ikut susunan. Agenda bertajuk "Pengesahan minit dan perkara berbangkit" memaparkan tindakan daripada mesyuarat lepas.</span></label>
+          <fieldset class="bidang-set"><legend>Memo jemputan</legend>
+            <div class="dua"><label class="medan">Tarikh memo<input type="date" name="memo_tarikh" value="${e(me.tarikh || '')}"></label><label class="medan">Daripada<input type="text" name="memo_daripada" value="${e(me.daripada || 'Penolong Kanan Kokurikulum')}"></label></div>
+            <label class="medan">Kepada<input type="text" name="memo_kepada" value="${e(me.kepada || 'Semua Guru SMK Ulu Sugut (Malinsau), Ranau')}"></label>
+            <label class="medan">Salinan kepada<input type="text" name="memo_salinan" value="${e(me.salinan || 'Pengurusan Fail Setiausaha Kokurikulum')}"></label></fieldset>
+          <div class="baris-btn"><button class="btn utama" type="submit">Simpan</button><button type="button" class="btn bahaya kosong" data-act="msy-padam" data-id="${m.id}">Padam mesyuarat</button></div></form>
+        <form class="panel" id="borang-msy-hadir" data-id="${m.id}"><h2 style="margin:0 0 4px">Kehadiran (${hadir.size}/${guru.length})</h2>
+          <p class="pudar kecil" style="margin:0 0 10px">Senarai daripada pegawai sekolah, senarai lantikan guru ${m.tahun} dan akaun aplikasi. Tanda yang hadir; yang tidak ditanda dicatat sebagai tidak hadir.</p>
+          <div class="baris-btn" style="margin-bottom:8px"><button type="button" class="btn kecil" data-act="msy-semua" data-v="1">Tanda semua</button><button type="button" class="btn kecil" data-act="msy-semua" data-v="0">Kosongkan</button></div>
+          <div class="msy-hadir">${guru.map((g) => `<label class="cek"><input type="checkbox" name="hadir" value="${e(g)}" ${hadir.has(norm(g)) ? 'checked' : ''}> ${e(g)}</label>`).join('')}</div>
+          <label class="medan" style="margin-top:10px">Nama lain yang hadir<textarea name="lain" rows="2" placeholder="Satu nama setiap baris"></textarea></label>
+          <label class="medan">Catatan tidak hadir<input type="text" name="catatan" value="${e(h.catatan || '')}" placeholder="Contoh: Pn. X (kursus), En. Y (cuti sakit)"></label>
+          <div class="baris-btn" style="margin-top:10px"><button class="btn utama" type="submit">Simpan kehadiran</button></div></form>`;
+    }
+    async function simpanButiran(f) {
+      const d = new FormData(f), g = (x) => String(d.get(x) || '').trim(), m = msyId(f.dataset.id);
+      const bil = +g('bil');
+      if (M().mesyuarat.some((x) => x.id !== m.id && x.bil === bil)) { roti(`Bil ${bil} sudah digunakan.`, true); return; }
+      const agenda = g('agenda').split('\n').map((x) => x.trim().toUpperCase()).filter(Boolean);
+      if (agenda.length < (m.agenda || []).length && perkaraM(m).some((p) => p.bahagian >= agenda.length) && !(await sahkan('Ada perkara minit di bawah agenda yang dibuang. Perkara itu akan dipindahkan ke agenda terakhir.', { ok: 'Teruskan' }))) return;
+      const rec = await S.db.msySimpan({ id: m.id, bil, tarikh: g('tarikh') || null, masa: g('masa') || null, masa_tamat: g('masa_tamat') || null, tempat: g('tempat') || null, agenda, status: g('status'),
+        memo: { tarikh: g('memo_tarikh'), kepada: g('memo_kepada'), daripada: g('memo_daripada'), salinan: g('memo_salinan') } });
+      for (const p of perkaraM(m).filter((x) => x.bahagian >= agenda.length)) Object.assign(p, await S.db.msySimpanPerkara({ ...p, bahagian: Math.max(0, agenda.length - 1) }));
+      Object.assign(m, rec); roti('Butiran disimpan'); S.kekalSkrol = true; render();
+    }
+    async function simpanHadir(f) {
+      const d = new FormData(f), m = msyId(f.dataset.id), guru = senaraiGuru();
+      const hadir = d.getAll('hadir').concat(String(d.get('lain') || '').split('\n').map((x) => x.trim().toUpperCase()).filter(Boolean));
+      const hs = new Set(hadir.map(norm));
+      const semua = guru.concat((m.kehadiran.hadir || []), (m.kehadiran.tidak || []));
+      const tidak = []; const t2 = new Set();
+      semua.forEach((n) => { const k = norm(n); if (!hs.has(k) && !t2.has(k)) { t2.add(k); tidak.push(n); } });
+      const rec = await S.db.msySimpan({ id: m.id, kehadiran: { hadir: Array.from(new Map(hadir.map((n) => [norm(n), n])).values()), tidak, catatan: String(d.get('catatan') || '').trim() } });
+      Object.assign(m, rec); roti(`Kehadiran disimpan: ${rec.kehadiran.hadir.length} hadir`); S.kekalSkrol = true; render();
+    }
+
+    /* ------------------------------------------------------------ minit */
+    function itemHtml(p, no, boleh) {
+      return `<div class="msy-item"><span class="no">${no}</span><div class="isi-item"><div>${e(p.teks).replace(/\n/g, '<br>')}</div>
+        <span class="kecil ${p.jenis === 'tindakan' ? '' : 'pudar'}">${p.jenis === 'tindakan' ? `<b>Tindakan:</b> ${e(p.oleh || '—')}${p.tarikh_akhir ? ` · sebelum ${e(fmtT(p.tarikh_akhir))}` : ''} · <span class="lencana-status s-${p.status}">${STATUS[p.status]}</span>` : JENIS[p.jenis]}</span></div>
+        ${boleh ? `<button type="button" class="btn kosong kecil" data-act="mp-ubah" data-id="${p.id}">Ubah</button>` : ''}</div>`;
+    }
+    function tMinit(m) {
+      const boleh = penyelaras(), pk = perkaraM(m), lepas = sebelum(m);
+      const oleh = ['Semua guru', 'Penyelaras UB/KP/SP', 'Penyelaras UB', 'Penyelaras KP', 'Penyelaras SP', 'SU Sukan Sekolah', 'SU Kokurikulum', 'SU Data Kokurikulum', 'Penyelaras PAJSK', 'Guru penasihat unit'];
+      return `${!(m.agenda || []).length ? '<div class="mesej amaran">Belum ada agenda. Isi agenda dalam tab Butiran & kehadiran.</div>' : ''}
+        <datalist id="msy-oleh">${oleh.map((x) => `<option value="${x}">`).join('')}</datalist>
+        ${(m.agenda || []).map((a, i) => { const l = pk.filter((p) => p.bahagian === i);
+          const bangkit = adalahBerbangkit(a) && lepas ? perkaraM(lepas).filter((p) => p.jenis === 'tindakan') : [];
+          return `<section class="panel msy-bahagian"><h2>${i + 1}.0 ${e(a)}</h2>
+            ${adalahBerbangkit(a) ? (lepas ? `<p class="kecil pudar" style="margin:0 0 8px">Minit Mesyuarat Bil ${e(bilTeks(lepas))} (${e(fmtT(lepas.tarikh))}) dibentangkan untuk pengesahan. Tindakan daripada mesyuarat itu:</p>${bangkit.length ? senaraiTindakan(bangkit) : '<p class="pudar kecil">Tiada tindakan direkod.</p>'}` : '<p class="pudar kecil" style="margin:0">Tiada mesyuarat sebelum ini dalam tahun yang sama.</p>') : ''}
+            ${l.map((p, j) => itemHtml(p, `${i + 1}.${j + 1}`, boleh)).join('')}
+            ${boleh ? `<form class="msy-tambah" id="borang-mp-${i}" data-m="${m.id}" data-b="${i}"><textarea name="teks" rows="2" placeholder="Perkara ${i + 1}.${l.length + 1}" aria-label="Perkara baharu" required></textarea>
+              <div class="baris-btn"><select name="jenis" aria-label="Jenis">${Object.entries(JENIS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select>
+              <input type="text" name="oleh" list="msy-oleh" placeholder="Tindakan oleh" aria-label="Tindakan oleh"><input type="date" name="tarikh_akhir" aria-label="Tarikh akhir">
+              <button class="btn utama kecil" type="submit">${IKON.tambah} Tambah</button></div></form>` : ''}</section>`; }).join('')}
+        <section class="panel msy-bahagian"><h2>${(m.agenda || []).length + 1}.0 PENUTUP</h2><p style="margin:0">Mesyuarat ditangguhkan pada jam ${e(m.masa_tamat || '……………')}.${boleh && !m.masa_tamat ? ' <span class="pudar kecil">(isi masa dalam tab Butiran)</span>' : ''}</p></section>`;
+    }
+    async function tambahPerkara(f) {
+      const d = new FormData(f), m = msyId(f.dataset.m), b = +f.dataset.b, teks = String(d.get('teks') || '').trim();
+      if (!teks) return;
+      const jenis = d.get('jenis'), oleh = String(d.get('oleh') || '').trim();
+      if (jenis === 'tindakan' && !oleh) { roti('Isi siapa yang bertindak.', true); return; }
+      const rec = await S.db.msySimpanPerkara({ mesyuarat_id: m.id, bahagian: b, susunan: perkaraM(m).filter((p) => p.bahagian === b).length, teks, jenis, oleh: oleh || null, tarikh_akhir: d.get('tarikh_akhir') || null, status: 'belum', susulan: null });
+      M().perkara.push(rec); roti('Perkara ditambah'); S.kekalSkrol = true; render();
+      setTimeout(() => { const x = $(`#borang-mp-${b} textarea`); if (x) x.focus(); }, 30);
+    }
+    function bukaPerkara(id) {
+      const p = M().perkara.find((x) => x.id === +id), m = M().mesyuarat.find((x) => x.id === p.mesyuarat_id), dlg = $('#dlg');
+      dlg.innerHTML = `<div class="dk"><div><h2>Ubah perkara</h2><p class="pudar kecil" style="margin:2px 0 0">Bil ${e(bilTeks(m))}</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
+        <div class="db"><form class="borang" id="borang-mp-ubah" data-id="${p.id}">
+          <label class="medan">Agenda<select name="bahagian">${m.agenda.map((a, i) => `<option value="${i}" ${p.bahagian === i ? 'selected' : ''}>${i + 1}.0 ${e(a)}</option>`).join('')}</select></label>
+          <label class="medan">Perkara<textarea name="teks" rows="4" required>${e(p.teks)}</textarea></label>
+          <div class="dua"><label class="medan">Jenis<select name="jenis">${Object.entries(JENIS).map(([k, v]) => `<option value="${k}" ${p.jenis === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+            <label class="medan">Tindakan oleh<input type="text" name="oleh" value="${e(p.oleh || '')}" list="msy-oleh"></label></div>
+          <div class="dua"><label class="medan">Tarikh akhir<input type="date" name="tarikh_akhir" value="${e(p.tarikh_akhir || '')}"></label>
+            <label class="medan">Status<select name="status">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${p.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label></div>
+          <label class="medan">Catatan susulan<input type="text" name="susulan" value="${e(p.susulan || '')}" placeholder="Contoh: Kertas kerja sudah dihantar 20/10"></label>
+          <div class="baris-btn"><button type="button" class="btn kecil" data-act="mp-gerak" data-id="${p.id}" data-arah="-1">Naik</button><button type="button" class="btn kecil" data-act="mp-gerak" data-id="${p.id}" data-arah="1">Turun</button></div>
+        </form></div>
+        <div class="dt"><button class="btn bahaya" data-act="mp-padam" data-id="${p.id}">Padam</button><button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="borang-mp-ubah">Simpan</button></div>`;
+      dlg.dataset.id = ''; dlg.dataset.ubah = '';
+      if (!dlg.open) dlg.showModal();
+    }
+    async function simpanPerkara(f) {
+      const d = new FormData(f), p = M().perkara.find((x) => x.id === +f.dataset.id), g = (x) => String(d.get(x) || '').trim();
+      const b = +g('bahagian');
+      const rec = await S.db.msySimpanPerkara({ ...p, bahagian: b, susunan: b === p.bahagian ? p.susunan : M().perkara.filter((x) => x.mesyuarat_id === p.mesyuarat_id && x.bahagian === b).length,
+        teks: g('teks'), jenis: g('jenis'), oleh: g('oleh') || null, tarikh_akhir: g('tarikh_akhir') || null, status: g('status'), susulan: g('susulan') || null });
+      Object.assign(p, rec); M().perkara.sort((a, c) => a.bahagian - c.bahagian || a.susunan - c.susunan || a.id - c.id);
+      $('#dlg').close(); roti('Perkara disimpan'); S.kekalSkrol = true; render();
+    }
+    async function gerak(id, arah) {
+      const p = M().perkara.find((x) => x.id === +id);
+      const l = M().perkara.filter((x) => x.mesyuarat_id === p.mesyuarat_id && x.bahagian === p.bahagian);
+      const i = l.indexOf(p), j = i + arah;
+      if (j < 0 || j >= l.length) return;
+      [l[i], l[j]] = [l[j], l[i]];
+      for (let k = 0; k < l.length; k++) if (l[k].susunan !== k) Object.assign(l[k], await S.db.msySimpanPerkara({ ...l[k], susunan: k }));
+      M().perkara.sort((a, c) => a.bahagian - c.bahagian || a.susunan - c.susunan || a.id - c.id);
+      $('#dlg').close(); S.kekalSkrol = true; render();
+    }
+
+    /* ------------------------------------------------------------ laporan data */
+    function dataF2(m) {
+      const t = m.tahun;
+      if (!S.f2 || S.f2.tahun !== t) { muatF2(t).then(renderLatar); return null; }
+      return S.f2.ralat ? { ralat: S.f2.ralat } : S.f2;
+    }
+    function kiraData(m) {
+      const F = dataF2(m); if (!F || F.ralat) return F;
+      const rujuk = m.tarikh || hariIni(), murid = aktif(), lepas = sebelum(m), kemudian = selepas(m);
+      const gpa = new Map(murid.map((x) => [x.id, kiraMurid(x)]));
+      const hadirPeta = new Map(); (F.hadir || []).forEach((h) => hadirPeta.set(h.murid_id + '|' + h.kategori, h));
+      const unit = KATS.map((K) => {
+        const lalu = (F.perjumpaan || []).filter((p) => p.kategori === K && p.tarikh <= rujuk).length, jum = (F.perjumpaan || []).filter((p) => p.kategori === K).length;
+        const us = unitKat(K).map((u) => {
+          const ahli = murid.filter((x) => x[K.toLowerCase()] === u.kod);
+          let h = 0, r = 0; ahli.forEach((x) => { const y = hadirPeta.get(x.id + '|' + K); if (y) { h += y.hadir; r += y.direkod; } });
+          const lengkap = ahli.filter((x) => { const g = gpa.get(x.id); return g && g.b[K] && g.b[K].lengkap; }).length;
+          return { u, ahli: ahli.length, peratus: r ? Math.round(h / r * 100) : null, opr: (F.opr || []).filter((o) => o.unit_kod === u.kod && o.tarikh <= rujuk).length, lengkap };
+        });
+        return { K, lalu, jum, us, tanpa: murid.filter((x) => !x[K.toLowerCase()]).length };
+      });
+      const ting = Array.from(new Set(murid.map((x) => x.tingkatan))).sort().map((tg) => {
+        const l = murid.filter((x) => x.tingkatan === tg), c = { tg, jum: l.length, TL: 0, belum: 0 }; GRED.forEach((g) => { c[g] = 0; });
+        l.forEach((x) => { const g = gpa.get(x.id); if (!g) return; if (g.gred === 'TL') { c.TL++; return; }
+          const k = Object.values(g.b); if (!k.length || k.some((b) => !b.lengkap)) { c.belum++; return; } c[g.gred] = (c[g.gred] || 0) + 1; });
+        return c;
+      });
+      const dari = lepas && lepas.tarikh ? lepas.tarikh : `${t}-01-01`;
+      const aktiviti = (F.aktiviti || []).filter((a) => ['luar', 'unit', 'sekolah'].includes(a.jenis) && a.tarikh_mula > dari && a.tarikh_mula <= rujuk).sort((a, b) => a.tarikh_mula.localeCompare(b.tarikh_mula));
+      const pc = (F.pencapaian || []).filter((x) => (x.tarikh || '') > dari && (x.tarikh || '') <= rujuk);
+      const pcPer = {}; pc.forEach((x) => { pcPer[x.peringkat] = (pcPer[x.peringkat] || 0) + 1; });
+      const hingga = kemudian && kemudian.tarikh ? kemudian.tarikh : (() => { const d = tk(rujuk); d.setDate(d.getDate() + 60); return d.toISOString().slice(0, 10); })();
+      const datang = entri ? entri().filter((x) => x.mula > rujuk && x.mula <= hingga) : [];
+      return { F, rujuk, murid, unit, ting, aktiviti, pc, pcPer, datang, dari, hingga };
+    }
+    function laporanData(m, cetak) {
+      const D = kiraData(m);
+      if (!D) return '<p class="pudar">Memuatkan data takwim, kehadiran dan PAJSK…</p>';
+      if (D.ralat) return `<div class="mesej ralat">${e(D.ralat)}</div>`;
+      const th = (l) => `<thead><tr>${l.map((x) => `<th>${x}</th>`).join('')}</tr></thead>`;
+      return `<div class="${cetak ? '' : 'panel'} msy-data"><h3>1. Keahlian dan perjumpaan unit (setakat ${e(fmtT(D.rujuk))})</h3>
+          <p class="kecil">Jumlah murid aktif: <b>${D.murid.length}</b>. ${D.unit.map((x) => `${x.K}: ${x.lalu}/${x.jum} perjumpaan sudah berlangsung, ${x.tanpa} murid tiada unit`).join(' · ')}.</p>
+          ${D.unit.map((x) => `<table class="${cetak ? '' : 'jadual'} kecil">${th([`${x.K} · ${KAT[x.K]}`, 'Ahli', 'Kehadiran', 'OPR', 'PAJSK lengkap'])}<tbody>
+            ${x.us.map((r) => `<tr><td>${e(r.u.kod)} <span class="pudar">${e(tajukKata(r.u.nama_penuh))}</span></td><td>${r.ahli}</td><td>${r.peratus == null ? '<span class="pudar">belum direkod</span>' : r.peratus + '%'}</td><td>${r.opr}</td><td>${r.ahli ? `${r.lengkap}/${r.ahli}` : '—'}</td></tr>`).join('')}</tbody></table>`).join('')}
+          <h3>2. Pencapaian PAJSK ikut tingkatan</h3>
+          <table class="${cetak ? '' : 'jadual'} kecil">${th(['Tingkatan', 'Murid', ...GRED, 'TL', 'Belum lengkap'])}<tbody>
+            ${D.ting.map((c) => `<tr><td>${e(c.tg)}</td><td>${c.jum}</td>${GRED.map((g) => `<td>${c[g] || ''}</td>`).join('')}<td>${c.TL || ''}</td><td>${c.belum || ''}</td></tr>`).join('')}
+            <tr><td><b>Jumlah</b></td><td><b>${D.murid.length}</b></td>${GRED.map((g) => `<td><b>${D.ting.reduce((s, c) => s + (c[g] || 0), 0)}</b></td>`).join('')}<td><b>${D.ting.reduce((s, c) => s + c.TL, 0)}</b></td><td><b>${D.ting.reduce((s, c) => s + c.belum, 0)}</b></td></tr></tbody></table>
+          <p class="kecil pudar">Gred dikira daripada markah PAJSK dalam aplikasi. "Belum lengkap": kehadiran atau komitmen belum diisi bagi sekurang-kurangnya satu bidang.</p>
+          <h3>3. SEGAK</h3><p class="kecil pudar">Data SEGAK tidak direkod dalam aplikasi ini.</p>
+          <h3>4. Aktiviti dan pencapaian (${e(fmtT(D.dari))} – ${e(fmtT(D.rujuk))})</h3>
+          ${D.aktiviti.length ? `<table class="${cetak ? '' : 'jadual'} kecil">${th(['Tarikh', 'Aktiviti', 'Unit', 'Peringkat'])}<tbody>${D.aktiviti.map((a) => `<tr><td>${e(fmtT(a.tarikh_mula))}</td><td>${e(a.tajuk)}</td><td>${e(a.unit_kod || '')}</td><td>${e(a.peringkat || '')}</td></tr>`).join('')}</tbody></table>` : '<p class="kecil pudar">Tiada aktiviti direkod dalam takwim bagi tempoh ini.</p>'}
+          <p class="kecil">Pencapaian / aktiviti tambahan murid direkod: <b>${D.pc.length}</b>${D.pc.length ? ` (${Object.entries(D.pcPer).map(([k, v]) => `${e(tajukKata(k))} ${v}`).join(', ')})` : ''}. OPR dihantar tahun ini: <b>${(D.F.opr || []).filter((o) => o.tarikh <= D.rujuk).length}</b>.</p>
+          <h3>5. Takwim hingga ${e(fmtT(D.hingga))}</h3>
+          ${D.datang.length ? `<table class="${cetak ? '' : 'jadual'} kecil">${th(['Tarikh', 'Perkara'])}<tbody>${D.datang.slice(0, 40).map((x) => `<tr><td>${e(fmtT(x.mula))}</td><td>${e(teksEntri(x, false))}</td></tr>`).join('')}</tbody></table>` : '<p class="kecil pudar">Tiada perkara dalam takwim bagi tempoh ini.</p>'}</div>`;
+    }
+    const tData = (m) => `<p class="pudar kecil">Data diambil terus daripada aplikasi pada tarikh mesyuarat. Cetak dan edarkan sebagai lampiran mesyuarat.</p>${laporanData(m, false)}`;
+
+    /* ------------------------------------------------------------ cetak */
+    function kepalaMemo() {
+      const p = P();
+      return `<div class="memo-kepala"><img src="${LOGO}" alt="Lencana sekolah"><b>${e(p.nama_rasmi || T().nama_sekolah || '')} (MALINSAU)</b>${String(p.alamat || '').split('\n').map((x) => `<b>${e(x.replace(/,$/, ''))}</b>`).join('')}</div>`;
+    }
+    function dokMemo(m) {
+      const me = m.memo || {}, p = P();
+      return `<section class="halaman dok memo-dok">${kepalaMemo()}<div class="memo-kotak">MEMO DALAMAN</div>
+        <table class="memo-info"><tbody><tr><td>Kepada</td><td>: ${e(me.kepada || 'Semua Guru SMK Ulu Sugut (Malinsau), Ranau')}</td></tr><tr><td>Daripada</td><td>: ${e(me.daripada || 'Penolong Kanan Kokurikulum')}</td></tr>
+          <tr><td>Salinan kepada</td><td>: ${e(me.salinan || 'Pengurusan Fail Setiausaha Kokurikulum')}</td></tr><tr><td>Tarikh</td><td>: ${e(fmtT(me.tarikh || hariIni()))}</td></tr></tbody></table>
+        <p>Tuan/Puan,</p><p class="memo-tajuk">JEMPUTAN KE MESYUARAT KOKURIKULUM BIL ${e(bilTeks(m))}</p>
+        <p>Perkara di atas adalah dirujuk.</p>
+        <p><span class="memo-no">02.</span>Sukacita dimaklumkan bahawa tuan / puan dijemput menghadiri mesyuarat yang akan diadakan pada ketetapan seperti berikut:</p>
+        <table class="memo-butiran"><tbody><tr><td>Tarikh</td><td>: ${e(fmtT(m.tarikh, true))}</td></tr><tr><td>Tempat</td><td>: ${e(m.tempat || '')}</td></tr><tr><td>Masa</td><td>: ${e(m.masa || '')}</td></tr></tbody></table>
+        <p><span class="memo-no">03.</span>Agenda Mesyuarat <b>Kokurikulum</b> adalah seperti yang berikut:</p>
+        <table class="memo-agenda"><tbody>${(m.agenda || []).map((a, i) => `<tr><td>3.${i + 1}</td><td>${e(tajukKata(a))}</td></tr>`).join('')}</tbody></table>
+        <p><span class="memo-no">04.</span>Kehadiran Tuan/Puan/Encik/Cik ke mesyuarat ini adalah <b>wajib</b> dan amat dihargai dan didahului dengan ucapan terima kasih.</p>
+        <p>Sekian, terima kasih,</p><div style="height:38px"></div>
+        <p>(${e(p.su_kokum || '……………………………')})<br><b>Setiausaha Kokurikulum</b></p></section>`;
+    }
+    function dokMinit(m) {
+      const pk = perkaraM(m), h = m.kehadiran || {}, lepas = sebelum(m), p = P();
+      const baris = (x, no, extra) => `<div class="minit-item"><div class="minit-teks"><span class="minit-no">${no}</span><div>${e(x.teks).replace(/\n/g, '<br>')}${extra || ''}</div></div>
+        <div class="minit-tindakan">${x.jenis === 'tindakan' ? `Tindakan: ${e(x.oleh || '')}` : JENIS[x.jenis]}</div></div>`;
+      return `<section class="halaman dok minit-dok"><h3 class="minit-tajuk">MINIT MESYUARAT KOKURIKULUM BIL. ${e(bilTeks(m))}</h3>
+        <table class="memo-butiran"><tbody><tr><td>TARIKH</td><td>: ${e(fmtT(m.tarikh, true).toUpperCase())}</td></tr><tr><td>MASA</td><td>: ${e((m.masa || '') + (m.masa_tamat ? ' – ' + m.masa_tamat : '')).toUpperCase()}</td></tr><tr><td>TEMPAT</td><td>: ${e((m.tempat || '').toUpperCase())}</td></tr></tbody></table>
+        <p><b>Kehadiran:</b></p><ol class="minit-nama">${(h.hadir || []).map((n) => `<li>${e(tajukKata(n))}</li>`).join('') || '<li>—</li>'}</ol>
+        ${(h.tidak || []).length ? `<p><b>Tidak hadir:</b></p><ol class="minit-nama">${h.tidak.map((n) => `<li>${e(tajukKata(n))}</li>`).join('')}</ol>` : ''}${h.catatan ? `<p class="kecil">Catatan: ${e(h.catatan)}</p>` : ''}
+        <p><b>Agenda:</b></p><ol class="minit-nama">${(m.agenda || []).map((a) => `<li>${e(tajukKata(a))}</li>`).join('')}</ol>
+        ${(m.agenda || []).map((a, i) => { const l = pk.filter((x) => x.bahagian === i); let j = 0;
+          const bangkit = adalahBerbangkit(a) && lepas ? perkaraM(lepas).filter((x) => x.jenis === 'tindakan') : [];
+          return `<h4 class="minit-bahagian">${i + 1}.0 ${e(a)}</h4>
+            ${adalahBerbangkit(a) && lepas ? `<div class="minit-item"><div class="minit-teks"><span class="minit-no">${i + 1}.${++j}</span><div>Minit Mesyuarat Kokurikulum Bil. ${e(bilTeks(lepas))} bertarikh ${e(fmtT(lepas.tarikh))} dibentangkan dan disahkan.</div></div><div class="minit-tindakan">Makluman</div></div>` : ''}
+            ${bangkit.map((x) => baris(x, `${i + 1}.${++j}`, ` <i>(Perkara Bil. ${e(bilTeks(lepas))}: ${e(STATUS[x.status])}${x.susulan ? ', ' + e(x.susulan) : ''})</i>`)).join('')}
+            ${l.map((x) => baris(x, `${i + 1}.${++j}`)).join('')}`; }).join('')}
+        <h4 class="minit-bahagian">${(m.agenda || []).length + 1}.0 PENUTUP</h4><p>Mesyuarat ditangguhkan pada jam ${e(m.masa_tamat || '……………')}.</p>
+        <div class="tandatangan ttd-2"><div>Disediakan oleh,<br><b>(${e(p.su_kokum || '……………………')})</b><br>SETIAUSAHA KOKURIKULUM</div><div>Disemak dan disahkan oleh,<br><b>(${e(p.pk_kokum || '……………………')})</b><br>TIMB. PENGERUSI KOKURIKULUM</div></div></section>`;
+    }
+    function dokData(m) {
+      const t = T();
+      return `<section class="halaman dok"><div class="kepala-cetak"><img src="${LOGO}" alt="Lencana sekolah"><div><h3>${e(t.nama_sekolah || '')}</h3><p class="sub">${e(t.alamat || '')}</p></div></div>
+        <h4 class="tajuk-dok">LAPORAN DATA KOKURIKULUM · MESYUARAT BIL. ${e(bilTeks(m))}</h4><p class="sub" style="text-align:center">${e(fmtT(m.tarikh, true))}</p>
+        ${laporanData(m, true)}<p class="nota-borang">Disediakan oleh SU Data Kokurikulum${P().su_data ? ` (${e(P().su_data)})` : ''} daripada aplikasi KOKUM SMART.</p></section>`;
+    }
+    function pCetak(m, q) {
+      const doc = q.get('doc') || 'minit';
+      const isi = doc === 'memo' ? dokMemo(m) : doc === 'data' ? dokData(m) : dokMinit(m);
+      return `<div class="panel tanpa-cetak" style="margin-bottom:14px"><p style="margin:0 0 10px"><a href="#/mesyuarat/${m.id}?tahun=${m.tahun}">← Kembali</a></p>
+          <div class="baris-btn">${BINGKAI ? '' : `<button class="btn utama" data-act="cetak">${IKON.cetak} Cetak</button>`}
+          ${['memo', 'minit', 'data'].filter((x) => x !== doc).map((x) => `<a class="btn" href="#/mesyuarat/${m.id}/cetak?doc=${x}&tahun=${m.tahun}">${{ memo: 'Memo jemputan', minit: 'Minit', data: 'Laporan data' }[x]}</a>`).join('')}</div>
+          <p class="pudar kecil" style="margin:8px 0 0">Saiz A4. Matikan "Headers and footers" dalam tetapan cetak.</p></div>
+        <div class="kertas-cetak">${isi}</div>`;
+    }
+
+    /* ============================================================ peristiwa */
+    async function baru() {
+      const t = M().tahun, akhir = M().mesyuarat.slice().sort((a, b) => b.bil - a.bil)[0];
+      const rec = await S.db.msySimpan({ tahun: t, bil: (akhir ? akhir.bil : 0) + 1, tarikh: hariIni().slice(0, 4) === String(t) ? hariIni() : null, masa: akhir ? akhir.masa : '', tempat: akhir ? akhir.tempat : 'Aula Perdana, SMK Ulu Sugut (Malinsau), Ranau',
+        agenda: akhir && akhir.agenda.length ? akhir.agenda : AGENDA_ASAS, kehadiran: {}, memo: { tarikh: hariIni() }, status: 'dirancang' });
+      M().mesyuarat.push(rec); M().mesyuarat.sort((a, b) => a.bil - b.bil);
+      roti(`Mesyuarat Bil ${bilTeks(rec)} dicipta`); tetapLokasi(`#/mesyuarat/${rec.id}?tahun=${t}&tab=butiran`); render();
+    }
+    async function tindakan(act, el) {
+      switch (act) {
+        case 'msy-muat': S.msy = null; render(); return true;
+        case 'msy-baru': await baru(); return true;
+        case 'msy-padam': {
+          const m = msyId(el.dataset.id);
+          if (!(await sahkan(`Padam Mesyuarat Bil ${bilTeks(m)} bersama ${perkaraM(m).length} perkara minitnya?`, { ok: 'Padam', bahaya: true }))) return true;
+          await S.db.msyPadam(m.id); M().mesyuarat = M().mesyuarat.filter((x) => x.id !== m.id); M().perkara = M().perkara.filter((p) => p.mesyuarat_id !== m.id);
+          roti('Mesyuarat dipadam'); tetapLokasi(`#/mesyuarat?tahun=${M().tahun}`); render(); return true;
+        }
+        case 'msy-semua': $$('#borang-msy-hadir input[name=hadir]').forEach((x) => { x.checked = el.dataset.v === '1'; }); return true;
+        case 'mp-ubah': bukaPerkara(el.dataset.id); return true;
+        case 'mp-gerak': await gerak(el.dataset.id, +el.dataset.arah); return true;
+        case 'mp-padam': {
+          if (!(await sahkan('Padam perkara ini?', { ok: 'Padam', bahaya: true }))) return true;
+          await S.db.msyPadamPerkara(+el.dataset.id); M().perkara = M().perkara.filter((p) => p.id !== +el.dataset.id); $('#dlg').close(); roti('Perkara dipadam'); S.kekalSkrol = true; render(); return true;
+        }
+        case 'mp-status': {
+          const p = M().perkara.find((x) => x.id === +el.dataset.id);
+          Object.assign(p, await S.db.msySimpanPerkara({ ...p, status: el.dataset.s }));
+          roti(`Status: ${STATUS[p.status]}`); S.kekalSkrol = true; render(); return true;
+        }
+        default: return false;
+      }
+    }
+    async function hantar(f) {
+      if (f.id === 'borang-msy') { await simpanButiran(f); return true; }
+      if (f.id === 'borang-msy-hadir') { await simpanHadir(f); return true; }
+      if (f.id === 'borang-mp-ubah') { await simpanPerkara(f); return true; }
+      if (/^borang-mp-\d+$/.test(f.id)) { await tambahPerkara(f); return true; }
+      return false;
+    }
+    return { papar, tindakan, hantar };
+  };
+})();
+
+</script>
+<script>
 /* KOKUM SMART 2026 · aplikasi utama (Fasa 1) */
 (function () {
   'use strict';
@@ -5531,6 +5978,7 @@ window.KOKUM_SURAT_ASET = {
     segar: P('<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>'),
     tutup: P('<path d="M6 6l12 12M18 6L6 18"/>'),
     olahraga: P('<circle cx="14.5" cy="4.5" r="2"/><path d="M8 21l3-6 3 2v5M6 11l3-3 4 1 3 3 3-1M11 15l2-6"/>'),
+    mesyuarat: P('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'),
     kem: P('<path d="M12 4L3 20h18z"/><path d="M12 4v16M9 20l3-6 3 6"/>'),
     takwim: P('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2"/>'),
   };
@@ -5802,7 +6250,7 @@ window.KOKUM_SURAT_ASET = {
   }
 
   // ------------------------------------------------------------------ rangka & penghala
-  const MENU = [['utama', 'Utama'], ['murid', 'Murid'], ['unit', 'Unit'], ['takwim', 'Takwim'], ['olahraga', 'Olahraga'], ['kem', 'Perkhemahan'], ['cetak', 'Cetak'], ['tetapan', 'Tetapan']];
+  const MENU = [['utama', 'Utama'], ['murid', 'Murid'], ['unit', 'Unit'], ['takwim', 'Takwim'], ['mesyuarat', 'Mesyuarat'], ['olahraga', 'Olahraga'], ['kem', 'Perkhemahan'], ['cetak', 'Cetak'], ['tetapan', 'Tetapan']];
   const MENU_BAWAH = ['utama', 'murid', 'unit', 'takwim', 'olahraga', 'tetapan'];  // Cetak ada dalam setiap halaman
   const AIS = window.KokumAIS({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
     eksport, KI, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI });
@@ -5810,6 +6258,8 @@ window.KOKUM_SURAT_ASET = {
     eksport, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI, KAT, bolehUrus, ahliUnit: (u) => ahliUnit(u), unitKat: (k, s) => unitKat(k, s), KP_,
     templatPajsk: (m, k, n, isi) => templatPajsk(m, k, n, isi) });
   const LG = window.KokumLantikan({ S, e, $, IKON, roti, sahkan, render: () => render(), penyelaras, eksport, tetapLokasi, hariIni, LOGO, BINGKAI, unitKat: (k, s) => unitKat(k, s) });
+  const MSY = window.KokumMesyuarat({ S, e, $, $$, IKON, roti, sahkan, render: () => render(), penyelaras, aktif: () => aktif(), tetapLokasi, hariIni, LOGO, BINGKAI,
+    unitKat: (k, s) => unitKat(k, s), KAT, kiraMurid: (m) => F2.kiraMurid(m), muatF2: (t) => F2.muatTahun(t), entri: () => F2.entri(), teksEntri: (x, h) => F2.teksEntri(x, h) });
   const KEM = window.KokumKem({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
     eksport, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI, bolehUrus, ahliUnit: (u) => ahliUnit(u), unitKat: (k, s) => unitKat(k, s) });
 
@@ -5863,6 +6313,7 @@ window.KOKUM_SURAT_ASET = {
       } else if (laluan === 'tetapan') html = paparTetapan(a1 || 'profil', a2);
       else if (laluan === 'olahraga') html = AIS.papar(a1 || 'ringkasan', q);
       else if (laluan === 'kem') html = KEM.papar(a1, a2, q);
+      else if (laluan === 'mesyuarat') html = MSY.papar(a1, a2, q);
       else if (laluan === 'lantikan') { menu = 'unit'; html = LG.papar(a1, q); }
       else { menu = 'utama'; html = paparUtama(); }
     } catch (err) { console.error(err); html = `<div class="mesej ralat">${e(err.message)}</div>`; }
@@ -6625,7 +7076,7 @@ window.KOKUM_SURAT_ASET = {
         case 'pasang': if (S.pasang) { S.pasang.prompt(); S.pasang = null; } return;
         case 'isi-contoh': S.db.isiContoh(); await muatData(); return roti('Data contoh dimuatkan');
         case 'reset-demo': if (await sahkan('Padam semua data dalam pelayar ini? Anda boleh import semula fail Excel selepas ini.', { ok: 'Padam data', bahaya: true })) { S.db.reset(); await muatData(); roti('Data demo dipadam'); } return;
-        default: if (!(await AIS.tindakan(act, el)) && !(await KEM.tindakan(act, el)) && !(await LG.tindakan(act, el))) await F2.tindakan(act, el);
+        default: if (!(await AIS.tindakan(act, el)) && !(await KEM.tindakan(act, el)) && !(await LG.tindakan(act, el)) && !(await MSY.tindakan(act, el))) await F2.tindakan(act, el);
       }
     } catch (err) { gagal(err); }
   });
@@ -6688,6 +7139,7 @@ window.KOKUM_SURAT_ASET = {
   document.addEventListener('submit', async (ev) => {
     const f = ev.target;
     if (f.id && f.id.startsWith('borang-f2')) { ev.preventDefault(); try { await F2.hantar(f, ev); } catch (err) { gagal(err); } return; }
+    if (f.id && /^borang-(msy|mp)\b/.test(f.id)) { ev.preventDefault(); try { await MSY.hantar(f); } catch (err) { gagal(err); } return; }
     if (f.id && f.id.startsWith('borang-lg')) { ev.preventDefault(); try { await LG.hantar(f); } catch (err) { gagal(err); } return; }
     if (f.id && f.id.startsWith('borang-kem')) { ev.preventDefault(); try { await KEM.hantar(f); } catch (err) { gagal(err); } return; }
     if (f.id && f.id.startsWith('borang-ais')) { ev.preventDefault(); try { await AIS.hantar(f); } catch (err) { gagal(err); } return; }
