@@ -1151,7 +1151,7 @@ window.KOKUM_CONFIG = {
           let n = 0;
           d.ais = {
             kejohanan: [{ id: 1, nama: 'KEJOHANAN OLAHRAGA MSS SMK ULU SUGUT', tahun: 2027, tarikh_mula: null, tarikh_tamat: null,
-              tempat: 'PADANG SMK ULU SUGUT', had_acara: 5, kuota: 2, kuota_gandaan: 6, kira_gandaan: false, pendaftaran_dibuka: true, aktif: true }],
+              tempat: 'PADANG SMK ULU SUGUT', had_acara: 5, kuota: 2, kuota_gandaan: 6, kira_gandaan: true, pendaftaran_dibuka: true, aktif: true }],
             acara: B.acara.map(([acara, kategori, jenis, unit, susunan]) => ({ id: ++n, kejohanan_id: 1, acara, kategori, jenis, unit, susunan })),
             penyertaan: [],
             rekod: B.rekod.map(([peringkat, kategori, acara, prestasi, nilai, nama, pasukan, tahun], i) => ({ id: i + 1, peringkat, kategori, acara, prestasi, nilai, nama, pasukan, tahun })),
@@ -1196,6 +1196,13 @@ window.KOKUM_CONFIG = {
         if (m.status === 'keluar') throw new Error(`${m.nama} sudah keluar sekolah`);
         if (!m.rumah_sukan) throw new Error(`${m.nama} belum ada rumah sukan`);
         if (m.jantina && a.kategori[0] !== m.jantina) throw new Error(`${m.nama} tidak boleh menyertai acara kategori ${a.kategori}`);
+        if (!a.kategori.endsWith('T') && m.jantina) { // sama seperti ais_kategori_umur
+          let umur = null; const t = (m.mykad || '').match(/^(\d\d)(\d\d)(\d\d)\d{6}$/);
+          if (t && +t[2] >= 1 && +t[2] <= 12 && +t[3] >= 1 && +t[3] <= 31) umur = k.tahun - ((+t[1] <= new Date().getFullYear() % 100 ? 2000 : 1900) + +t[1]);
+          else if (/^[1-6]$/.test(m.tingkatan)) umur = 12 + +m.tingkatan + (k.tahun - (d.tetapan.tahun || k.tahun));
+          const kat = umur == null ? null : umur <= 15 ? m.jantina + '15' : umur <= 18 ? m.jantina + '18' : null;
+          if (kat && kat !== a.kategori) throw new Error(`${m.nama} dalam kategori ${kat} dan tidak boleh menyertai acara kategori ${a.kategori}`);
+        }
         if (A.penyertaan.some((p) => p.acara_id === acara_id && p.murid_id === murid_id)) throw new Error('Rekod ini sudah wujud.');
         const had = a.jenis === 'gandaan' ? k.kuota_gandaan : k.kuota;
         if (A.penyertaan.filter((p) => p.acara_id === acara_id && p.rumah === m.rumah_sukan).length >= had) throw new Error(`Kuota rumah ${m.rumah_sukan} untuk ${a.acara} ${a.kategori} sudah penuh (${had})`);
@@ -1528,10 +1535,12 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       return { umur, kod: g && m.jantina ? m.jantina + g : null, sumber };
     }
     const kumpKat = (kat) => (kat === 'PT' || kat === 'LT' ? 'T' : kat);
+    // Keputusan SU Kokum (Okt 2026): atlet hanya menyertai acara kategori umurnya sendiri; Terbuka untuk semua.
     function layakKat(m, a) {
       if (!m.jantina || a.kategori[0] !== m.jantina) return false;
       if (a.kategori.endsWith('T')) return true;
-      return katAtlet(m).kod === a.kategori;
+      const kod = katAtlet(m).kod;
+      return kod === a.kategori || kod == null;
     }
     const acaraId = () => new Map(A().acara.map((a) => [a.id, a]));
     const dikira = (a) => !!a && (a.jenis !== 'gandaan' || (K() && K().kira_gandaan));
@@ -1618,7 +1627,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           <div class="panel"><h2>Cara pendaftaran</h2><ol class="kecil" style="padding-left:18px;margin:8px 0 0">
             <li>Penyelaras menetapkan rumah sukan murid dan guru rumah.</li>
             <li>Guru rumah membuka <b>Pendaftaran</b>, memilih kategori, kemudian memilih atlet bagi setiap acara.</li>
-            <li>Aplikasi menyemak jantina, kategori umur (daripada MyKad), had ${k.had_acara} acara dan kuota ${k.kuota} atlet setiap rumah.</li>
+            <li>Aplikasi menyemak jantina, kategori umur daripada MyKad (atlet hanya dalam kategori sendiri; Terbuka untuk semua), had ${k.had_acara} acara${k.kira_gandaan ? ' termasuk gandaan' : ''} dan kuota ${k.kuota} atlet setiap rumah.</li>
             <li>Penyelaras menutup pendaftaran dan memberi nombor BIB (tab Atlet).</li>
             <li>Pencatat menjana senarai mula, mengisi keputusan dari telefon dan mengesahkan setiap acara (tab Jadual & keputusan).</li>
             <li>Pingat, olahragawan/olahragawati, laporan dan sijil dijana automatik (tab Pingat dan Cetak).</li></ol></div>
@@ -1681,25 +1690,24 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const dlg = $('#dlg');
       dlg.innerHTML = `<div class="dk"><div><h2>${e(a.acara)} · ${e(LABEL_KAT[a.kategori] || a.kategori)}</h2><p class="pudar kecil" style="margin:2px 0 0">Rumah ${e(r)}. Pilih atlet (kuota ${kuotaAcara(a)}).</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
         <div class="db"><input class="cari" type="search" id="ap-q" placeholder="Cari nama atau kelas" aria-label="Cari atlet" style="width:100%;margin-bottom:8px">
-          <label class="cek kecil" style="margin-bottom:8px"><input type="checkbox" id="ap-semua"> Papar juga murid kategori umur lain</label>
           <p class="pudar kecil" id="ap-bil"></p><ul class="senarai" id="ap-senarai" style="max-height:52vh;overflow:auto"></ul></div>
         <div class="dt"><button class="btn" data-act="tutup">Selesai</button></div>`;
       dlg.dataset.id = ''; dlg.dataset.acara = String(a.id); dlg.dataset.ubah = '';
       if (!dlg.open) dlg.showModal();
       const isi = () => {
-        const qq = $('#ap-q').value.trim().toUpperCase(), semua = $('#ap-semua').checked;
+        const qq = $('#ap-q').value.trim().toUpperCase();
         const calon = aktif().filter((m) => m.rumah_sukan === r && m.jantina === a.kategori[0] && !dalam.has(m.id)
-          && (semua || layakKat(m, a)) && (!qq || m.nama.includes(qq) || m.kelas.includes(qq))).sort(susunMurid);
-        $('#ap-bil').textContent = `${calon.length} murid rumah ${r} boleh dipilih.`;
+          && layakKat(m, a) && (!qq || m.nama.includes(qq) || m.kelas.includes(qq))).sort(susunMurid);
+        $('#ap-bil').textContent = `${calon.length} murid rumah ${r} dalam kategori ${a.kategori.endsWith('T') ? 'terbuka' : a.kategori} boleh dipilih.`;
         $('#ap-senarai').innerHTML = calon.slice(0, 200).map((m) => {
           const n = bilAcara(m.id, petaA), ka = katAtlet(m), penuh = dikira(a) && n >= k.had_acara;
           const lalu = sejarahMurid(m).filter((h) => h.acara === a.acara)[0];
           return `<li><button class="baris" data-act="ais-daftar" data-murid="${e(m.id)}" ${penuh ? 'disabled' : ''}>
-            <span><span class="nama">${e(m.nama)}</span><br><span class="meta">${e(m.kelas)} · ${ka.kod ? e(ka.kod.slice(1)) + ' tahun' : 'kategori ?'}${ka.umur ? ' (umur ' + ka.umur + ')' : ''}${!layakKat(m, a) ? ' · <b style="color:var(--amaran)">kategori lain</b>' : ''}${lalu ? ` · ${lalu.tahun}: ${lalu.kedudukan ? 'ked. ' + lalu.kedudukan : ''} ${e(lalu.prestasi)}` : ''}</span></span>
+            <span><span class="nama">${e(m.nama)}</span><br><span class="meta">${e(m.kelas)} · ${ka.kod ? e(ka.kod.slice(1)) + ' tahun' : 'kategori ?'}${ka.umur ? ' (umur ' + ka.umur + ')' : ''}${!ka.kod ? ' · <b style="color:var(--amaran)">umur tidak pasti</b>' : ''}${lalu ? ` · ${lalu.tahun}: ${lalu.kedudukan ? 'ked. ' + lalu.kedudukan : ''} ${e(lalu.prestasi)}` : ''}</span></span>
             <span class="${penuh ? 'penuh' : 'pudar kecil'}">${n}/${k.had_acara} acara</span></button></li>`;
         }).join('') || '<li class="kosong-isi">Tiada murid sepadan.</li>';
       };
-      $('#ap-q').addEventListener('input', isi); $('#ap-semua').addEventListener('change', isi);
+      $('#ap-q').addEventListener('input', isi);
       dlg._isiPilih = () => { A().penyertaan.filter((p) => p.acara_id === a.id).forEach((p) => dalam.add(p.murid_id)); isi(); };
       isi();
     }
@@ -1707,7 +1715,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     async function daftar(muridId, btn) {
       const dlg = $('#dlg'), acara = +dlg.dataset.acara, a = A().acara.find((x) => x.id === acara);
       const m = S.data.murid.find((x) => x.id === muridId);
-      if (!layakKat(m, a) && !(await sahkan(`${m.nama} berada dalam kategori ${katAtlet(m).kod || 'lain'}. Daftar juga dalam ${a.kategori}?`, { ok: 'Daftar juga' }))) return;
+      if (!layakKat(m, a)) { roti(`${m.nama} dalam kategori ${katAtlet(m).kod || 'lain'} dan tidak boleh menyertai acara ${a.kategori}.`, true); return; }
+      if (!a.kategori.endsWith('T') && !katAtlet(m).kod && !(await sahkan(`Kategori umur ${m.nama} tidak dapat ditentukan (MyKad atau tingkatan tidak lengkap). Daftar juga dalam ${a.kategori}?`, { ok: 'Daftar juga' }))) return;
       if (btn) btn.disabled = true;
       try {
         const rec = await S.db.aisDaftar(acara, muridId);
@@ -2028,6 +2037,11 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const c = Math.floor((L + 1) / 2), out = [c];
       for (let i = 1; out.length < L; i++) { if (c + i <= L) out.push(c + i); if (c - i >= 1 && out.length < L) out.push(c - i); }
       return out;
+    }
+    // rekod sekolah yang dipecahkan (rekod terbaik sebelum kejohanan ini)
+    function rekodLama(a) {
+      const rs = A().rekod.filter((r) => r.peringkat === 'SEKOLAH' && r.kategori === a.kategori && r.acara === a.acara && r.nilai != null && r.acara_id !== a.id);
+      return rs.sort((p, q) => (a.unit === 'm' ? q.nilai - p.nilai : p.nilai - q.nilai))[0] || null;
     }
     function rekodSekolah(a) {
       const rs = A().rekod.filter((r) => r.peringkat === 'SEKOLAH' && r.kategori === a.kategori && r.acara === a.acara && r.nilai != null && r.acara_id !== a.id).map((r) => +r.nilai);
@@ -2421,14 +2435,20 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           if (!ikutRumah.has(x.rumah)) ikutRumah.set(x.rumah, { ...kosong(), kat: Object.fromEntries(KUMP.map(([k]) => [k, kosong()])) });
           const r = ikutRumah.get(x.rumah); r[kk]++; r.kat[kumpKat(a.kategori)][kk]++;
           if (a.jenis !== 'gandaan' && x.murid_id && peta.get(x.murid_id)) {
-            if (!atlet.has(x.murid_id)) atlet.set(x.murid_id, { m: peta.get(x.murid_id), rumah: x.rumah, ...kosong(), RB: 0, acara: [] });
-            const t = atlet.get(x.murid_id); t[kk]++; if (/RB/.test(x.catatan || '')) t.RB++; t.acara.push({ a, x });
+            if (!atlet.has(x.murid_id)) atlet.set(x.murid_id, { m: peta.get(x.murid_id), rumah: x.rumah, ...kosong(), RB: 0, rekodTertua: null, acara: [] });
+            const t = atlet.get(x.murid_id); t[kk]++; t.acara.push({ a, x });
+            if (/RB/.test(x.catatan || '')) {
+              t.RB++;
+              const lama = rekodLama(a);
+              if (lama && lama.tahun && (t.rekodTertua == null || +lama.tahun < t.rekodTertua)) t.rekodTertua = +lama.tahun;
+            }
           }
         });
       });
       const susunP = (p, q) => q.E - p.E || q.P - p.P || q.G - p.G;
       const jadual = Array.from(ikutRumah.entries()).map(([r, v]) => ({ r, ...v })).sort((p, q) => susunP(p, q) || p.r.localeCompare(q.r));
-      const susunA = (p, q) => q.E - p.E || q.RB - p.RB || q.P - p.P || q.G - p.G;
+      // Keputusan SU Kokum: emas, rekod baharu, perak, gangsa; jika masih seri, rekod paling lama yang dipecahkan
+      const susunA = (p, q) => q.E - p.E || q.RB - p.RB || q.P - p.P || q.G - p.G || (p.rekodTertua ?? 9999) - (q.rekodTertua ?? 9999);
       const calon = (f) => Array.from(atlet.values()).filter(f).sort(susunA);
       const olah = [
         ['Olahragawan Keseluruhan', calon((t) => t.m.jantina === 'L')], ['Olahragawati Keseluruhan', calon((t) => t.m.jantina === 'P')],
@@ -2453,8 +2473,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         <div class="panel skrol-x" style="padding:0;margin-bottom:14px"><table class="jadual kecil"><thead><tr><th>Rumah</th>${KUMP.map(([, l]) => `<th class="n">${e(l)}<br><span class="pudar">E · P · G</span></th>`).join('')}</tr></thead><tbody>
           ${P.jadual.map((r) => `<tr><td>${cipRumah(r.r)}</td>${KUMP.map(([k]) => `<td class="n">${r.kat[k].E} · ${r.kat[k].P} · ${r.kat[k].G}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
         <h2 style="margin:18px 0 10px">Olahragawan dan olahragawati</h2>
-        <p class="pudar kecil" style="margin:-4px 0 10px">Kiraan: pingat emas acara individu, kemudian bilangan rekod baharu, pingat perak dan gangsa. Acara gandaan tidak dikira. Keputusan akhir oleh jawatankuasa teknik.</p>
-        <div class="grid-olah">${P.olah.map(([t, l]) => `<div class="panel"><h3>${e(t)}</h3>${l.length ? `<ol class="olah">${l.slice(0, 3).map((x) => `<li><b>${e(x.m.nama)}</b> ${cipRumah(x.rumah)}<br><span class="pudar kecil">${x.E} emas · ${x.P} perak · ${x.G} gangsa${x.RB ? ` · ${x.RB} RB` : ''}</span></li>`).join('')}</ol>${P.seri(l) ? '<p class="kecil" style="color:var(--amaran)">Seri di tempat pertama. Jawatankuasa teknik perlu memutuskan.</p>' : ''}` : '<p class="pudar kecil">Belum ada pemenang.</p>'}</div>`).join('')}</div>
+        <p class="pudar kecil" style="margin:-4px 0 10px">Kiraan: pingat emas acara individu, kemudian bilangan rekod baharu, pingat perak, gangsa, dan jika masih seri, rekod paling lama yang dipecahkan. Acara gandaan tidak dikira.</p>
+        <div class="grid-olah">${P.olah.map(([t, l]) => `<div class="panel"><h3>${e(t)}</h3>${l.length ? `<ol class="olah">${l.slice(0, 3).map((x) => `<li><b>${e(x.m.nama)}</b> ${cipRumah(x.rumah)}<br><span class="pudar kecil">${x.E} emas · ${x.P} perak · ${x.G} gangsa${x.RB ? ` · ${x.RB} RB (rekod ${x.rekodTertua || '?'})` : ''}</span></li>`).join('')}</ol>${P.seri(l) ? '<p class="kecil" style="color:var(--amaran)">Seri di tempat pertama. Jawatankuasa teknik perlu memutuskan.</p>' : ''}` : '<p class="pudar kecil">Belum ada pemenang.</p>'}</div>`).join('')}</div>
         <h2 style="margin:18px 0 10px">Rekod baharu ${e(K().tahun)}</h2>
         ${rekodBaharu().length ? `<div class="panel" style="padding:0"><table class="jadual"><tbody>${rekodBaharu().map((r) => `<tr><td>${e(LABEL_KAT[r.kategori] || r.kategori)} ${e(r.acara)}</td><td><b>${e(r.nama)}</b> ${cipRumah(r.pasukan)}</td><td class="n">${e(r.prestasi)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="pudar kecil">Belum ada rekod baharu yang disahkan.</p>'}
         <div class="baris-btn" style="margin-top:16px"><a class="btn" href="#/olahraga/cetak?doc=pingat${semua ? '&semua=1' : ''}">${IKON.cetak} Cetak kutipan pingat</a><a class="btn" href="#/olahraga/cetak?doc=mssd">${IKON.cetak} Calon MSSD</a></div>`;
