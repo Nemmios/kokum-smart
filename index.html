@@ -5804,7 +5804,7 @@ window.KOKUM_SURAT_ASET = {
           const k = Object.values(g.b); if (!k.length || k.some((b) => !b.lengkap)) { c.belum++; return; } c[g.gred] = (c[g.gred] || 0) + 1; });
         return c;
       });
-      const dari = lepas && lepas.tarikh ? lepas.tarikh : `${t}-01-01`;
+      const dari = lepas && lepas.tarikh ? lepas.tarikh : `${m.tahun}-01-01`;
       const aktiviti = (F.aktiviti || []).filter((a) => ['luar', 'unit', 'sekolah'].includes(a.jenis) && a.tarikh_mula > dari && a.tarikh_mula <= rujuk).sort((a, b) => a.tarikh_mula.localeCompare(b.tarikh_mula));
       const pc = (F.pencapaian || []).filter((x) => (x.tarikh || '') > dari && (x.tarikh || '') <= rujuk);
       const pcPer = {}; pc.forEach((x) => { pcPer[x.peringkat] = (pcPer[x.peringkat] || 0) + 1; });
