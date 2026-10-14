@@ -674,6 +674,32 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .bab { break-after: avoid; page-break-after: avoid; }
 .kertas-cetak .grid-hadir-cetak tr { break-inside: avoid; }
 
+/* muka depan Laporan Penuh olahraga */
+.halaman.kulit-ol { position: relative; min-height: 270mm; display: flex; flex-direction: column; background: #fff; color: #142019; overflow: hidden; border: 1.2mm solid #1f5c45; padding: 12mm 12mm 0; box-sizing: border-box; font-family: var(--fon); }
+.kulit-ol-atas { display: flex; align-items: center; gap: 4mm; }
+.kulit-ol-atas img { width: 22mm; }
+.kulit-ol-atas b { display: block; font-size: 14pt; letter-spacing: .04em; }
+.kulit-ol-atas span { font-size: 9pt; color: #555; }
+.kulit-ol-tengah { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 2mm; margin-top: 22mm; }
+.kulit-ol-tengah .label { font-size: 11pt; font-weight: 800; letter-spacing: .3em; text-transform: uppercase; color: #b5532f; border-bottom: .8mm solid #b5532f; padding-bottom: 1mm; }
+.kulit-ol-tengah h1 { font-size: 27pt; line-height: 1.12; margin: 4mm 0 0; max-width: 160mm; letter-spacing: .01em; text-wrap: balance; }
+.kulit-ol-tengah .kali { font-size: 14pt; font-weight: 700; margin: 0; color: #1f5c45; letter-spacing: .08em; text-transform: uppercase; }
+.kulit-ol-tengah .tahun { font-size: 64pt; font-weight: 800; line-height: 1; margin: 4mm 0 2mm; color: #1f5c45; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.kulit-ol-tengah .info { font-size: 11pt; margin: 0; color: #333; }
+.kulit-ol-tengah .johan { display: grid; gap: .5mm; margin-top: 6mm; padding: 3mm 6mm; border-left: 3mm solid #555; background: #f4f6f3; }
+.kulit-ol-tengah .johan small { font-size: 8.5pt; letter-spacing: .14em; text-transform: uppercase; color: #555; }
+.kulit-ol-tengah .johan b { font-size: 20pt; letter-spacing: .06em; }
+.kulit-ol-tengah .johan span { font-size: 9.5pt; }
+.johan.cr1 { border-left-color: #b3261e; } .johan.cr2 { border-left-color: #2e7d32; } .johan.cr3 { border-left-color: #a86400; } .johan.cr4 { border-left-color: #6a3d9a; } .johan.cr5 { border-left-color: #1f5f99; }
+.rumah-baris { display: flex; flex-wrap: wrap; gap: 2mm 5mm; margin-top: 7mm; font-size: 9pt; font-weight: 700; letter-spacing: .06em; }
+.rumah-baris i { display: inline-block; width: 4mm; height: 4mm; border-radius: 1mm; margin-right: 1.5mm; vertical-align: -.6mm; background: #5b6862; }
+.rumah-baris .cr1 i { background: #b3261e; } .rumah-baris .cr2 i { background: #2e7d32; } .rumah-baris .cr3 i { background: #a86400; } .rumah-baris .cr4 i { background: #6a3d9a; } .rumah-baris .cr5 i { background: #1f5f99; }
+.kulit-ol-trek { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 95mm; }
+.kulit-ol-trek .tanah { fill: #b5532f; } .kulit-ol-trek .padang { fill: #2f7a4f; }
+.kulit-ol-trek .garis circle { fill: none; stroke: #fff; stroke-width: 1.6; opacity: .9; }
+.kulit-ol-kaki { position: relative; z-index: 1; margin: 6mm 0 0; font-size: 8pt; color: #555; letter-spacing: .06em; }
+@media print { .halaman.kulit-ol, .kulit-ol-trek, .kulit-ol-tengah .johan, .rumah-baris i { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .halaman.kulit-ol { min-height: 272mm; } }
+
 </style>
 </head>
 <body>
@@ -2911,10 +2937,32 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     const dokPingat = (q) => `<section class="halaman dok">${kepalaDok('KUTIPAN PINGAT')}${bahagianPingat(q.get('semua') === '1')}${ttd(['Setiausaha Sukan', 'Pengetua'])}</section>`;
 
+    // Muka depan laporan: lorong balapan sebagai motif, warna rumah, johan keseluruhan
+    function kulitLaporan() {
+      const k = K(), t = S.data.tetapan || {}, P = kiraPingat(false), j = P.jadual[0];
+      const ada = j && j.E + j.P + j.G > 0 && A().acara.length && A().acara.every((a) => a.rasmi);
+      const tarikh = k.tarikh_mula ? `${h.tarikhPendek(k.tarikh_mula, k.tarikh_tamat)} ${k.tahun}` : '';
+      // selekoh balapan: 8 lorong sepusat di sekeliling padang
+      const lorong = Array.from({ length: 9 }, (_, i) => `<circle cx="560" cy="470" r="${250 + i * 24}" />`).join('');
+      return `<section class="halaman kulit-ol">
+        <div class="kulit-ol-atas"><img src="${LOGO}" alt="Lencana sekolah"><div><b>${e(t.nama_sekolah || '')}</b><span>${e(t.alamat || '')}</span></div></div>
+        <div class="kulit-ol-tengah">
+          <span class="label">Laporan Penuh</span>
+          <h1>${e(k.nama)}</h1>
+          ${TK().kali_ke ? `<p class="kali">Kali Ke-${e(TK().kali_ke)}</p>` : ''}
+          <p class="tahun">${e(k.tahun)}</p>
+          <p class="info">${[tarikh, k.tempat].filter(Boolean).map(e).join('<br>')}</p>
+          ${ada ? `<div class="johan cr${idxRumah(j.r)}"><small>Johan keseluruhan</small><b>${e(j.r)}</b><span>${j.E} emas · ${j.P} perak · ${j.G} gangsa</span></div>` : ''}
+          <div class="rumah-baris">${senaraiRumah().map((r) => `<span class="cr${idxRumah(r)}"><i></i>${e(r)}</span>`).join('')}</div>
+        </div>
+        <svg class="kulit-ol-trek" viewBox="0 0 520 320" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><circle cx="560" cy="470" r="470" class="tanah"/><circle cx="560" cy="470" r="250" class="padang"/><g class="garis">${lorong}</g></svg>
+        <p class="kulit-ol-kaki">Disediakan oleh Urus Setia Kejohanan · Dijana oleh KOKUM SMART</p>
+      </section>`;
+    }
     function dokLaporan() {
       const k = K(), atlet = new Set(A().penyertaan.map((p) => p.murid_id)).size;
       const acara = A().acara.slice().sort((p, q) => (p.no_acara || 9999) - (q.no_acara || 9999));
-      return `<section class="halaman dok">${kepalaDok('LAPORAN PENUH KEJOHANAN')}
+      return `${kulitLaporan()}<section class="halaman dok">${kepalaDok('LAPORAN PENUH KEJOHANAN')}
           <table class="ringkas-dok"><tbody><tr><td>Tarikh</td><td>${k.tarikh_mula ? e(h.tarikhPendek(k.tarikh_mula, k.tarikh_tamat)) : '—'}</td><td>Tempat</td><td>${e(k.tempat || '—')}</td></tr>
           <tr><td>Rumah sukan</td><td>${senaraiRumah().length}</td><td>Atlet</td><td>${atlet}</td></tr>
           <tr><td>Acara</td><td>${A().acara.length} (${A().acara.filter((a) => a.rasmi).length} disahkan)</td><td>Penyertaan</td><td>${A().penyertaan.length}</td></tr></tbody></table>
@@ -3564,7 +3612,11 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           <label class="medan">Disediakan oleh<input type="text" name="disediakan" value="${e(v.disediakan || '')}"></label>
           <div class="medan"><span>Gambar (maksimum 4)</span>
             <div class="grid-gambar">${gambar.map((g, i) => `<label class="gambar-kecil"><img src="${e(F().url[g.path] || '')}" alt="Gambar ${i + 1}"><span><input type="checkbox" name="buang_${i}"> Buang</span></label>`).join('')}</div>
-            ${gambar.length < 4 ? `<input type="file" name="gambar" accept="image/*" multiple><span class="bantu">Gambar dimampatkan dalam telefon sebelum dimuat naik (kira-kira 200 KB setiap satu).</span>` : ''}</div>
+            ${gambar.length < 4 ? `<div class="baris-btn pilih-gambar">
+                <label class="btn"><input type="file" name="kamera" accept="image/*" capture="environment" hidden>📷 Ambil gambar (kamera)</label>
+                <label class="btn"><input type="file" name="gambar" accept="image/*" multiple hidden>🖼️ Pilih dari galeri</label></div>
+              <div class="grid-gambar" id="opr-pratonton"></div>
+              <span class="bantu">Boleh ambil beberapa gambar satu demi satu. Gambar dimampatkan dalam telefon sebelum dimuat naik (kira-kira 200 KB setiap satu).</span>` : ''}</div>
           <div class="baris-btn"><button class="btn utama" type="submit">Simpan OPR</button>${o ? `<button type="button" class="btn bahaya" data-act="f2-padam-opr" data-id="${o.id}">Padam</button>` : ''}</div>
         </form>`;
     }
@@ -3584,7 +3636,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     async function simpanOpr(f) {
       const kod = f.dataset.unit, d = new FormData(f), lama = f.dataset.id ? F().opr.find((o) => o.id === f.dataset.id) : null;
-      const fail = Array.from((f.querySelector('[name=gambar]') || {}).files || []);
+      const fail = (f._fail || []).slice();
       const kekal = (lama ? lama.gambar || [] : []).filter((g, i) => !d.get('buang_' + i));
       const buang = (lama ? lama.gambar || [] : []).filter((g, i) => d.get('buang_' + i));
       if (kekal.length + fail.length > 4) { roti(`Maksimum 4 gambar. Anda memilih ${kekal.length + fail.length}.`, true); return; }
@@ -3980,6 +4032,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           await S.db.f2PadamAktiviti(+el.dataset.id); F().aktiviti = F().aktiviti.filter((a) => a.id !== +el.dataset.id);
           $('#dlg').close(); roti('Aktiviti dipadam'); S.kekalSkrol = true; render(); return true;
         }
+        case 'f2-buang-baru': { const f = $('#borang-f2-opr'); f._fail.splice(+el.dataset.i, 1); $('#opr-pratonton').innerHTML = f._fail.map((x, i) => `<span class="gambar-kecil"><img src="${URL.createObjectURL(x)}" alt="Gambar baharu ${i + 1}"><button type="button" class="pautan kecil" data-act="f2-buang-baru" data-i="${i}">Buang</button></span>`).join(''); return true; }
         case 'f2-semua': $$('#borang-f2-hadir input[type=radio]').forEach((x) => { x.checked = x.value === el.dataset.v; }); kiraHadirBorang(); return true;
         case 'f2-padam-opr': {
           const o = F().opr.find((x) => x.id === el.dataset.id);
@@ -4005,6 +4058,13 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (t.closest('#borang-f2-pajsk')) { kiraPajskBorang(); return true; }
       if (t.id === 'pukal-semua') { $$('#borang-f2-pukal [name=murid]').forEach((x) => { x.checked = t.checked; }); return true; }
       if (t.closest('#borang-f2-opr') && t.name === 'perjumpaan_id') { isiDariPerjumpaan(t.closest('form')); return true; }
+      if (t.closest('#borang-f2-opr') && (t.name === 'gambar' || t.name === 'kamera')) {
+        const f = t.closest('form'); f._fail = (f._fail || []).concat(Array.from(t.files || [])); t.value = '';
+        const ada = f.querySelectorAll('.gambar-kecil').length;
+        if (ada + f._fail.length > 4) { f._fail = f._fail.slice(0, Math.max(0, 4 - ada)); roti('Maksimum 4 gambar.', true); }
+        $('#opr-pratonton').innerHTML = f._fail.map((x, i) => `<span class="gambar-kecil"><img src="${URL.createObjectURL(x)}" alt="Gambar baharu ${i + 1}"><button type="button" class="pautan kecil" data-act="f2-buang-baru" data-i="${i}">Buang</button></span>`).join('');
+        return true;
+      }
       if (t.closest('#f2-pj-kelas')) { tetapLokasi(`#/pajsk/rumusan?tahun=${F().tahun}&kelas=${encodeURIComponent(t.value)}`); S.kekalSkrol = true; render(); return true; }
       if (t.closest('#f2-pj-ekstra')) {
         const f = t.closest('form'), d = new FormData(f);
