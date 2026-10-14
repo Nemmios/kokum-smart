@@ -745,6 +745,62 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .kertas-cetak .takwim-sekolah td.tanda { color: #000; width: 22px; }
 .kertas-cetak .takwim-sekolah tfoot td { border: 1px solid #555; }
 
+/* ---------------- Perkhemahan Perdana */
+.kad-kem { display: grid; gap: 4px; text-decoration: none; color: inherit; }
+.kad-kem:hover { border-color: var(--hijau); }
+.status-kem { font-size: .78rem; font-weight: 700; }
+.status-kem.buka { color: var(--hijau); } .status-kem.tutup { color: var(--bahaya); }
+.info-kem { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.info-kem span { display: grid; gap: 2px; }
+.info-kem small, .meter-kem small { font-size: .72rem; color: var(--kabus); }
+.jadual-kem td.n small { color: var(--kabus); font-size: .72rem; }
+.jadual-kem td.lebih { color: var(--bahaya); font-weight: 700; }
+.jadual-kem tr.unit-saya td { background: var(--hijau-latar); }
+.jadual-kem tr.jumlah-baris td { border-top: 2px solid var(--garis-kuat); }
+.lencana-penganjur { font-size: .66rem; font-weight: 800; padding: 1px 6px; border-radius: 5px; background: var(--ub-latar); color: var(--ub); vertical-align: 1px; }
+.meter-set { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+.meter-kem { display: grid; gap: 1px; }
+.meter-kem b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.meter-kem b i { font-style: normal; font-size: .85rem; color: var(--kabus); font-weight: 600; }
+.meter-kem.lebih b { color: var(--bahaya); }
+.borang-sebaris { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.kem-senarai { display: grid; }
+.kem-baris { display: grid; grid-template-columns: 28px minmax(160px, 1.4fr) minmax(200px, 1.2fr) auto auto; gap: 8px 12px; align-items: center; padding: 9px 16px; border-top: 1px solid var(--garis); }
+.kem-baris .bil { color: var(--kabus); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.kem-baris .siapa { display: grid; min-width: 0; } .kem-baris .siapa small { color: var(--kabus); font-size: .76rem; }
+.kem-peranan { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.kem-peranan select, .kem-peranan input { min-height: 36px; padding: 4px 8px; font-size: .84rem; }
+.kem-tanda { display: flex; gap: 12px; flex-wrap: wrap; font-size: .84rem; }
+.kem-pilih { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); max-height: 460px; overflow: auto; border-top: 1px solid var(--garis); }
+.kem-calon { display: flex; gap: 10px; align-items: flex-start; padding: 8px 16px; border-bottom: 1px solid var(--garis); cursor: pointer; }
+.kem-calon input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+.kem-calon span { display: grid; } .kem-calon small { color: var(--kabus); font-size: .76rem; }
+.kem-calon:has(input:checked) { background: var(--hijau-latar); }
+@media (max-width: 760px) {
+  .kem-baris { grid-template-columns: 24px 1fr auto; }
+  .kem-baris .kem-peranan, .kem-baris .kem-tanda { grid-column: 2 / -1; }
+  .kem-baris > button { grid-row: 1; grid-column: 3; }
+}
+.surat-kem { font-size: 10.5pt; line-height: 1.45; }
+.surat-kem p { margin: 0 0 7px; }
+.surat-kem hr { border: 0; border-top: 2px solid #000; margin: 6px 0 10px; }
+.surat-kem table.ruj, .surat-kem table.butiran { width: auto; margin: 0 0 8px; border: 0; }
+.kertas-cetak .surat-kem table.ruj td, .kertas-cetak .surat-kem table.butiran td { border: 0; padding: 0 10px 1px 0; }
+.surat-kem table.ruj { margin-left: auto; }
+.surat-kem table.butiran { margin-left: 22px; }
+.surat-kem .tajuk-surat { font-weight: 700; text-decoration: underline; text-transform: uppercase; }
+.surat-kem .no-para { display: inline-block; width: 22px; }
+.surat-kem .barang { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin: 3px 0 0 22px; }
+.surat-kem .barang span::before { content: "• "; }
+.surat-kem .ruang-ttd { height: 26px; }
+.surat-kem .keratan { border-top: 1.5px dashed #000; margin-top: 12px; padding-top: 10px; position: relative; }
+.surat-kem .gunting { position: absolute; top: -10px; left: 0; background: #fff; font-size: 8pt; padding-right: 6px; }
+.surat-kem .ttd-keratan { display: flex; justify-content: space-between; margin-top: 14px; }
+.kertas-cetak .jadual-daftar td { height: 26px; }
+@media print { .surat-kem { break-after: page; } }
+.borang .tiga { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: start; }
+@media (max-width: 520px) { .borang .tiga { grid-template-columns: 1fr 1fr; } }
+
 </style>
 </head>
 <body>
@@ -1023,6 +1079,8 @@ window.KOKUM_CONFIG = {
   const MEDAN_UNIT = ['kod', 'kategori', 'nama_penuh', 'bilik_operasi', 'guru_penasihat', 'jantina', 'had_ahli', 'susunan', 'aktif'];
   const MEDAN_PJ = ['tahun', 'kategori', 'bil', 'tarikh', 'masa_mula', 'masa_tamat', 'catatan', 'tema', 'program', 'tindakan', 'tentatif'];
   const MEDAN_AK = ['tahun', 'tarikh_mula', 'tarikh_tamat', 'tajuk', 'jenis', 'unit_kod', 'peringkat', 'tempat', 'catatan', 'tindakan'];
+  const MEDAN_KEM = ['tahun', 'nama', 'kali_ke', 'tarikh_mula', 'tarikh_tamat', 'tempat', 'penganjur', 'tingkatan', 'kuota_l', 'kuota_p', 'kuota_ajk', 'yuran', 'tarikh_tutup', 'dibuka', 'maklumat', 'pajsk_pada'];
+  const MEDAN_KP = ['kem_id', 'murid_id', 'unit_kod', 'peranan', 'jawatan', 'borang', 'yuran', 'hadir', 'catatan'];
   const pilih = (o, medan) => Object.fromEntries(medan.filter((k) => k in o).map((k) => [k, o[k] === '' ? null : o[k]]));
 
   function terjemah(e) {
@@ -1186,6 +1244,28 @@ window.KOKUM_CONFIG = {
         const medan = ['nama', 'tahun', 'tarikh_mula', 'tarikh_tamat', 'tempat', 'had_acara', 'kuota', 'kuota_gandaan', 'kira_gandaan', 'pendaftaran_dibuka', 'aktif', 'bil_lorong', 'tetapan'];
         const data = Object.fromEntries(medan.filter((x) => x in k).map((x) => [x, k[x] === '' ? null : k[x]]));
         return semak(await sb.from('ais_kejohanan').update(data).eq('id', k.id).select().single());
+      },
+      // ---------------- Perkhemahan Perdana
+      async kemMuat(tahun) {
+        const kem = semak(await sb.from('kem').select('*').eq('tahun', tahun).order('id'));
+        const ids = kem.map((k) => k.id);
+        if (!ids.length) return { kem, peserta: [], unit: [] };
+        const [peserta, unit] = await Promise.all([semuaBaris(() => sb.from('kem_peserta').select('*').in('kem_id', ids)), sb.from('kem_unit').select('*').in('kem_id', ids).then(semak)]);
+        return { kem, peserta, unit };
+      },
+      async kemSimpan(k) {
+        const data = pilih(k, MEDAN_KEM);
+        if (k.id) return semak(await sb.from('kem').update(data).eq('id', k.id).select().single());
+        return semak(await sb.from('kem').insert(data).select().single());
+      },
+      async kemPadam(id) { semak(await sb.from('kem').delete().eq('id', id)); },
+      async kemSimpanPeserta(rows) {
+        if (!rows.length) return [];
+        return semak(await sb.from('kem_peserta').upsert(rows.map((r) => ({ ...pilih(r, MEDAN_KP), dikemas: new Date().toISOString() })), { onConflict: 'kem_id,murid_id' }).select());
+      },
+      async kemPadamPeserta(kemId, ids) { if (ids.length) semak(await sb.from('kem_peserta').delete().eq('kem_id', kemId).in('murid_id', ids)); },
+      async kemSimpanUnit(r) {
+        return semak(await sb.from('kem_unit').upsert({ kem_id: r.kem_id, unit_kod: r.unit_kod, guru: r.guru || null, catatan: r.catatan || null, dikemas: new Date().toISOString() }, { onConflict: 'kem_id,unit_kod' }).select().single());
       },
       // ---------------- Fasa 2: takwim, kehadiran, OPR, PAJSK, laporan
       async f2Muat(tahun) {
@@ -1574,6 +1654,31 @@ window.KOKUM_CONFIG = {
         let n = A.acara.reduce((m, x) => Math.max(m, x.id), 0);
         A.acara.push(...A.acara.filter((a) => a.kejohanan_id === lama.id).map((a) => ({ ...a, id: ++n, kejohanan_id: kid, rasmi: false, rasmi_pada: null })));
         tulis(); return kid;
+      },
+      // ---------------- Perkhemahan Perdana (demo)
+      _kem() { const d = baca(); if (!d.kem) d.kem = { kem: [], peserta: [], unit: [], n: 1 }; return d.kem; },
+      async kemMuat(tahun) {
+        await tunda(); const K = this._kem(), kem = K.kem.filter((k) => k.tahun === tahun), ids = new Set(kem.map((k) => k.id));
+        return salin({ kem, peserta: K.peserta.filter((p) => ids.has(p.kem_id)), unit: K.unit.filter((u) => ids.has(u.kem_id)) });
+      },
+      async kemSimpan(k) {
+        const K = this._kem(); let x = k.id && K.kem.find((y) => y.id === k.id);
+        if (!x) { x = { id: K.n++, nama: 'PERKHEMAHAN PERDANA UNIT-UNIT BERUNIFORM', tingkatan: ['3', '4'], kuota_l: 10, kuota_p: 10, kuota_ajk: 3, yuran: 5, dibuka: true, maklumat: {}, pajsk_pada: null, dicipta: new Date().toISOString() }; K.kem.push(x); }
+        Object.assign(x, pilih(k, MEDAN_KEM)); tulis(); return salin(x);
+      },
+      async kemPadam(id) { const K = this._kem(); K.kem = K.kem.filter((k) => k.id !== id); K.peserta = K.peserta.filter((p) => p.kem_id !== id); K.unit = K.unit.filter((u) => u.kem_id !== id); tulis(); },
+      async kemSimpanPeserta(rows) {
+        const K = this._kem();
+        const hasil = rows.map((r) => { let x = K.peserta.find((p) => p.kem_id === r.kem_id && p.murid_id === r.murid_id);
+          if (!x) { x = { borang: false, yuran: false, hadir: null, jawatan: null, catatan: null, oleh: 'demo' }; K.peserta.push(x); }
+          Object.assign(x, pilih(r, MEDAN_KP), { dikemas: new Date().toISOString() }); return x; });
+        tulis(); return salin(hasil);
+      },
+      async kemPadamPeserta(kemId, ids) { const K = this._kem(), s2 = new Set(ids); K.peserta = K.peserta.filter((p) => !(p.kem_id === kemId && s2.has(p.murid_id))); tulis(); },
+      async kemSimpanUnit(r) {
+        const K = this._kem(); let x = K.unit.find((u) => u.kem_id === r.kem_id && u.unit_kod === r.unit_kod);
+        if (!x) { x = { kem_id: r.kem_id, unit_kod: r.unit_kod }; K.unit.push(x); }
+        Object.assign(x, { guru: r.guru || null, catatan: r.catatan || null, dikemas: new Date().toISOString() }); tulis(); return salin(x);
       },
       // ---------------- Fasa 2 (demo): sama seperti dasar RLS, disimpan dalam pelayar
       async f2Muat(tahun) {
@@ -4609,6 +4714,477 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
 
 </script>
 <script>
+/* KOKUM SMART · Perkhemahan Perdana Unit-unit Beruniform
+   Penyelaras menetapkan perkhemahan. Guru penasihat setiap unit beruniform mendaftar peserta, AJK pengiring dan urusetia
+   daripada ahli unit sendiri, menanda borang kebenaran, yuran dan kehadiran. Dokumen: ringkasan bilangan peserta,
+   senarai semak, borang pendaftaran, surat makluman ibu bapa dengan keratan jawapan, Excel, dan rekod pelibatan PAJSK. */
+(function () {
+  'use strict';
+
+  const BULAN = ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'];
+  const HARI = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+  const PERANAN = { peserta: 'Peserta', ajk: 'AJK pengiring', urusetia: 'Urusetia' };
+  const JAWATAN_AJK = ['PENGERUSI', 'SETIAUSAHA', 'BENDAHARI'];
+  const TING_SEMUA = ['1', '2', '3', '4', '5', 'PPKI'];
+  const BARANG_ASAS = ['Pakaian seragam unit yang lengkap', 'Pakaian sukan dan pakaian tidur', 'Peralatan mandi dan ubat-ubatan peribadi',
+    'Selimut atau beg tidur', 'Pinggan, cawan dan sudu', 'Lampu suluh', 'Alat tulis', 'Kelengkapan ibadat (bagi yang berkenaan)'];
+
+  window.KokumKem = function (ctx) {
+    const { S, e, $, $$, IKON, roti, sahkan, gagal, render, penyelaras, aktif, eksport, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI,
+      bolehUrus, ahliUnit, unitKat } = ctx;
+
+    /* ============================================================ keadaan */
+    const T = () => S.data.tetapan || {};
+    const tahunAsal = () => +T().tahun || new Date().getFullYear();
+    const K = () => S.kem;
+    const renderLatar = () => { const d = $('#dlg'); if (d && d.open) return; S.kekalSkrol = true; render(); };
+    let memuat = null;
+    function muat(tahun, paksa) {
+      if (!paksa && S.kem && S.kem.tahun === tahun) return Promise.resolve();
+      if (memuat && memuat.tahun === tahun) return memuat.p;
+      const p = S.db.kemMuat(tahun).then((d) => { S.kem = { ...d, tahun, ralat: null }; },
+        (err) => { S.kem = { tahun, kem: [], peserta: [], unit: [], ralat: err.message || String(err) }; }).finally(() => { memuat = null; });
+      memuat = { tahun, p };
+      return p;
+    }
+    function sedia(tahun) {
+      if (S.kem && S.kem.tahun === tahun) return S.kem.ralat ? `<div class="mesej ralat">${e(S.kem.ralat)}. Pastikan fail <b>kem.sql</b> sudah dijalankan di Supabase.</div><button class="btn" data-act="kem-muat">${IKON.segar} Cuba lagi</button>` : '';
+      muat(tahun).then(renderLatar);
+      return '<p class="pudar">Memuatkan perkhemahan…</p>';
+    }
+    const pilihTahun = (q) => { const t = +(q && q.get('tahun')) || S.kemTahun || tahunAsal(); S.kemTahun = t; return t; };
+
+    /* ============================================================ bantuan */
+    const tk = (s) => (s ? new Date(s + 'T00:00:00') : null);
+    const fmtT = (s, panjang) => { const d = tk(s); if (!d) return '—'; return `${panjang ? HARI[d.getDay()] + ', ' : ''}${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`; };
+    const fmtJulat = (a, b) => {
+      if (!a) return 'Tarikh belum ditetapkan';
+      if (!b || b === a) return fmtT(a, true);
+      const x = tk(a), y = tk(b);
+      const hari = `(${HARI[x.getDay()]} – ${HARI[y.getDay()]})`;
+      return x.getMonth() === y.getMonth() ? `${x.getDate()} – ${y.getDate()} ${BULAN[y.getMonth()]} ${y.getFullYear()} ${hari}` : `${fmtT(a)} – ${fmtT(b)} ${hari}`;
+    };
+    const rm = (n) => `RM${(+n || 0).toFixed(2)}`;
+    const unitUB = () => unitKat('UB');
+    const namaUnit = (kod) => { const u = S.unitPeta.get(kod); return u ? u.nama_penuh : kod || ''; };
+    const tajukKem = (k) => `${k.nama}${k.kali_ke ? ` KALI KE-${k.kali_ke}` : ''} ${T().nama_sekolah ? T().nama_sekolah.replace(/\.$/, '') + ' ' : ''}TAHUN ${k.tahun}`;
+    const kemId = (id) => (K().kem || []).find((k) => k.id === +id);
+    const pesertaKem = (k) => K().peserta.filter((p) => p.kem_id === k.id);
+    const pesertaUnit = (k, kod) => pesertaKem(k).filter((p) => p.unit_kod === kod);
+    const muridPeta = () => new Map(S.data.murid.map((m) => [m.id, m]));
+    const infoUnit = (k, kod) => K().unit.find((x) => x.kem_id === k.id && x.unit_kod === kod) || {};
+    const M = (k) => k.maklumat || {};
+    const tingLayak = (k) => (k.tingkatan && k.tingkatan.length ? k.tingkatan : ['3', '4']);
+    const teksTing = (k) => tingLayak(k).map((t) => (t === 'PPKI' ? 'PPKI' : 'T' + t)).join(', ');
+    function kuotaUnit(k, u) {
+      const j = (u && u.jantina) || '';
+      if (j === 'P') return { L: 0, P: k.kuota_l + k.kuota_p };
+      if (j === 'L') return { L: k.kuota_l + k.kuota_p, P: 0 };
+      return { L: k.kuota_l, P: k.kuota_p };
+    }
+    function kira(l, peta) {
+      const c = { L: 0, P: 0, ajk: 0, urusetia: 0, jumlah: l.length, borang: 0, yuran: 0, hadir: 0 };
+      l.forEach((p) => {
+        const m = peta.get(p.murid_id) || {};
+        if (p.peranan === 'peserta') { if (m.jantina === 'P') c.P++; else c.L++; } else c[p.peranan]++;
+        if (p.borang) c.borang++; if (p.yuran) c.yuran++; if (p.hadir) c.hadir++;
+      });
+      return c;
+    }
+    const peranTeks = (p) => (p.peranan === 'ajk' ? `AJK${p.jawatan ? ' (' + p.jawatan + ')' : ''}` : PERANAN[p.peranan]);
+    const susunPeserta = (l, peta) => l.slice().sort((a, b) => ['ajk', 'urusetia', 'peserta'].indexOf(a.peranan) - ['ajk', 'urusetia', 'peserta'].indexOf(b.peranan)
+      || (JAWATAN_AJK.indexOf(a.jawatan) + 1 || 9) - (JAWATAN_AJK.indexOf(b.jawatan) + 1 || 9) || susunMurid(peta.get(a.murid_id) || {}, peta.get(b.murid_id) || {}));
+    const bolehDaftar = (k, kod) => bolehUrus(kod) && (k.dibuka || penyelaras());
+
+    /* ============================================================ halaman */
+    function papar(a1, a2, q) {
+      const tahun = pilihTahun(q);
+      const x = sedia(tahun);
+      const chip = (t) => `<a class="cip ${t === tahun ? 'pilih' : ''}" href="#/kem?tahun=${t}">${t}</a>`;
+      const kepalaTahun = `<div class="cip-set tanpa-cetak" style="margin-bottom:12px">${[tahunAsal() - 1, tahunAsal(), tahunAsal() + 1].map(chip).join('')}</div>`;
+      if (x) return `<div class="kepala"><div><h1>Perkhemahan Perdana</h1><p>Pendaftaran peserta unit-unit beruniform.</p></div></div>${kepalaTahun}${x}`;
+      if (a1) {
+        const k = kemId(a1);
+        if (!k) return `<div class="mesej ralat">Perkhemahan tidak dijumpai dalam tahun ${tahun}.</div><a class="btn" href="#/kem">Kembali</a>`;
+        if (a2 === 'cetak') return pCetak(k, q);
+        if (a2) { const u = S.unitPeta.get(a2); return u ? pUnit(k, u, q) : `<div class="mesej ralat">Unit ${e(a2)} tidak dijumpai.</div>`; }
+        return pRingkasan(k);
+      }
+      if (K().kem.length === 1 && !q.get('semua')) return kepalaTahun + pRingkasan(K().kem[0]);
+      return pSenarai(kepalaTahun);
+    }
+
+    function pSenarai(kepalaTahun) {
+      const t = K().tahun, l = K().kem;
+      return `<div class="kepala"><div><h1>Perkhemahan Perdana ${t}</h1><p>Pendaftaran peserta unit-unit beruniform.</p></div>
+          ${penyelaras() ? `<div class="baris-btn"><button class="btn utama" data-act="kem-baru">${IKON.tambah} Tetapkan perkhemahan</button></div>` : ''}</div>${kepalaTahun}
+        ${l.length ? `<div class="grid-opr">${l.map((k) => `<a class="panel kad-kem" href="#/kem/${k.id}?tahun=${t}"><b>${e(k.nama)}${k.kali_ke ? ` KALI KE-${k.kali_ke}` : ''}</b>
+            <span class="kecil">${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))}</span><span class="kecil pudar">${k.penganjur ? 'Anjuran ' + e(k.penganjur) : 'Penganjur belum ditetapkan'} · ${pesertaKem(k).length} berdaftar</span>
+            <span class="status-kem ${k.dibuka ? 'buka' : 'tutup'}">${k.dibuka ? 'Pendaftaran dibuka' : 'Pendaftaran ditutup'}</span></a>`).join('')}</div>`
+          : `<div class="panel kosong-isi"><h3>Belum ada perkhemahan untuk ${t}</h3><p>${penyelaras() ? 'Tetapkan tarikh, penganjur, kuota dan yuran. Guru penasihat unit beruniform boleh mendaftar peserta selepas itu.' : 'Penyelaras belum membuka pendaftaran perkhemahan.'}</p>
+            ${penyelaras() ? `<div class="baris-btn" style="justify-content:center"><button class="btn utama" data-act="kem-baru">${IKON.tambah} Tetapkan perkhemahan</button></div>` : ''}</div>`}`;
+    }
+
+    function pRingkasan(k) {
+      const peta = muridPeta(), us = unitUB(), saya = us.filter((u) => bolehUrus(u.kod) && !penyelaras());
+      const baris = us.map((u) => ({ u, c: kira(pesertaUnit(k, u.kod), peta), q: kuotaUnit(k, u), g: infoUnit(k, u.kod).guru || '' }));
+      const jum = baris.reduce((s, { c }) => { Object.keys(c).forEach((x) => { s[x] = (s[x] || 0) + c[x]; }); return s; }, {});
+      const tempoh = k.tarikh_mula && k.tarikh_mula <= hariIni();
+      return `<div class="kepala"><div><h1>${e(k.nama)}${k.kali_ke ? ` kali ke-${k.kali_ke}` : ''} ${k.tahun}</h1>
+          <p>${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))}${k.tempat ? ' · ' + e(k.tempat) : ''}</p></div>
+          <div class="baris-btn tanpa-cetak">${penyelaras() ? `<button class="btn" data-act="kem-ubah" data-id="${k.id}">Tetapan</button>` : ''}
+            <a class="btn" href="#/kem/${k.id}/cetak?doc=ringkasan&tahun=${k.tahun}">${IKON.cetak} Cetak</a></div></div>
+        ${saya.length ? `<div class="mesej ok tanpa-cetak">Unit anda: ${saya.map((u) => `<a href="#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}"><b>${e(u.kod)}</b>: daftar peserta</a>`).join(' · ')}</div>` : ''}
+        <div class="panel" style="margin-bottom:14px"><div class="info-kem">
+          <span><small>Penganjur</small><b>${k.penganjur ? e(namaUnit(k.penganjur)) : 'Belum ditetapkan'}</b></span>
+          <span><small>Peserta</small><b>${e(teksTing(k))}</b></span>
+          <span><small>Kuota setiap unit</small><b>${k.kuota_l} L + ${k.kuota_p} P</b></span>
+          <span><small>AJK pengiring</small><b>${k.kuota_ajk} seunit</b></span>
+          <span><small>Yuran</small><b>${rm(k.yuran)}</b></span>
+          <span><small>Pendaftaran</small><b class="status-kem ${k.dibuka ? 'buka' : 'tutup'}">${k.dibuka ? 'Dibuka' : 'Ditutup'}${k.tarikh_tutup && k.dibuka ? ' hingga ' + e(fmtT(k.tarikh_tutup)) : ''}</b></span></div>
+          ${penyelaras() ? `<div class="baris-btn" style="margin-top:12px"><button class="btn" data-act="kem-tukar-buka" data-id="${k.id}">${k.dibuka ? 'Tutup pendaftaran' : 'Buka semula pendaftaran'}</button>
+            ${k.pajsk_pada ? `<span class="kecil pudar">Pelibatan PAJSK direkod pada ${e(fmtT(k.pajsk_pada.slice(0, 10)))}.</span>` : `<button class="btn" data-act="kem-pajsk" data-id="${k.id}" ${tempoh ? '' : 'disabled title="Selepas perkhemahan bermula"'}>Rekod pelibatan PAJSK</button>`}
+            ${K().kem.length > 1 ? `<a class="btn kosong" href="#/kem?tahun=${k.tahun}&semua=1">Semua perkhemahan</a>` : `<button class="btn kosong" data-act="kem-baru">Tambah perkhemahan lain</button>`}</div>` : ''}</div>
+        <div class="panel" style="padding:0"><div class="skrol-x"><table class="jadual jadual-kem"><thead><tr><th>Unit</th><th class="n">L</th><th class="n">P</th><th class="n">AJK</th><th class="n">Urusetia</th><th class="n">Jumlah</th><th class="n">Borang</th><th class="n">Yuran</th>${tempoh ? '<th class="n">Hadir</th>' : ''}<th>Guru pengiring</th><th></th></tr></thead><tbody>
+          ${baris.map(({ u, c, q, g }) => `<tr${bolehUrus(u.kod) && !penyelaras() ? ' class="unit-saya"' : ''}><td><b>${e(u.kod)}</b>${u.kod === k.penganjur ? ' <span class="lencana-penganjur">Penganjur</span>' : ''}<br><span class="pudar kecil">${e(u.nama_penuh)}</span></td>
+            <td class="n ${c.L > q.L ? 'lebih' : ''}">${c.L}<small>/${q.L}</small></td><td class="n ${c.P > q.P ? 'lebih' : ''}">${c.P}<small>/${q.P}</small></td><td class="n ${c.ajk > k.kuota_ajk ? 'lebih' : ''}">${c.ajk}</td><td class="n">${c.urusetia || ''}</td>
+            <td class="n"><b>${c.jumlah}</b></td><td class="n">${c.jumlah ? `${c.borang}/${c.jumlah}` : ''}</td><td class="n">${c.jumlah ? `${c.yuran}/${c.jumlah}` : ''}</td>${tempoh ? `<td class="n">${c.jumlah ? `${c.hadir}/${c.jumlah}` : ''}</td>` : ''}
+            <td class="kecil">${e(g)}</td><td><a class="btn kecil ${bolehDaftar(k, u.kod) ? 'utama' : ''}" href="#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}">${bolehDaftar(k, u.kod) ? 'Daftar' : 'Lihat'}</a></td></tr>`).join('')}
+          <tr class="jumlah-baris"><td><b>Jumlah</b></td><td class="n">${jum.L || 0}</td><td class="n">${jum.P || 0}</td><td class="n">${jum.ajk || 0}</td><td class="n">${jum.urusetia || 0}</td><td class="n"><b>${jum.jumlah || 0}</b></td><td class="n">${jum.borang || 0}</td><td class="n">${jum.yuran || 0}</td>${tempoh ? `<td class="n">${jum.hadir || 0}</td>` : ''}<td></td><td></td></tr></tbody></table></div></div>
+        <div class="panel" style="margin-top:14px"><h2>Dokumen</h2><div class="baris-btn">
+          <a class="btn" href="#/kem/${k.id}/cetak?doc=ringkasan&tahun=${k.tahun}">${IKON.cetak} Ringkasan bilangan peserta</a>
+          <a class="btn" href="#/kem/${k.id}/cetak?doc=senarai&tahun=${k.tahun}">${IKON.cetak} Senarai semak semua unit</a>
+          <a class="btn" href="#/kem/${k.id}/cetak?doc=daftar&tahun=${k.tahun}">${IKON.cetak} Borang pendaftaran</a>
+          <a class="btn" href="#/kem/${k.id}/cetak?doc=surat&tahun=${k.tahun}">${IKON.cetak} Surat ibu bapa (semua)</a>
+          <button class="btn" data-act="kem-excel" data-id="${k.id}">${IKON.muat} Excel</button></div>
+          <p class="pudar kecil" style="margin:8px 0 0">Kuota L/P dikira bagi peserta sahaja. AJK pengiring (Pengerusi, Setiausaha, Bendahari) dan urusetia unit penganjur dikira berasingan.</p></div>`;
+    }
+
+    function pUnit(k, u, q) {
+      const peta = muridPeta(), boleh = bolehUrus(u.kod), daftar = bolehDaftar(k, u.kod), penganjur = u.kod === k.penganjur;
+      const l = susunPeserta(pesertaUnit(k, u.kod), peta), c = kira(l, peta), qu = kuotaUnit(k, u), info = infoUnit(k, u.kod);
+      const ada = new Set(l.map((p) => p.murid_id)), semua = q.get('semua') === '1';
+      const lain = ahliUnit(u).filter((m) => !ada.has(m.id));
+      const layak = lain.filter((m) => semua || tingLayak(k).includes(m.tingkatan));
+      const tempoh = k.tarikh_mula && k.tarikh_mula <= hariIni();
+      const meter = (lbl, n, max) => `<span class="meter-kem ${max != null && n > max ? 'lebih' : ''}"><small>${lbl}</small><b>${n}${max != null ? `<i>/${max}</i>` : ''}</b></span>`;
+      const pilihanPeranan = (v) => Object.entries(PERANAN).filter(([x]) => x !== 'urusetia' || penganjur || v === 'urusetia').map(([x, t]) => `<option value="${x}" ${v === x ? 'selected' : ''}>${t}</option>`).join('');
+      return `<p class="tanpa-cetak" style="margin-bottom:12px"><a href="#/kem/${k.id}?tahun=${k.tahun}">← ${e(k.nama)} ${k.tahun}</a></p>
+        <div class="kepala kategori UB" style="margin-top:0"><div class="unit-kepala"><div class="kod-besar">${e(u.kod)}</div><h1 style="font-size:1.25rem;margin-top:6px">${e(u.nama_penuh)}</h1>
+          <p>${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))}${penganjur ? ' · <b>Unit penganjur</b>' : ''}</p></div></div>
+        ${!k.dibuka ? `<div class="mesej amaran">Pendaftaran sudah ditutup.${boleh ? ' Anda masih boleh menanda borang, yuran dan kehadiran.' : ''}${penyelaras() ? ' Penyelaras masih boleh menambah peserta.' : ''}</div>` : ''}
+        <div class="panel" style="margin-bottom:14px"><div class="meter-set">${meter('Peserta L', c.L, qu.L)}${meter('Peserta P', c.P, qu.P)}${meter('AJK pengiring', c.ajk, k.kuota_ajk)}${penganjur || c.urusetia ? meter('Urusetia', c.urusetia) : ''}${meter('Borang', c.borang, c.jumlah)}${meter('Yuran', c.yuran, c.jumlah)}</div>
+          <p class="pudar kecil" style="margin:8px 0 0">Peserta: ahli ${e(teksTing(k))}. Yuran ${rm(k.yuran)} seorang${c.jumlah ? `, jumlah kutipan ${rm(c.jumlah * k.yuran)} (${rm(c.yuran * k.yuran)} sudah dibayar)` : ''}.</p>
+          ${boleh ? `<form class="borang-sebaris" id="borang-kem-unit" data-kem="${k.id}" data-unit="${e(u.kod)}" style="margin-top:12px"><label class="medan" style="flex:1">Guru pengiring<input type="text" name="guru" value="${e(info.guru || '')}" placeholder="Contoh: EN. ALI BIN AHMAD, PN. SITI BINTI ABU"></label><button class="btn" type="submit">Simpan</button></form>`
+            : info.guru ? `<p class="kecil" style="margin:10px 0 0">Guru pengiring: <b>${e(info.guru)}</b></p>` : ''}</div>
+
+        <form class="panel" id="borang-kem-peserta" data-kem="${k.id}" data-unit="${e(u.kod)}" style="padding:0">
+          <div style="padding:14px 16px 6px"><h2 style="margin:0">Berdaftar (${l.length})</h2>${boleh && l.length ? '<p class="pudar kecil" style="margin:4px 0 0">Tanda borang kebenaran yang sudah diterima dan yuran yang sudah dibayar, kemudian tekan Simpan.</p>' : ''}</div>
+          ${l.length ? `<div class="kem-senarai">${l.map((p, i) => { const m = peta.get(p.murid_id) || { nama: '(murid tiada)', kelas: '' };
+            return `<div class="kem-baris"><span class="bil">${i + 1}</span><span class="siapa"><b>${e(m.nama)}</b><small>${e(m.kelas)} · ${e(m.jantina || '')}</small></span>
+              ${boleh ? `<span class="kem-peranan"><select name="peranan_${e(p.murid_id)}" aria-label="Peranan">${pilihanPeranan(p.peranan)}</select>
+                <input type="text" name="jawatan_${e(p.murid_id)}" value="${e(p.jawatan || '')}" list="kem-jawatan" placeholder="Jawatan" aria-label="Jawatan AJK"></span>
+                <span class="kem-tanda"><label class="cek"><input type="checkbox" name="borang_${e(p.murid_id)}" ${p.borang ? 'checked' : ''}> Borang</label>
+                <label class="cek"><input type="checkbox" name="yuran_${e(p.murid_id)}" ${p.yuran ? 'checked' : ''}> Yuran</label>
+                ${tempoh ? `<label class="cek"><input type="checkbox" name="hadir_${e(p.murid_id)}" ${p.hadir ? 'checked' : ''}> Hadir</label>` : ''}</span>
+                ${daftar ? `<button type="button" class="btn kosong kecil" data-act="kem-buang" data-kem="${k.id}" data-mid="${e(p.murid_id)}" aria-label="Buang ${e(m.nama)}">${IKON.tutup}</button>` : ''}`
+              : `<span class="kecil">${e(peranTeks(p))}</span><span class="kecil pudar">${p.borang ? 'Borang ✓' : 'Borang —'} · ${p.yuran ? 'Yuran ✓' : 'Yuran —'}</span>`}</div>`; }).join('')}</div>
+            ${boleh ? '<div class="baris-btn" style="padding:12px 16px"><button class="btn utama" type="submit">Simpan</button></div>' : ''}`
+          : '<div class="kosong-isi">Belum ada peserta berdaftar.</div>'}
+          <datalist id="kem-jawatan">${JAWATAN_AJK.map((j) => `<option value="${j}">`).join('')}</datalist></form>
+
+        ${daftar ? `<form class="panel" id="borang-kem-tambah" data-kem="${k.id}" data-unit="${e(u.kod)}" style="margin-top:14px;padding:0">
+          <div style="padding:14px 16px 6px"><h2 style="margin:0">Tambah peserta</h2>
+            <p class="pudar kecil" style="margin:4px 0 8px">${semua ? 'Memaparkan semua ahli unit.' : `Ahli ${e(u.kod)} ${e(teksTing(k))} yang belum didaftar (${layak.length}).`} ${semua ? `<a href="#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}">Papar ${e(teksTing(k))} sahaja</a>` : lain.length > layak.length ? `<a href="#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}&semua=1">Papar semua tingkatan (${lain.length})</a>` : ''}</p>
+            <div class="baris-btn"><input class="cari" type="search" id="kem-cari" placeholder="Cari nama atau kelas" aria-label="Cari ahli" style="flex:1;min-width:160px">
+              <button type="button" class="btn kecil" data-act="kem-tanda" data-j="L">Tanda L</button><button type="button" class="btn kecil" data-act="kem-tanda" data-j="P">Tanda P</button><button type="button" class="btn kecil" data-act="kem-tanda" data-j="">Kosongkan</button></div></div>
+          ${layak.length ? `<div class="kem-pilih">${layak.map((m) => `<label class="kem-calon" data-cari="${e((m.nama + ' ' + m.kelas).toUpperCase())}"><input type="checkbox" name="mid" value="${e(m.id)}" data-j="${e(m.jantina || '')}">
+              <span><b>${e(m.nama)}</b><small>${e(m.kelas)} · ${e(m.jantina || '?')}${m.ub_jawatan ? ' · ' + e(m.ub_jawatan) : ''}</small></span></label>`).join('')}</div>
+            <div class="baris-btn" style="padding:12px 16px"><select name="peranan" aria-label="Daftar sebagai" style="width:auto">${pilihanPeranan('peserta')}</select><button class="btn utama" type="submit">Daftar yang ditanda</button><span class="kecil" id="kem-kiraan"></span></div>`
+          : `<div class="kosong-isi">${lain.length ? 'Tiada ahli dalam tingkatan yang layak.' : 'Semua ahli unit sudah didaftar.'}</div>`}</form>` : ''}
+
+        <div class="panel" style="margin-top:14px"><h2>Dokumen ${e(u.kod)}</h2><div class="baris-btn">
+          <a class="btn" href="#/kem/${k.id}/cetak?doc=surat&unit=${encodeURIComponent(u.kod)}&tahun=${k.tahun}">${IKON.cetak} Surat ibu bapa (${l.length})</a>
+          <a class="btn" href="#/kem/${k.id}/cetak?doc=senarai&unit=${encodeURIComponent(u.kod)}&tahun=${k.tahun}">${IKON.cetak} Senarai semak</a>
+          <a class="btn" href="#/kem/${k.id}/cetak?doc=daftar&unit=${encodeURIComponent(u.kod)}&tahun=${k.tahun}">${IKON.cetak} Borang pendaftaran</a></div></div>`;
+    }
+
+    /* ============================================================ tetapan perkhemahan */
+    function cadangTarikh(tahun) {
+      const f2 = S.f2;
+      if (!f2 || f2.tahun !== tahun || !f2.perjumpaan) return {};
+      const l = f2.perjumpaan.filter((p) => p.kategori === 'UB' && /PERKHEMAHAN PERDANA/i.test(p.tema || '')).map((p) => p.tarikh).sort();
+      return l.length ? { tarikh_mula: l[0], tarikh_tamat: l[l.length - 1] } : {};
+    }
+    function bukaTetapan(id) {
+      const tahun = K().tahun, k = id ? kemId(id) : { tahun, nama: 'PERKHEMAHAN PERDANA UNIT-UNIT BERUNIFORM', tempat: `TAPAK PERKHEMAHAN, ${(T().nama_sekolah || '').replace(/\.$/, '')}`,
+        tingkatan: ['3', '4'], kuota_l: 10, kuota_p: 10, kuota_ajk: 3, yuran: 5, dibuka: true, maklumat: { barang: BARANG_ASAS.join('\n'), ttd_jawatan: 'Pengetua', cogan: 'BERKHIDMAT UNTUK NEGARA' }, ...cadangTarikh(tahun) };
+      const m = M(k), dlg = $('#dlg');
+      dlg.innerHTML = `<div class="dk"><div><h2>${id ? 'Tetapan perkhemahan' : 'Tetapkan perkhemahan'} ${tahun}</h2></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
+        <div class="db"><form class="borang" id="borang-kem" data-id="${id || ''}">
+          <div class="dua"><label class="medan" style="grid-column:span 1">Nama<input type="text" name="nama" value="${e(k.nama || '')}" required></label><label class="medan">Kali ke-<input type="number" name="kali_ke" value="${e(k.kali_ke || '')}" min="1" max="99"></label></div>
+          <div class="dua"><label class="medan">Tarikh mula<input type="date" name="tarikh_mula" value="${e(k.tarikh_mula || '')}"></label><label class="medan">Tarikh tamat<input type="date" name="tarikh_tamat" value="${e(k.tarikh_tamat || '')}"></label></div>
+          <label class="medan">Tempat<input type="text" name="tempat" value="${e(k.tempat || '')}"></label>
+          <label class="medan">Unit penganjur<select name="penganjur"><option value="">Belum ditetapkan</option>${unitUB().map((u) => `<option value="${e(u.kod)}" ${k.penganjur === u.kod ? 'selected' : ''}>${e(u.kod)} · ${e(u.nama_penuh)}</option>`).join('')}</select><span class="bantu">Unit penganjur boleh mendaftar urusetia.</span></label>
+          <fieldset class="bidang-set"><legend>Tingkatan layak menjadi peserta</legend><div class="cip-set">${TING_SEMUA.map((t) => `<label class="cek"><input type="checkbox" name="ting" value="${t}" ${tingLayak(k).includes(t) ? 'checked' : ''}> ${t === 'PPKI' ? 'PPKI' : 'Tingkatan ' + t}</label>`).join('')}</div></fieldset>
+          <div class="tiga"><label class="medan">Kuota L seunit<input type="number" name="kuota_l" value="${e(k.kuota_l)}" min="0" max="200" required></label><label class="medan">Kuota P seunit<input type="number" name="kuota_p" value="${e(k.kuota_p)}" min="0" max="200" required></label><label class="medan">AJK pengiring<input type="number" name="kuota_ajk" value="${e(k.kuota_ajk)}" min="0" max="20" required></label></div>
+          <p class="bantu" style="margin:-4px 0 0">Unit puteri (PPIM, Pandu Puteri) mendapat kuota L + P untuk peserta perempuan.</p>
+          <div class="dua"><label class="medan">Yuran (RM)<input type="number" name="yuran" value="${e(k.yuran)}" min="0" step="0.5" required></label><label class="medan">Pendaftaran ditutup<input type="date" name="tarikh_tutup" value="${e(k.tarikh_tutup || '')}"></label></div>
+          <label class="cek"><input type="checkbox" name="dibuka" ${k.dibuka ? 'checked' : ''}> Pendaftaran dibuka kepada guru penasihat</label>
+          <fieldset class="bidang-set"><legend>Surat makluman ibu bapa</legend>
+            <div class="dua"><label class="medan">Rujukan surat<input type="text" name="rujukan" value="${e(m.rujukan || '')}" placeholder="SMKUSR.600-2/…"></label><label class="medan">Tarikh akhir hantar borang<input type="date" name="tarikh_borang" value="${e(m.tarikh_borang || '')}"></label></div>
+            <label class="medan">Lapor diri<input type="text" name="lapor" value="${e(m.lapor || '')}" placeholder="Contoh: 7.00 pagi, 20 Oktober 2027 di Dataran Solar"></label>
+            <label class="medan">Barang yang perlu dibawa<textarea name="barang" rows="5">${e(m.barang || '')}</textarea><span class="bantu">Satu barang setiap baris.</span></label>
+            <label class="medan">Makluman tambahan<textarea name="nota" rows="2" placeholder="Pilihan">${e(m.nota || '')}</textarea></label>
+            <div class="dua"><label class="medan">Penandatangan<input type="text" name="ttd_nama" value="${e(m.ttd_nama || '')}" placeholder="Nama"></label><label class="medan">Jawatan<input type="text" name="ttd_jawatan" value="${e(m.ttd_jawatan || '')}"></label></div>
+            <label class="medan">Cogan kata<input type="text" name="cogan" value="${e(m.cogan || '')}"></label></fieldset>
+        </form></div>
+        <div class="dt">${id ? `<button class="btn bahaya" data-act="kem-padam" data-id="${id}">Padam</button>` : ''}<button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="borang-kem">Simpan</button></div>`;
+      dlg.dataset.id = ''; dlg.dataset.ubah = '';
+      if (!dlg.open) dlg.showModal();
+    }
+    async function simpanTetapan(f) {
+      const d = new FormData(f), g = (x) => String(d.get(x) || '').trim();
+      if (g('tarikh_mula') && g('tarikh_tamat') && g('tarikh_tamat') < g('tarikh_mula')) { roti('Tarikh tamat sebelum tarikh mula.', true); return; }
+      const ting = d.getAll('ting');
+      if (!ting.length) { roti('Pilih sekurang-kurangnya satu tingkatan.', true); return; }
+      const rec = await S.db.kemSimpan({ id: f.dataset.id ? +f.dataset.id : null, tahun: K().tahun, nama: g('nama').toUpperCase(), kali_ke: +g('kali_ke') || null,
+        tarikh_mula: g('tarikh_mula') || null, tarikh_tamat: g('tarikh_tamat') || null, tempat: g('tempat').toUpperCase() || null, penganjur: g('penganjur') || null,
+        tingkatan: ting, kuota_l: +g('kuota_l') || 0, kuota_p: +g('kuota_p') || 0, kuota_ajk: +g('kuota_ajk') || 0, yuran: +g('yuran') || 0,
+        tarikh_tutup: g('tarikh_tutup') || null, dibuka: !!d.get('dibuka'),
+        maklumat: { rujukan: g('rujukan'), tarikh_borang: g('tarikh_borang'), lapor: g('lapor'), barang: g('barang'), nota: g('nota'), ttd_nama: g('ttd_nama').toUpperCase(), ttd_jawatan: g('ttd_jawatan'), cogan: g('cogan').toUpperCase() } });
+      const i = K().kem.findIndex((x) => x.id === rec.id); if (i >= 0) K().kem[i] = rec; else K().kem.push(rec);
+      $('#dlg').close(); roti('Tetapan perkhemahan disimpan'); tetapLokasi(`#/kem/${rec.id}?tahun=${rec.tahun}`); S.kekalSkrol = true; render();
+    }
+
+    /* ============================================================ simpan pendaftaran */
+    function gantiPeserta(hasil) {
+      hasil.forEach((r) => { const i = K().peserta.findIndex((p) => p.kem_id === r.kem_id && p.murid_id === r.murid_id); if (i >= 0) K().peserta[i] = r; else K().peserta.push(r); });
+    }
+    async function simpanTambah(f) {
+      const k = kemId(f.dataset.kem), kod = f.dataset.unit, u = S.unitPeta.get(kod), d = new FormData(f);
+      const ids = d.getAll('mid'), peranan = d.get('peranan') || 'peserta';
+      if (!ids.length) { roti('Tanda sekurang-kurangnya seorang murid.', true); return; }
+      const peta = muridPeta(), c = kira(pesertaUnit(k, kod), peta), qu = kuotaUnit(k, u);
+      const tambahL = peranan === 'peserta' ? ids.filter((x) => (peta.get(x) || {}).jantina !== 'P').length : 0, tambahP = peranan === 'peserta' ? ids.length - tambahL : 0;
+      const lebih = [];
+      if (c.L + tambahL > qu.L) lebih.push(`peserta lelaki ${c.L + tambahL}/${qu.L}`);
+      if (c.P + tambahP > qu.P) lebih.push(`peserta perempuan ${c.P + tambahP}/${qu.P}`);
+      if (peranan === 'ajk' && c.ajk + ids.length > k.kuota_ajk) lebih.push(`AJK pengiring ${c.ajk + ids.length}/${k.kuota_ajk}`);
+      if (lebih.length && !(await sahkan(`Melebihi kuota: ${lebih.join(', ')}.\n\nDaftar juga? Penyelaras akan melihat unit ini ditanda melebihi kuota.`, { ok: 'Daftar juga' }))) return;
+      const rows = ids.map((mid) => ({ kem_id: k.id, murid_id: mid, unit_kod: kod, peranan, jawatan: null, borang: false, yuran: false, hadir: null, catatan: null }));
+      gantiPeserta(await S.db.kemSimpanPeserta(rows));
+      roti(`${rows.length} murid didaftar sebagai ${PERANAN[peranan].toLowerCase()}`); S.kekalSkrol = true; render();
+    }
+    async function simpanPeserta(f) {
+      const k = kemId(f.dataset.kem), kod = f.dataset.unit, d = new FormData(f), rows = [];
+      pesertaUnit(k, kod).forEach((p) => {
+        const id = p.murid_id, baru = { ...p, peranan: d.get('peranan_' + id) || p.peranan, jawatan: String(d.get('jawatan_' + id) || '').trim().toUpperCase() || null,
+          borang: !!d.get('borang_' + id), yuran: !!d.get('yuran_' + id), hadir: f.querySelector(`[name="hadir_${CSS.escape(id)}"]`) ? !!d.get('hadir_' + id) : p.hadir };
+        if (baru.peranan !== 'ajk') baru.jawatan = null;
+        if (baru.peranan !== p.peranan || (baru.jawatan || null) !== (p.jawatan || null) || ['borang', 'yuran', 'hadir'].some((x) => !!baru[x] !== !!p[x])) rows.push(baru);
+      });
+      if (!rows.length) { roti('Tiada perubahan'); return; }
+      gantiPeserta(await S.db.kemSimpanPeserta(rows));
+      roti(`${rows.length} rekod dikemas kini`); S.kekalSkrol = true; render();
+    }
+    async function simpanUnit(f) {
+      const r = await S.db.kemSimpanUnit({ kem_id: +f.dataset.kem, unit_kod: f.dataset.unit, guru: String(new FormData(f).get('guru') || '').trim().toUpperCase() });
+      const i = K().unit.findIndex((x) => x.kem_id === r.kem_id && x.unit_kod === r.unit_kod); if (i >= 0) K().unit[i] = r; else K().unit.push(r);
+      roti('Guru pengiring disimpan'); S.kekalSkrol = true; render();
+    }
+    async function rekodPajsk(k) {
+      const peta = muridPeta(), l = pesertaKem(k).filter((p) => p.hadir && peta.has(p.murid_id));
+      if (!l.length) { roti('Tiada peserta ditanda hadir. Guru unit perlu menanda kehadiran dahulu.', true); return; }
+      const belum = pesertaKem(k).length - l.length;
+      if (!(await sahkan(`Rekod pelibatan PAJSK peringkat sekolah bagi ${l.length} murid yang hadir?\n\n• Peserta: Pelibatan 1 (Peserta)\n• AJK pengiring dan urusetia: Pelibatan 2 (AJK)\n\nRekod dimasukkan sebagai aktiviti tambahan bidang UB.${belum ? `\n${belum} murid lain belum ditanda hadir dan tidak direkod.` : ''}`, { ok: 'Rekod' }))) return;
+      const program = `${k.nama}${k.kali_ke ? ` KALI KE-${k.kali_ke}` : ''} ${k.tahun}`;
+      await S.db.f2SimpanPencapaian(l.map((p) => ({ murid_id: p.murid_id, tahun: k.tahun, bidang: 'UB', aktiviti: namaUnit(p.unit_kod).toUpperCase(), program, tarikh: k.tarikh_mula,
+        peringkat: 'SEKOLAH', jenis_libat: p.peranan === 'peserta' ? 'PELIBATAN 1 - Atlet/Peserta' : 'PELIBATAN 2 - AJK/Teknikal/Persembahan', kedudukan: null, catatan: 'Perkhemahan Perdana', oleh_nama: S.profil.nama || S.profil.email || null })));
+      const rec = await S.db.kemSimpan({ id: k.id, pajsk_pada: new Date().toISOString() });
+      Object.assign(k, rec); S.f2 = null;
+      roti(`Pelibatan PAJSK direkod untuk ${l.length} murid`); S.kekalSkrol = true; render();
+    }
+
+    /* ============================================================ cetak */
+    function kepalaDok(tajuk, sub) {
+      const t = T();
+      return `<div class="kepala-cetak"><img src="${LOGO}" alt="Lencana sekolah"><div><h3>${e(t.nama_sekolah || '')}${t.kod_sekolah ? ` (${e(t.kod_sekolah)})` : ''}</h3><p class="sub">${e(t.alamat || '')}</p></div></div>
+        <h4 class="tajuk-dok">${e(tajuk)}</h4>${sub ? `<p class="sub" style="text-align:center">${sub}</p>` : ''}`;
+    }
+    const ttd = (l) => `<div class="tandatangan ttd-${l.length}">${l.map((x) => `<div>${x}</div>`).join('')}</div>`;
+    function pCetak(k, q) {
+      const doc = q.get('doc') || 'ringkasan', kod = q.get('unit') || '';
+      const us = kod ? unitUB().filter((u) => u.kod === kod) : unitUB();
+      const peta = muridPeta();
+      let isi;
+      if (doc === 'ringkasan') isi = dokRingkasan(k, peta);
+      else if (doc === 'surat') isi = dokSurat(k, us, peta);
+      else isi = us.map((u) => dokSenarai(k, u, peta, doc === 'daftar')).filter(Boolean).join('') || '<section class="halaman dok"><p>Tiada peserta berdaftar.</p></section>';
+      const bil = (isi.match(/<section class="halaman/g) || []).length;
+      return `<div class="panel tanpa-cetak" style="margin-bottom:14px"><p style="margin:0 0 10px"><a href="#/kem/${k.id}${kod ? '/' + encodeURIComponent(kod) : ''}?tahun=${k.tahun}">← Kembali</a></p>
+          <div class="baris-btn">${BINGKAI ? '' : `<button class="btn utama" data-act="cetak">${IKON.cetak} Cetak (${bil} halaman)</button>`}<button class="btn" data-act="kem-excel" data-id="${k.id}">${IKON.muat} Excel</button></div>
+          <p class="pudar kecil" style="margin:8px 0 0">Saiz A4. Matikan "Headers and footers" dalam tetapan cetak.${doc === 'surat' ? ' Satu muka surat bagi setiap murid.' : ''}</p></div>
+        <div class="kertas-cetak">${isi}</div>`;
+    }
+    function dokRingkasan(k, peta) {
+      const baris = unitUB().map((u) => ({ u, c: kira(pesertaUnit(k, u.kod), peta), g: infoUnit(k, u.kod).guru || '' }));
+      const j = baris.reduce((s, { c }) => ({ L: s.L + c.L, P: s.P + c.P, ajk: s.ajk + c.ajk, urusetia: s.urusetia + c.urusetia, jumlah: s.jumlah + c.jumlah }), { L: 0, P: 0, ajk: 0, urusetia: 0, jumlah: 0 });
+      const guru = baris.reduce((s, x) => s + (x.g ? x.g.split(',').filter((y) => y.trim()).length : 0), 0);
+      return `<section class="halaman dok">${kepalaDok(tajukKem(k), `${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))}${k.tempat ? ' · ' + e(k.tempat) : ''}`)}
+        <h4 class="tajuk-dok">BILANGAN PESERTA</h4>
+        <table><thead><tr><th rowspan="2">Bil</th><th rowspan="2">Unit</th><th colspan="2">Peserta</th><th rowspan="2">AJK pengiring</th><th rowspan="2">Urusetia</th><th rowspan="2">Jumlah</th><th rowspan="2">Guru pengiring</th></tr><tr><th>L</th><th>P</th></tr></thead><tbody>
+        ${baris.map(({ u, c, g }, i) => `<tr><td>${i + 1}</td><td>${e(u.nama_penuh)}${u.kod === k.penganjur ? ' (penganjur)' : ''}</td><td>${c.L || '-'}</td><td>${c.P || '-'}</td><td>${c.ajk || '-'}</td><td>${c.urusetia || '-'}</td><td><b>${c.jumlah}</b></td><td>${e(g)}</td></tr>`).join('')}
+        <tr><td colspan="2"><b>JUMLAH</b></td><td><b>${j.L}</b></td><td><b>${j.P}</b></td><td><b>${j.ajk}</b></td><td><b>${j.urusetia}</b></td><td><b>${j.jumlah}</b></td><td><b>${guru || ''}</b></td></tr></tbody></table>
+        <p class="nota-borang">Peserta: ${e(teksTing(k))}, kuota ${k.kuota_l} L + ${k.kuota_p} P setiap unit. AJK pengiring ${k.kuota_ajk} setiap unit. Yuran ${rm(k.yuran)} seorang: jumlah ${rm(j.jumlah * k.yuran)}.</p>
+        ${ttd(['Disediakan oleh (Setiausaha Program)', 'Disemak oleh (Penolong Kanan Kokurikulum)'])}</section>`;
+    }
+    function dokSenarai(k, u, peta, daftar) {
+      const l = susunPeserta(pesertaUnit(k, u.kod), peta);
+      if (!l.length) return '';
+      const g = infoUnit(k, u.kod).guru || '';
+      return `<section class="halaman dok">${kepalaDok(daftar ? 'BORANG PENDAFTARAN PESERTA' : 'SENARAI SEMAK PESERTA', `${e(tajukKem(k))}<br><b>${e(u.nama_penuh)} (${e(u.kod)})</b>`)}
+        <table class="${daftar ? 'jadual-daftar' : ''}"><thead><tr><th>Bil</th><th>Nama penuh</th>${daftar ? '<th>No. KP</th>' : ''}<th>Kelas</th><th>J</th><th>Peranan</th>${daftar ? '<th style="width:16%">Masa tiba</th><th style="width:16%">Tandatangan</th>' : '<th>Borang</th><th>Yuran</th><th>Hadir</th>'}</tr></thead><tbody>
+        ${l.map((p, i) => { const m = peta.get(p.murid_id) || {}; return `<tr><td>${i + 1}</td><td>${e(m.nama || '')}</td>${daftar ? `<td>${e(m.mykad || '')}</td>` : ''}<td>${e(m.kelas || '')}</td><td>${e(m.jantina || '')}</td><td>${e(peranTeks(p))}</td>
+          ${daftar ? '<td></td><td></td>' : `<td>${p.borang ? '✓' : ''}</td><td>${p.yuran ? '✓' : ''}</td><td>${p.hadir ? '✓' : ''}</td>`}</tr>`; }).join('')}</tbody></table>
+        <p class="nota-borang">Guru pengiring: ${e(g || '………………………………………………')}</p>
+        ${ttd(['Guru Penasihat', daftar ? 'AJK Pendaftaran' : 'Setiausaha Program'])}</section>`;
+    }
+    function dokSurat(k, us, peta) {
+      const m = M(k), t = T(), barang = String(m.barang || '').split('\n').map((x) => x.trim()).filter(Boolean);
+      const tajuk = `MAKLUMAN DAN KEBENARAN MENYERTAI ${tajukKem(k)}`;
+      const l = us.flatMap((u) => susunPeserta(pesertaUnit(k, u.kod), peta).map((p) => ({ p, u })));
+      if (!l.length) return '<section class="halaman dok"><p>Tiada peserta berdaftar.</p></section>';
+      let no = 1;
+      const para = (x) => `<p><span class="no-para">${++no}.</span>${x}</p>`;
+      return l.map(({ p, u }) => { const mu = peta.get(p.murid_id) || {}; no = 1;
+        return `<section class="halaman dok surat-kem">
+          <div class="kepala-cetak"><img src="${LOGO}" alt="Lencana sekolah"><div><h3>${e(t.nama_sekolah || '')}</h3><p class="sub">${e(t.alamat || '')}</p></div></div><hr>
+          <table class="ruj"><tbody><tr><td>Ruj. Kami</td><td>: ${e(m.rujukan || '')}</td></tr><tr><td>Tarikh</td><td>: ${e(fmtT(hariIni()))}</td></tr></tbody></table>
+          <p>Ibu bapa / penjaga kepada,<br><b>${e(mu.nama || '')}</b><br>${e(mu.kelas || '')}</p>
+          <p>Tuan / Puan,</p>
+          <p class="tajuk-surat">${e(tajuk)}</p>
+          <p>Dengan hormatnya perkara di atas adalah dirujuk.</p>
+          ${para(`Sukacita dimaklumkan bahawa anak jagaan tuan/puan telah dipilih untuk menyertai perkhemahan di atas sebagai <b>${e(p.peranan === 'ajk' ? peranTeks(p).replace('AJK', 'AJK pengiring') : PERANAN[p.peranan].toLowerCase())}</b> mewakili <b>${e(u.nama_penuh)}</b>. Butiran perkhemahan adalah seperti berikut:`)}
+          <table class="butiran"><tbody><tr><td>Tarikh</td><td>: ${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))}</td></tr><tr><td>Tempat</td><td>: ${e(k.tempat || '')}</td></tr>
+            ${m.lapor ? `<tr><td>Lapor diri</td><td>: ${e(m.lapor)}</td></tr>` : ''}${+k.yuran ? `<tr><td>Sumbangan penyertaan</td><td>: ${rm(k.yuran)}</td></tr>` : ''}</tbody></table>
+          ${barang.length ? para(`Peserta dikehendaki membawa barang-barang berikut:<span class="barang">${barang.map((x) => `<span>${e(x)}</span>`).join('')}</span>`) : ''}
+          ${m.nota ? para(e(m.nota)) : ''}
+          ${para(`Sehubungan itu, tuan/puan dimohon mengisi dan mengembalikan keratan jawapan di bawah kepada guru penasihat unit${m.tarikh_borang ? ` sebelum <b>${e(fmtT(m.tarikh_borang))}</b>` : ''}. Kerjasama dan perhatian tuan/puan amat dihargai.`)}
+          <p>Sekian, terima kasih.</p>
+          ${m.cogan ? `<p><b>"${e(m.cogan)}"</b></p>` : ''}
+          <p>Saya yang menjalankan amanah,</p><p class="ruang-ttd"></p>
+          <p>${m.ttd_nama ? `<b>(${e(m.ttd_nama)})</b><br>` : '…………………………………………<br>'}${e(m.ttd_jawatan || '')}<br>${e(t.nama_sekolah || '')}</p>
+          <div class="keratan"><span class="gunting">✂ potong di sini</span>
+            <p class="tajuk-surat">KERATAN JAWAPAN: ${e(k.nama)}${k.kali_ke ? ` KALI KE-${k.kali_ke}` : ''} ${k.tahun}</p>
+            <p>Saya, ……………………………………………………… No. KP: ……………………………… ibu / bapa / penjaga kepada:</p>
+            <table class="butiran"><tbody><tr><td>Nama murid</td><td>: <b>${e(mu.nama || '')}</b></td></tr><tr><td>Kelas / Unit</td><td>: ${e(mu.kelas || '')} / ${e(u.kod)}</td></tr></tbody></table>
+            <p>☐ MEMBENARKAN &nbsp;&nbsp; ☐ TIDAK MEMBENARKAN &nbsp;anak jagaan saya menyertai perkhemahan tersebut.</p>
+            <p>Masalah kesihatan / alahan / ubat yang diambil: ……………………………………………………………………</p>
+            <p>No. telefon untuk dihubungi semasa kecemasan: ………………………………………</p>
+            <div class="ttd-keratan"><span>Tandatangan: ……………………………</span><span>Tarikh: ………………………</span></div></div></section>`; }).join('');
+    }
+
+    async function eksportExcel(k) {
+      const peta = muridPeta();
+      const rows = [['BIL', 'UNIT', 'NAMA', 'NO. KP', 'KELAS', 'JANTINA', 'PERANAN', 'JAWATAN', 'BORANG', 'YURAN', 'HADIR']];
+      let n = 0;
+      unitUB().forEach((u) => susunPeserta(pesertaUnit(k, u.kod), peta).forEach((p) => { const m = peta.get(p.murid_id) || {};
+        rows.push([++n, u.kod, m.nama || '', m.mykad || '', m.kelas || '', m.jantina || '', PERANAN[p.peranan].toUpperCase(), p.jawatan || '', p.borang ? 'YA' : '', p.yuran ? 'YA' : '', p.hadir ? 'YA' : '']); }));
+      const ring = [['UNIT', 'NAMA UNIT', 'PESERTA L', 'PESERTA P', 'AJK', 'URUSETIA', 'JUMLAH', 'BORANG', 'YURAN', 'GURU PENGIRING']].concat(unitUB().map((u) => { const c = kira(pesertaUnit(k, u.kod), peta);
+        return [u.kod, u.nama_penuh, c.L, c.P, c.ajk, c.urusetia, c.jumlah, c.borang, c.yuran, infoUnit(k, u.kod).guru || '']; }));
+      const tajuk = [[tajukKem(k)], [fmtJulat(k.tarikh_mula, k.tarikh_tamat)], []];
+      const ok = await eksport(`PERKHEMAHAN-${k.tahun}.xlsx`, [['Peserta', tajuk.concat(rows)], ['Ringkasan', tajuk.concat(ring)]]);
+      if (ok) roti('Fail Excel disediakan');
+    }
+
+    /* ============================================================ panel lain */
+    // banner dalam halaman unit beruniform dan Utama
+    function kemTerbuka() {
+      const t = tahunAsal();
+      if (!S.kem) { if (!memuat) muat(t).then(renderLatar, () => {}); return []; }
+      if (S.kem.tahun !== t) return [];
+      return (S.kem.kem || []).filter((k) => k.dibuka);
+    }
+    function bannerUnit(u) {
+      if (u.kategori !== 'UB') return '';
+      return kemTerbuka().map((k) => `<div class="mesej ok tanpa-cetak" style="margin-bottom:12px">Pendaftaran <b>${e(k.nama)} ${k.tahun}</b> dibuka (${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))}).
+        <a href="#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}"><b>${bolehUrus(u.kod) ? 'Daftar peserta' : 'Lihat peserta'}</b></a> · ${pesertaUnit(k, u.kod).length} berdaftar</div>`).join('');
+    }
+    function panelUtama() {
+      const us = unitUB().filter((u) => bolehUrus(u.kod) && !penyelaras());
+      if (!penyelaras() && !us.length) return '';
+      const l = kemTerbuka();
+      if (!l.length) return '';
+      return l.map((k) => `<div class="panel" style="margin-bottom:18px"><div class="kepala-panel"><h2>${e(k.nama)} ${k.tahun}</h2><a class="btn kecil" href="#/kem/${k.id}?tahun=${k.tahun}">Buka</a></div>
+        <p class="kecil" style="margin:0">${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))} · ${pesertaKem(k).length} berdaftar${k.tarikh_tutup ? ` · pendaftaran ditutup ${e(fmtT(k.tarikh_tutup))}` : ''}</p>
+        ${us.length ? `<p class="kecil" style="margin:8px 0 0">${us.map((u) => `<a href="#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}">${e(u.kod)}: ${pesertaUnit(k, u.kod).length} berdaftar, daftar peserta</a>`).join(' · ')}</p>` : ''}</div>`).join('');
+    }
+
+    /* ============================================================ peristiwa */
+    function kiraTanda() {
+      const out = $('#kem-kiraan'); if (!out) return;
+      const v = $$('#borang-kem-tambah input[name=mid]:checked');
+      out.textContent = v.length ? `${v.length} ditanda (${v.filter((x) => x.dataset.j === 'L').length} L, ${v.filter((x) => x.dataset.j === 'P').length} P)` : '';
+    }
+    async function tindakan(act, el) {
+      switch (act) {
+        case 'kem-muat': S.kem = null; render(); return true;
+        case 'kem-baru': bukaTetapan(null); return true;
+        case 'kem-ubah': bukaTetapan(el.dataset.id); return true;
+        case 'kem-padam': {
+          const k = kemId(el.dataset.id), n = pesertaKem(k).length;
+          if (!(await sahkan(`Padam ${k.nama} ${k.tahun}?${n ? `\n\n${n} pendaftaran peserta turut dipadam.` : ''}`, { ok: 'Padam', bahaya: true }))) return true;
+          await S.db.kemPadam(k.id); await muat(K().tahun, true); $('#dlg').close(); roti('Perkhemahan dipadam'); tetapLokasi(`#/kem?tahun=${K().tahun}`); render(); return true;
+        }
+        case 'kem-tukar-buka': {
+          const k = kemId(el.dataset.id);
+          Object.assign(k, await S.db.kemSimpan({ id: k.id, dibuka: !k.dibuka }));
+          roti(k.dibuka ? 'Pendaftaran dibuka semula' : 'Pendaftaran ditutup'); S.kekalSkrol = true; render(); return true;
+        }
+        case 'kem-pajsk': await rekodPajsk(kemId(el.dataset.id)); return true;
+        case 'kem-excel': await eksportExcel(kemId(el.dataset.id)); return true;
+        case 'kem-buang': {
+          const k = kemId(el.dataset.kem), m = S.data.murid.find((x) => x.id === el.dataset.mid);
+          if (!(await sahkan(`Buang ${m ? m.nama : 'murid ini'} daripada senarai peserta?`, { ok: 'Buang', bahaya: true }))) return true;
+          await S.db.kemPadamPeserta(k.id, [el.dataset.mid]);
+          K().peserta = K().peserta.filter((p) => !(p.kem_id === k.id && p.murid_id === el.dataset.mid));
+          roti('Peserta dibuang'); S.kekalSkrol = true; render(); return true;
+        }
+        case 'kem-tanda': {
+          const j = el.dataset.j;
+          $$('#borang-kem-tambah .kem-calon').forEach((x) => { const c = x.querySelector('input'); if (x.hidden) return; c.checked = j ? c.dataset.j === j || c.checked : false; });
+          kiraTanda(); return true;
+        }
+        default: return false;
+      }
+    }
+    async function hantar(f) {
+      switch (f.id) {
+        case 'borang-kem': await simpanTetapan(f); return true;
+        case 'borang-kem-unit': await simpanUnit(f); return true;
+        case 'borang-kem-peserta': await simpanPeserta(f); return true;
+        case 'borang-kem-tambah': await simpanTambah(f); return true;
+        default: return false;
+      }
+    }
+    function ubah(ev) {
+      const t = ev.target;
+      if (t.id === 'kem-cari') {
+        const q = t.value.trim().toUpperCase();
+        $$('#borang-kem-tambah .kem-calon').forEach((x) => { x.hidden = !!q && !x.dataset.cari.includes(q); });
+        return true;
+      }
+      if (t.closest && t.closest('#borang-kem-tambah') && t.name === 'mid') { kiraTanda(); return true; }
+      return false;
+    }
+
+    return { papar, tindakan, hantar, ubah, bannerUnit, panelUtama, _uji: { kuotaUnit, kira, fmtJulat } };
+  };
+})();
+
+</script>
+<script>
 /* KOKUM SMART 2026 · aplikasi utama (Fasa 1) */
 (function () {
   'use strict';
@@ -4652,6 +5228,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     segar: P('<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>'),
     tutup: P('<path d="M6 6l12 12M18 6L6 18"/>'),
     olahraga: P('<circle cx="14.5" cy="4.5" r="2"/><path d="M8 21l3-6 3 2v5M6 11l3-3 4 1 3 3 3-1M11 15l2-6"/>'),
+    kem: P('<path d="M12 4L3 20h18z"/><path d="M12 4v16M9 20l3-6 3 6"/>'),
     takwim: P('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2"/>'),
   };
 
@@ -4922,13 +5499,15 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
   }
 
   // ------------------------------------------------------------------ rangka & penghala
-  const MENU = [['utama', 'Utama'], ['murid', 'Murid'], ['unit', 'Unit'], ['takwim', 'Takwim'], ['olahraga', 'Olahraga'], ['cetak', 'Cetak'], ['tetapan', 'Tetapan']];
+  const MENU = [['utama', 'Utama'], ['murid', 'Murid'], ['unit', 'Unit'], ['takwim', 'Takwim'], ['olahraga', 'Olahraga'], ['kem', 'Perkhemahan'], ['cetak', 'Cetak'], ['tetapan', 'Tetapan']];
   const MENU_BAWAH = ['utama', 'murid', 'unit', 'takwim', 'olahraga', 'tetapan'];  // Cetak ada dalam setiap halaman
   const AIS = window.KokumAIS({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
     eksport, KI, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI });
   const F2 = window.KokumFasa2({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
     eksport, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI, KAT, bolehUrus, ahliUnit: (u) => ahliUnit(u), unitKat: (k, s) => unitKat(k, s), KP_,
     templatPajsk: (m, k, n, isi) => templatPajsk(m, k, n, isi) });
+  const KEM = window.KokumKem({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
+    eksport, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI, bolehUrus, ahliUnit: (u) => ahliUnit(u), unitKat: (k, s) => unitKat(k, s) });
 
   function rangka(aktifMenu, isi) {
     const t = S.data.tetapan || {};
@@ -4979,6 +5558,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         html = paparCetak();
       } else if (laluan === 'tetapan') html = paparTetapan(a1 || 'profil', a2);
       else if (laluan === 'olahraga') html = AIS.papar(a1 || 'ringkasan', q);
+      else if (laluan === 'kem') html = KEM.papar(a1, a2, q);
       else { menu = 'utama'; html = paparUtama(); }
     } catch (err) { console.error(err); html = `<div class="mesej ralat">${e(err.message)}</div>`; }
     app().innerHTML = rangka(menu, html);
@@ -5046,7 +5626,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       <div class="kepala"><div><h1>Selamat datang, ${e((S.profil.nama || '').split(' ')[0] || 'cikgu')}</h1>
         <p>${e(t.nama_sekolah)} · Kokurikulum ${e(t.tahun)}</p></div>
         <button class="btn kecil" data-act="muat-semula" title="Muat semula data">${IKON.segar} Muat semula</button></div>
-      ${F2.panelUtama()}
+      ${KEM.panelUtama()}${F2.panelUtama()}
       ${unitSaya.length ? `<div class="panel" style="margin-bottom:18px"><h2>Unit yang anda urus</h2><div class="unit-grid">${unitSaya.map((u) => kadUnit(u, bil)).join('')}</div></div>` : ''}
       <div class="ringkas">
         <a class="kotak" href="#/murid?keg=&ting=&kelas=&unit=&status=aktif"><b>${m.length}</b><span>Murid aktif, ${L} lelaki, ${Pp} perempuan</span></a>
@@ -5243,7 +5823,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     const bil = bilanganUnit();
     return `<div class="kepala"><div><h1>Unit kokurikulum</h1><p>${S.data.units.length} unit dalam tiga kategori. Pilih unit untuk melihat dan mengurus ahli.</p></div>
       ${penyelaras() ? `<a class="btn" href="#/tetapan/unit">Urus senarai unit</a>` : ''}</div>
-      ${KATS.map((kat) => `<section class="kategori ${kat}"><div class="kategori-kepala"><h2>${KAT[kat]}</h2></div>
+      ${KATS.map((kat) => `<section class="kategori ${kat}"><div class="kategori-kepala"><h2>${KAT[kat]}</h2>${kat === 'UB' ? `<a class="btn kecil" href="#/kem">${IKON.kem} Perkhemahan Perdana</a>` : ''}</div>
         <div class="unit-grid">${unitKat(kat, true).map((u) => kadUnit(u, bil)).join('')}</div></section>`).join('')}`;
   }
 
@@ -5259,7 +5839,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     if (!u) return `<div class="mesej ralat">Unit ${e(kod)} tidak dijumpai.</div><a class="btn" href="#/unit">Kembali</a>`;
     if (!F2.TAB_UNIT.some((x) => x[0] === tab)) tab = 'ahli';
     if (tab !== 'ahli') {
-      return `<p class="tanpa-cetak" style="margin-bottom:12px"><a href="#/unit">Semua unit</a></p>
+      return `<p class="tanpa-cetak" style="margin-bottom:12px"><a href="#/unit">Semua unit</a></p>${KEM.bannerUnit(u)}
         <div class="kepala kategori ${u.kategori} tanpa-cetak" style="margin-top:0"><div class="unit-kepala"><div class="kod-besar">${e(u.kod)}</div><h1 style="font-size:1.25rem;margin-top:6px">${e(u.nama_penuh)}</h1>
           <p>${KAT[u.kategori]}. Guru penasihat: ${e(u.guru_penasihat || 'belum ditetapkan')}.</p></div></div>
         ${F2.navUnit(u, tab)}${F2.paparUnit(tab, u, q)}`;
@@ -5269,7 +5849,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     const purata = Math.round(aktif().length / Math.max(1, unitKat(u.kategori).length));
     const ting = TING.map((t) => [t, ahli.filter((m) => m.tingkatan === t).length]).filter((x) => x[1]);
     return `
-      <p class="tanpa-cetak" style="margin-bottom:12px"><a href="#/unit">Semua unit</a></p>
+      <p class="tanpa-cetak" style="margin-bottom:12px"><a href="#/unit">Semua unit</a></p>${KEM.bannerUnit(u)}
       <div class="kepala kategori ${u.kategori}" style="margin-top:0">
         <div class="unit-kepala"><div class="kod-besar">${e(u.kod)}</div><h1 style="font-size:1.25rem;margin-top:6px">${e(u.nama_penuh)}</h1>
           <p>${KAT[u.kategori]}. Guru penasihat: ${e(u.guru_penasihat || 'belum ditetapkan')}. Bilik operasi: ${e(u.bilik_operasi || '—')}.</p></div>
@@ -5733,7 +6313,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         case 'pasang': if (S.pasang) { S.pasang.prompt(); S.pasang = null; } return;
         case 'isi-contoh': S.db.isiContoh(); await muatData(); return roti('Data contoh dimuatkan');
         case 'reset-demo': if (await sahkan('Padam semua data dalam pelayar ini? Anda boleh import semula fail Excel selepas ini.', { ok: 'Padam data', bahaya: true })) { S.db.reset(); await muatData(); roti('Data demo dipadam'); } return;
-        default: if (!(await AIS.tindakan(act, el))) await F2.tindakan(act, el);
+        default: if (!(await AIS.tindakan(act, el)) && !(await KEM.tindakan(act, el))) await F2.tindakan(act, el);
       }
     } catch (err) { gagal(err); }
   });
@@ -5741,6 +6321,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
   document.addEventListener('input', (ev) => {
     const t = ev.target;
     if (AIS.ubah(ev)) return;
+    if (KEM.ubah(ev)) return;
     if (F2.ubah(ev)) return;
     if (t.closest('#penapis')) {
       S.f[t.name] = t.value; S.had = 60;
@@ -5795,6 +6376,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
   document.addEventListener('submit', async (ev) => {
     const f = ev.target;
     if (f.id && f.id.startsWith('borang-f2')) { ev.preventDefault(); try { await F2.hantar(f, ev); } catch (err) { gagal(err); } return; }
+    if (f.id && f.id.startsWith('borang-kem')) { ev.preventDefault(); try { await KEM.hantar(f); } catch (err) { gagal(err); } return; }
     if (f.id && f.id.startsWith('borang-ais')) { ev.preventDefault(); try { await AIS.hantar(f); } catch (err) { gagal(err); } return; }
     if (!['borang-profil', 'borang-kata', 'borang-sekolah', 'borang-murid'].includes(f.id)) return;
     ev.preventDefault();
