@@ -707,6 +707,37 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .gpa-besar span { font-size: .8rem; font-weight: 700; }
 #pc-terpilih .cip { display: inline-flex; gap: 6px; align-items: center; }
 
+/* ---------------- Takwim format sekolah */
+.ringkas-takwim { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .9rem; align-items: center; }
+.takwim-sekolah { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.takwim-sekolah th, .takwim-sekolah td { border-bottom: 1px solid var(--garis); padding: 6px 8px; text-align: left; vertical-align: top; }
+.takwim-sekolah th { font-size: .72rem; color: var(--kabus); font-weight: 700; background: var(--kertas); position: sticky; top: 0; white-space: nowrap; }
+.takwim-sekolah td.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.takwim-sekolah td:nth-child(2), .takwim-sekolah td:nth-child(4) { white-space: nowrap; }
+.takwim-sekolah td:nth-child(6) { min-width: 150px; }
+.takwim-sekolah td:nth-child(7) { min-width: 220px; }
+.takwim-sekolah td:nth-child(8) { min-width: 150px; }
+.takwim-sekolah tr.tentatif td { background: var(--amaran-latar); }
+.takwim-sekolah tr.lepas td { opacity: .62; }
+.takwim-sekolah tr.cuti td { background: var(--bahaya-latar); color: var(--bahaya); font-weight: 700; text-align: center; font-size: .74rem; letter-spacing: .03em; padding: 4px 8px; }
+.takwim-sekolah tr.cuti td b { font-weight: 600; margin-left: 6px; font-variant-numeric: tabular-nums; }
+.takwim-sekolah .cip-baris { display: inline-flex; gap: 3px; margin-right: 6px; }
+.tent { font-style: italic; font-size: .72rem; color: var(--amaran); font-weight: 600; }
+.rancangan-baris .bila small.tema { color: var(--dakwat); opacity: .8; }
+.bidang-set { border: 1px solid var(--garis); border-radius: var(--jejari); padding: 10px 12px; margin: 0; display: grid; gap: 8px; }
+.bidang-set legend { font-size: .8rem; font-weight: 700; padding: 0 4px; }
+.bidang-baris { display: grid; grid-template-columns: 120px 1fr; gap: 8px; align-items: center; }
+@media (max-width: 520px) { .bidang-baris { grid-template-columns: 1fr; gap: 4px; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.kertas-cetak .takwim-sekolah { font-size: 8pt; }
+.kertas-cetak .takwim-sekolah th, .kertas-cetak .takwim-sekolah td { border: 1px solid #555; padding: 2px 4px; color: #000; background: none; position: static; }
+.kertas-cetak .takwim-sekolah th { background: #e9e9e9; }
+.kertas-cetak .takwim-sekolah tr.tentatif td { background: #fff4c2; }
+.kertas-cetak .takwim-sekolah tr.cuti td { background: #f6d3cf; color: #8a1c14; }
+.kertas-cetak .takwim-sekolah .tent { color: #6b4a00; }
+.kertas-cetak .takwim-sekolah tr { break-inside: avoid; }
+@media print { .takwim-sekolah tr.tentatif td, .takwim-sekolah tr.cuti td, .takwim-sekolah th { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+
 </style>
 </head>
 <body>
@@ -983,6 +1014,8 @@ window.KOKUM_CONFIG = {
   const MEDAN_KEP = ['acara_id', 'pusingan', 'siri', 'lorong', 'murid_id', 'rumah', 'ahli', 'prestasi', 'nilai', 'cubaan', 'status', 'kedudukan', 'catatan'];
   const MEDAN_MURID = ['nama', 'tingkatan', 'kelas', 'mykad', 'jantina', 'rumah_sukan', 'status', 'tarikh_keluar', 'catatan', 'bil_asal'];
   const MEDAN_UNIT = ['kod', 'kategori', 'nama_penuh', 'bilik_operasi', 'guru_penasihat', 'jantina', 'had_ahli', 'susunan', 'aktif'];
+  const MEDAN_PJ = ['tahun', 'kategori', 'bil', 'tarikh', 'masa_mula', 'masa_tamat', 'catatan', 'tema', 'program', 'tindakan', 'tentatif'];
+  const MEDAN_AK = ['tahun', 'tarikh_mula', 'tarikh_tamat', 'tajuk', 'jenis', 'unit_kod', 'peringkat', 'tempat', 'catatan', 'tindakan'];
   const pilih = (o, medan) => Object.fromEntries(medan.filter((k) => k in o).map((k) => [k, o[k] === '' ? null : o[k]]));
 
   function terjemah(e) {
@@ -1077,7 +1110,9 @@ window.KOKUM_CONFIG = {
       async padamUnit(kod) { semak(await sb.from('unit').delete().eq('kod', kod)); },
       async simpanTetapan(t) {
         const { nama_sekolah, kod_sekolah, alamat, tahun, senarai_rumah } = t;
-        return semak(await sb.from('tetapan').update({ nama_sekolah, kod_sekolah, alamat, tahun, senarai_rumah }).eq('id', 1).select().single());
+        const data = { nama_sekolah, kod_sekolah, alamat, tahun, senarai_rumah };
+        if ('ttd_kokum' in t) data.ttd_kokum = t.ttd_kokum;
+        return semak(await sb.from('tetapan').update(data).eq('id', 1).select().single());
       },
       async simpanProfil(p) {
         const data = { nama: p.nama };
@@ -1159,7 +1194,8 @@ window.KOKUM_CONFIG = {
           sb.from('ais_kejohanan').select('nama,tahun,tarikh_mula,tarikh_tamat,tempat').eq('tahun', tahun).then((r) => r.data || [], () => []),
         ]);
         const pc = await sb.from('pencapaian_murid').select('*').eq('tahun', tahun).order('dicipta');
-        return { perjumpaan: per, aktiviti, rancangan, opr, pajsk, laporan, hadir, kejohanan: kej, pencapaian: pc.error ? [] : pc.data, adaPencapaian: !pc.error };
+        const ft = await sb.from('takwim_perjumpaan').select('tema,program,tindakan,tentatif').limit(1);
+        return { adaFormat: !ft.error, perjumpaan: per, aktiviti, rancangan, opr, pajsk, laporan, hadir, kejohanan: kej, pencapaian: pc.error ? [] : pc.data, adaPencapaian: !pc.error };
       },
       async f2KehadiranUnit(unit_kod, perjumpaanIds) {
         if (!perjumpaanIds.length) return [];
@@ -1167,12 +1203,18 @@ window.KOKUM_CONFIG = {
       },
       async f2SimpanPerjumpaan(rows) {
         if (!rows.length) return [];
-        return semak(await sb.from('takwim_perjumpaan').upsert(rows.map((r) => pilih(r, ['tahun', 'kategori', 'bil', 'tarikh', 'masa_mula', 'masa_tamat', 'catatan'])),
+        return semak(await sb.from('takwim_perjumpaan').upsert(rows.map((r) => pilih(r, MEDAN_PJ)),
           { onConflict: 'tahun,kategori,bil' }).select());
       },
       async f2PadamPerjumpaan(ids) { if (ids.length) semak(await sb.from('takwim_perjumpaan').delete().in('id', ids)); },
+      async f2KemasPerjumpaan(rows) {
+        const out = [];
+        for (const r of rows) out.push(semak(await sb.from('takwim_perjumpaan').update(pilih(r, MEDAN_PJ.filter((k) => k !== 'tahun' && k !== 'kategori' && k !== 'bil'))).eq('id', r.id).select().single()));
+        return out;
+      },
+      async f2SusunPerjumpaan(tahun) { semak(await sb.rpc('takwim_susun', { p_tahun: tahun })); },
       async f2SimpanAktiviti(a) {
-        const data = pilih(a, ['tahun', 'tarikh_mula', 'tarikh_tamat', 'tajuk', 'jenis', 'unit_kod', 'peringkat', 'tempat', 'catatan']);
+        const data = pilih(a, MEDAN_AK);
         if (a.id) return semak(await sb.from('takwim_aktiviti').update(data).eq('id', a.id).select().single());
         return semak(await sb.from('takwim_aktiviti').insert(data).select().single());
       },
@@ -1311,6 +1353,7 @@ window.KOKUM_CONFIG = {
         const d = baca();
         if (d.baharu && window.KOKUM_BINGKAI) { d.murid = janaContoh(d.units); d.contoh = true; }
         if (d.baharu) { delete d.baharu; tulis(); }
+        if (!('ttd_kokum' in d.tetapan)) d.tetapan.ttd_kokum = [];
         return { tetapan: salin(d.tetapan), units: salin(d.units), murid: salin(d.murid), profiles: [{ ...profil }], guruUnit: [], contoh: !!d.contoh };
       },
       async simpanMurid(m) {
@@ -1532,7 +1575,7 @@ window.KOKUM_CONFIG = {
         const F = d.f2, per = F.perjumpaan.filter((p) => p.tahun === tahun).sort((p, q) => p.tarikh.localeCompare(q.tarikh)), ids = new Set(per.map((p) => p.id));
         const kej = d.ais ? d.ais.kejohanan.filter((k) => k.tahun === tahun) : [];
         if (!F.pencapaian) F.pencapaian = [];
-        return salin({ pencapaian: F.pencapaian.filter((x) => x.tahun === tahun), adaPencapaian: true, perjumpaan: per, aktiviti: F.aktiviti.filter((a) => a.tahun === tahun), rancangan: F.rancangan.filter((r) => ids.has(r.perjumpaan_id)),
+        return salin({ adaFormat: true, pencapaian: F.pencapaian.filter((x) => x.tahun === tahun), adaPencapaian: true, perjumpaan: per, aktiviti: F.aktiviti.filter((a) => a.tahun === tahun), rancangan: F.rancangan.filter((r) => ids.has(r.perjumpaan_id)),
           opr: F.opr.filter((o) => o.tahun === tahun), pajsk: F.pajsk.filter((x) => x.tahun === tahun), laporan: F.laporan.filter((x) => x.tahun === tahun),
           hadir: this._hadir(F, tahun), kejohanan: kej });
       },
@@ -1546,13 +1589,25 @@ window.KOKUM_CONFIG = {
       async f2SimpanPerjumpaan(rows) {
         const F = baca().f2;
         const hasil = rows.map((r) => { let x = F.perjumpaan.find((p) => p.tahun === r.tahun && p.kategori === r.kategori && p.bil === r.bil);
-          if (!x) { x = { id: F.n++, masa_mula: null, masa_tamat: null, catatan: null }; F.perjumpaan.push(x); }
-          Object.assign(x, pilih(r, ['tahun', 'kategori', 'bil', 'tarikh', 'masa_mula', 'masa_tamat', 'catatan'])); return x; });
+          if (!x) { x = { id: F.n++, masa_mula: null, masa_tamat: null, catatan: null, tema: null, program: null, tindakan: null, tentatif: false }; F.perjumpaan.push(x); }
+          Object.assign(x, pilih(r, MEDAN_PJ)); return x; });
         tulis(); return salin(hasil);
+      },
+      async f2KemasPerjumpaan(rows) {
+        const F = baca().f2;
+        const hasil = rows.map((r) => { const x = F.perjumpaan.find((p) => p.id === r.id); if (!x) throw new Error('Perjumpaan tidak dijumpai');
+          Object.assign(x, pilih(r, MEDAN_PJ.filter((k) => k !== 'tahun' && k !== 'kategori' && k !== 'bil'))); return x; });
+        tulis(); return salin(hasil);
+      },
+      async f2SusunPerjumpaan(tahun) {
+        const F = baca().f2, kat = {};
+        F.perjumpaan.filter((p) => p.tahun === tahun).sort((p, q) => p.tarikh.localeCompare(q.tarikh) || p.bil - q.bil)
+          .forEach((p) => { kat[p.kategori] = (kat[p.kategori] || 0) + 1; p.bil = kat[p.kategori]; });
+        tulis();
       },
       async f2PadamPerjumpaan(ids) { const F = baca().f2, s2 = new Set(ids); F.perjumpaan = F.perjumpaan.filter((p) => !s2.has(p.id)); F.kehadiran = F.kehadiran.filter((k) => !s2.has(k.perjumpaan_id)); F.rancangan = F.rancangan.filter((r) => !s2.has(r.perjumpaan_id)); tulis(); },
       async f2SimpanAktiviti(a) {
-        const F = baca().f2, data = pilih(a, ['tahun', 'tarikh_mula', 'tarikh_tamat', 'tajuk', 'jenis', 'unit_kod', 'peringkat', 'tempat', 'catatan']);
+        const F = baca().f2, data = pilih(a, MEDAN_AK);
         let x = a.id && F.aktiviti.find((y) => y.id === a.id);
         if (!x) { x = { id: F.n++, dicipta: new Date().toISOString() }; F.aktiviti.push(x); }
         Object.assign(x, data); tulis(); return salin(x);
@@ -3222,6 +3277,53 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       ['2027-12-04', '2027-12-31', 'Cuti Akhir Persekolahan', 'cuti', ''],
     ],
   };
+  // Draf Takwim Kokum SMKUSR (format sekolah: Takwim Kokum 2024 + Kalendar Akademik KPM). Dipersetujui SU Kokum untuk dimuatkan.
+  // [tarikh, program sekolah, [[bidang, tema]], tindakan, tentatif]. Baris tanpa bidang dimasukkan sebagai aktiviti sekolah.
+  const DRAF_TAKWIM = {
+    2027: [
+      ["2027-01-13", "", [["UB", "MESYUARAT AGUNG"]], "GURU PENYELARAS UB", 0],
+      ["2027-01-20", "", [["KP", "MESYUARAT AGUNG"]], "GURU PENYELARAS KP", 0],
+      ["2027-01-27", "", [["SP", "MESYUARAT AGUNG"]], "GURU PENYELARAS SP", 0],
+      ["2027-02-03", "", [["UB", "TUGAS AJK & UNDANG-UNDANG"]], "UNIT UB MASING-MASING", 0],
+      ["2027-02-17", "", [["KP", "TUGAS AJK & PROGRAM/AKTIVITI"]], "KP MASING-MASING", 0],
+      ["2027-02-24", "", [["UB", "ASAS KAWAD KAKI"]], "UNIT UB MASING-MASING", 0],
+      ["2027-03-03", "", [["KP", "PERTANDINGAN REKA CIPTA / INOVASI DALAM KUMPULAN"]], "UNIT KP MASING-MASING", 0],
+      ["2027-03-17", "", [["UB", "ASAS PERKHEMAHAN"]], "UNIT UB MASING-MASING", 0],
+      ["2027-03-23", "SAMBUTAN HARI RAYA AIDILFITRI SMKUSR", [["UB", "MEMUPUK PERPADUAN - SAMBUTAN AIDILFITRI"]], "PENGARAH PROGRAM & UNIT UB MASING-MASING", 1],
+      ["2027-03-24", "", [["KP", "PERSEMBAHAN HASIL REKA CIPTA / INOVASI DALAM KUMPULAN"]], "UNIT KP MASING-MASING", 0],
+      ["2027-03-31", "", [["UB", "ASAS BELAJAR MASAKAN"]], "UNIT UB MASING-MASING", 0],
+      ["2027-04-03", "KEJOHANAN MERENTAS DESA SEKOLAH", [["SP", "MERENTAS DESA"]], "GURU SU SUKAN / MERENTAS DESA", 1],
+      ["2027-04-21", "MSS SMKUSR 2027", [["SP", "MSS SMKUSR"]], "GURU SU SUKAN & KETUA-KETUA RUMAH", 1],
+      ["2027-04-22", "MSS SMKUSR 2027", [["SP", "MSS SMKUSR"]], "GURU SU SUKAN & KETUA-KETUA RUMAH", 1],
+      ["2027-04-23", "MSS SMKUSR 2027", [["SP", "MSS SMKUSR"]], "GURU SU SUKAN & KETUA-KETUA RUMAH", 1],
+      ["2027-05-05", "", [["KP", "CARA MENGHARGAI GURU"]], "KP MASING-MASING", 0],
+      ["2027-05-11", "SAMBUTAN TADAU KAAMATAN SMKUSR", [["SP", "SUKAN & PERMAINAN TRADISIONAL KAAMATAN"]], "PENGARAH PROGRAM & UNIT SP MASING-MASING", 1],
+      ["2027-05-13", "SAMBUTAN HARI GURU PERINGKAT SEKOLAH", [["KP", "MAJLIS SAMBUTAN HARI GURU"]], "PENGARAH PROGRAM & KP MASING-MASING", 1],
+      ["2027-06-09", "", [["UB", "KECEMASAN / KEBUDAYAAN"]], "UNIT UB MASING-MASING", 0],
+      ["2027-06-16", "", [["SP", "UNDANG-UNDANG / PERATURAN PERMAINAN SIRI 1"]], "UNIT SP MASING-MASING", 0],
+      ["2027-06-23", "", [["KP", "PERTANDINGAN KUIZ PERDANA"]], "PENGARAH PROGRAM / SU KOKUM", 0],
+      ["2027-07-07", "", [["SP", "PRAKTIKAL UNDANG-UNDANG PERMAINAN SIRI 2"]], "UNIT SP MASING-MASING", 0],
+      ["2027-07-28", "", [["UB", "SEMANGAT MERDEKA - PASANG/KIBAR BENDERA"]], "PENGARAH PROGRAM & UNIT UB MASING-MASING", 0],
+      ["2027-08-23", "SAMBUTAN KEMERDEKAAN 2027", [["KP", "KHIDMAT SUMBANGAN - MENGHIAS KELAS/BILIK"]], "PENGARAH PROGRAM & GURU-GURU KELAS", 1],
+      ["2027-08-24", "SAMBUTAN KEMERDEKAAN 2027", [["SP", "PESTA BOLA-BOLA: SEPAK/TAMPAR/JARING/BALING"]], "PENGARAH PROGRAM & GURU PENYELARAS SP", 1],
+      ["2027-08-25", "SAMBUTAN KEMERDEKAAN 2027", [["UB", "PERTANDINGAN PIDATO MERDEKA"]], "PENGARAH PROGRAM & UNIT UB MASING-MASING", 1],
+      ["2027-08-26", "SAMBUTAN KEMERDEKAAN 2027", [["KP", "MENYERTAI MANA-MANA PERTANDINGAN KOIR/VIDEO/POSTER VISUAL/DLL (BUKAN PERMAINAN)"]], "PENGARAH PROGRAM & UNIT KP MASING-MASING", 1],
+      ["2027-08-27", "SAMBUTAN KEMERDEKAAN 2027", [["UB", "MENYERTAI MAJLIS SAMBUTAN KEMERDEKAAN"], ["KP", "MENYERTAI MAJLIS SAMBUTAN KEMERDEKAAN"], ["SP", "MENYERTAI MAJLIS SAMBUTAN KEMERDEKAAN"]], "PENGARAH PROGRAM & UNIT UB/KP/SP MASING-MASING", 1],
+      ["2027-09-22", "PENUTUPAN BULAN KEMERDEKAAN / PERKHEMAHAN PERDANA", [["UB", "PERKHEMAHAN PERDANA"]], "KRS", 1],
+      ["2027-09-23", "PERKHEMAHAN PERDANA", [["UB", "PERKHEMAHAN PERDANA"]], "KRS", 1],
+      ["2027-09-24", "PERKHEMAHAN PERDANA", [["UB", "PERKHEMAHAN PERDANA"]], "KRS", 1],
+      ["2027-10-06", "", [["SP", "SUKAN TARA / ACARA 1 SUKAN 1 MURID"]], "GURU PENYELARAS SP", 0],
+      ["2027-10-13", "", [["KP", "SEMINAR CEGAH JENAYAH"]], "GURU PENYELARAS KP DENGAN UNIT DISIPLIN", 0],
+      ["2027-10-20", "", [["UB", "MAKE-KOKUM"], ["KP", "MAKE-KOKUM"], ["SP", "MAKE-KOKUM"]], "KRS", 0],
+      ["2027-11-03", "", [["UB", "PAJSK"]], "PENYELARAS PAJSK & PENYELARAS UB", 0],
+      ["2027-11-10", "", [["KP", "PAJSK"]], "PENYELARAS PAJSK & PENYELARAS KP", 0],
+      ["2027-11-17", "", [["SP", "PAJSK"]], "PENYELARAS PAJSK & PENYELARAS SP", 0],
+      ["2027-11-24", "PAJSK EKSTRA KOKURIKULUM", [], "PENYELARAS PAJSK & GURU-GURU KELAS", 0],
+      ["2027-12-01", "PENGISIAN SKOR PAJSK DALAM SISTEM IDME (NOV-DIS)", [], "PENYELARAS PAJSK, PK KOKUM & GURU-GURU KELAS", 0],
+    ],
+  };
+  const URUT_S = ['UB', 'KP', 'SP'];
+  const BLN_S = ['JAN', 'FEB', 'MAC', 'APRIL', 'MEI', 'JUN', 'JULAI', 'OGOS', 'SEPT', 'OKT', 'NOV', 'DIS'];
 
   window.KokumFasa2 = function (ctx) {
     const { S, e, $, $$, IKON, roti, sahkan, gagal, render, penyelaras, aktif, eksport, susunMurid, tetapLokasi, hariIni,
@@ -3349,11 +3451,12 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     const ttd = (l) => `<div class="tandatangan ttd-${l.length}">${l.map((x) => `<div>${x}</div>`).join('')}</div>`;
     const cipKat = (k) => `<span class="cip-kat ${k}">${KAT_PENDEK[k]}</span>`;
+    const uniq = (l) => Array.from(new Set(l.filter(Boolean)));
 
     /* ============================================================ TAKWIM (menu) */
     function pTakwim(tab, q) {
       const tahun = pilihTahun(q);
-      const tabs = [['bulan', 'Ikut bulan'], ['perjumpaan', 'Tarikh perjumpaan'], ['aktiviti', 'Aktiviti & cuti']].concat(penyelaras() ? [['jana', 'Jana tarikh']] : []);
+      const tabs = [['bulan', 'Ikut bulan'], ['senarai', 'Format sekolah'], ['perjumpaan', 'Tarikh perjumpaan'], ['aktiviti', 'Aktiviti & cuti']].concat(penyelaras() ? [['jana', 'Jana tarikh']] : []);
       const ta = tahunAsal();
       const kepala = `<div class="kepala tanpa-cetak"><div><h1>Takwim kokurikulum ${tahun}</h1><p>Tarikh perjumpaan UB, KP dan SP, aktiviti sekolah, cuti dan peperiksaan.</p></div>
         <div class="baris-btn">${[ta - 1, ta, ta + 1].map((t) => `<a class="cip ${t === tahun ? 'pilih' : ''}" href="#/takwim/${tab === 'cetak' ? 'bulan' : tab}?tahun=${t}">${t}</a>`).join('')}
@@ -3362,7 +3465,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (!tabs.some((t) => t[0] === tab)) tab = 'bulan';
       const nav = `<nav class="tab tanpa-cetak">${tabs.map(([k, l]) => `<a href="#/takwim/${k}?tahun=${tahun}" ${k === tab ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
       const x = sedia(tahun); if (x) return kepala + nav + x;
-      return kepala + nav + { bulan: pBulan, perjumpaan: pPerjumpaan, aktiviti: pAktiviti, jana: pJana }[tab](q);
+      return kepala + nav + { bulan: pBulan, senarai: pSenarai, perjumpaan: pPerjumpaan, aktiviti: pAktiviti, jana: pJana }[tab](q);
     }
 
     function entri() {
@@ -3376,8 +3479,11 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       return out.sort((p, q) => p.mula.localeCompare(q.mula) || urut.indexOf(p.jenis) - urut.indexOf(q.jenis));
     }
     function teksEntri(x, html) {
-      if (x.jenis === 'perjumpaan') return html ? `Perjumpaan ${x.ps.map((p) => `${cipKat(p.kategori)} ke-${p.bil}`).join(' ')}${x.ps[0].masa_mula ? ` <span class="pudar">${e(x.ps[0].masa_mula)}${x.ps[0].masa_tamat ? '–' + e(x.ps[0].masa_tamat) : ''}</span>` : ''}`
-        : `Perjumpaan ${x.ps.map((p) => `${p.kategori} ke-${p.bil}`).join(', ')}`;
+      if (x.jenis === 'perjumpaan') {
+        const tema = uniq(x.ps.map((p) => p.tema)).join(' / '), prog = uniq(x.ps.map((p) => p.program)).join(' / '), tent = x.ps.some((p) => p.tentatif);
+        return html ? `${prog ? `<b>${e(prog)}</b>${tent ? ' <span class="tent">tentatif</span>' : ''}<br>` : ''}Perjumpaan ${x.ps.map((p) => `${cipKat(p.kategori)} ke-${p.bil}`).join(' ')}${tema ? ` · ${e(tema)}` : ''}${x.ps[0].masa_mula ? ` <span class="pudar">${e(x.ps[0].masa_mula)}${x.ps[0].masa_tamat ? '–' + e(x.ps[0].masa_tamat) : ''}</span>` : ''}`
+          : `${prog ? prog + ': ' : ''}Perjumpaan ${x.ps.map((p) => `${p.kategori} ke-${p.bil}`).join(', ')}${tema ? ` (${tema})` : ''}`;
+      }
       if (x.olahraga) return html ? `<b>${e(x.olahraga.nama)}</b>` : x.olahraga.nama;
       const a = x.a;
       return html ? `<b>${e(a.tajuk)}</b>${a.unit_kod ? ` <span class="pudar">(${e(a.unit_kod)})</span>` : ''}${a.peringkat ? ` <span class="pudar">· ${e(a.peringkat)}</span>` : ''}${a.tempat ? ` <span class="pudar">· ${e(a.tempat)}</span>` : ''}`
@@ -3385,7 +3491,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     function pBulan() {
       const sem = entri(), hi = hariIniIso();
-      if (!sem.length) return `<div class="panel kosong-isi"><h3>Takwim ${F().tahun} masih kosong</h3><p>${penyelaras() ? 'Mulakan dengan <a href="#/takwim/jana">Jana tarikh perjumpaan</a>, kemudian tambah cuti dan aktiviti sekolah.' : 'Penyelaras belum menetapkan tarikh perjumpaan.'}</p></div>`;
+      if (!sem.length) return `<div class="panel kosong-isi"><h3>Takwim ${F().tahun} masih kosong</h3><p>${penyelaras() ? (DRAF_TAKWIM[F().tahun] ? 'Muatkan draf takwim yang sudah disediakan, atau' : 'Mulakan dengan') + ' <a href="#/takwim/jana">Jana tarikh perjumpaan</a>, kemudian tambah cuti dan aktiviti sekolah.' : 'Penyelaras belum menetapkan tarikh perjumpaan.'}</p>${butangDraf() ? `<div class="baris-btn" style="justify-content:center">${butangDraf()}</div>` : ''}</div>`;
       const ikut = new Map();
       sem.forEach((x) => { const b = x.mula.slice(0, 7); if (!ikut.has(b)) ikut.set(b, []); ikut.get(b).push(x); });
       return `<div class="petunjuk-takwim kecil">${['perjumpaan', 'sekolah', 'luar', 'unit', 'cuti', 'peperiksaan'].map((j) => `<span><i class="j-${j}"></i>${j === 'perjumpaan' ? 'Perjumpaan' : JENIS[j]}</span>`).join('')}</div>
@@ -3394,6 +3500,146 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
             <span class="tarikh-kotak"><b>${d.getDate()}</b><small>${HARI[d.getDay()].slice(0, 3)}</small></span>
             <span class="apa">${teksEntri(x, true)}${x.tamat && x.tamat !== x.mula ? `<small>${e(fmtJulat(x.mula, x.tamat))}</small>` : ''}${x.jenis !== 'perjumpaan' ? `<small>${x.olahraga ? 'Kejohanan olahraga' : JENIS[x.jenis]}</small>` : ''}</span>
             ${x.a && bolehUbahAktiviti(x.a) ? `<button class="btn kosong kecil" data-act="f2-aktiviti" data-id="${x.a.id}" aria-label="Ubah">Ubah</button>` : ''}</div>`; }).join('')}</section>`; }).join('')}`;
+    }
+
+    /* ------------------------------------------------------------ format sekolah (BIL, BULAN, M, HARI, TARIKH, PROGRAM SEKOLAH, KOKUM, TINDAKAN) */
+    const mingguIso = (s) => { const d = tk(s); d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7); const j = new Date(d.getFullYear(), 0, 4); return 1 + Math.round(((d - j) / 864e5 - 3 + (j.getDay() + 6) % 7) / 7); };
+    const tarikhSlash = (s) => `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(2, 4)}`;
+    const tarikhDM = (a) => (a.tarikh_tamat && a.tarikh_tamat !== a.tarikh_mula ? `${a.tarikh_mula.slice(8, 10)}/${a.tarikh_mula.slice(5, 7)} – ${a.tarikh_tamat.slice(8, 10)}/${a.tarikh_tamat.slice(5, 7)}` : `${a.tarikh_mula.slice(8, 10)}/${a.tarikh_mula.slice(5, 7)}`);
+    function barisSekolah() {
+      const m = new Map(), ambil = (t) => { if (!m.has(t)) m.set(t, { tarikh: t, ps: [], akt: [], ol: [] }); return m.get(t); };
+      F().perjumpaan.forEach((p) => ambil(p.tarikh).ps.push(p));
+      F().aktiviti.filter((a) => a.jenis === 'sekolah' || a.jenis === 'peperiksaan').forEach((a) => ambil(a.tarikh_mula).akt.push(a));
+      (F().kejohanan || []).forEach((k) => { if (k.tarikh_mula) ambil(k.tarikh_mula).ol.push(k); });
+      const baris = Array.from(m.values()).sort((a, b) => a.tarikh.localeCompare(b.tarikh));
+      baris.forEach((x) => x.ps.sort((a, b) => URUT_S.indexOf(a.kategori) - URUT_S.indexOf(b.kategori)));
+      const cuti = F().aktiviti.filter((a) => a.jenis === 'cuti').sort((a, b) => a.tarikh_mula.localeCompare(b.tarikh_mula));
+      const out = []; let i = 0, n = 0;
+      baris.forEach((x) => { while (i < cuti.length && cuti[i].tarikh_mula < x.tarikh) out.push({ cuti: cuti[i++] }); out.push({ ...x, bil: ++n }); });
+      while (i < cuti.length) out.push({ cuti: cuti[i++] });
+      return out;
+    }
+    function teksKokum(ps) {
+      const g = new Map();
+      ps.forEach((p) => { const k = p.tema || ''; if (!g.has(k)) g.set(k, []); g.get(k).push(p); });
+      return Array.from(g, ([tema, l]) => { const no = l.map((p) => `${p.kategori} ${p.bil}`).join(' / ');
+        return /^PAJSK$/i.test(tema) ? `PAJSK ${no}` : `PERJUMPAAN ${no}${tema ? ` (${tema})` : ''}`; }).join('; ');
+    }
+    const teksProgram = (x) => uniq([...x.ps.map((p) => p.program), ...x.akt.map((a) => a.tajuk.toUpperCase() + (a.tarikh_tamat && a.tarikh_tamat !== a.tarikh_mula ? ` (${tarikhDM(a)})` : '')),
+      ...(x.ps.some((p) => p.program) ? [] : x.ol.map((k) => k.nama.toUpperCase()))]).join(' / ');
+    const teksTindakan = (x) => uniq([...x.ps.map((p) => p.tindakan), ...x.akt.map((a) => a.tindakan)]).join(' / ');
+    const kiraanBidang = () => Object.fromEntries(URUT_S.map((k) => [k, perjumpaanKat(k).length]));
+    function jadualSekolah(b, skrin) {
+      const ubah = skrin && penyelaras(), kol = ubah ? 9 : 8, hi = hariIniIso();
+      return `<table class="takwim-sekolah"><thead><tr><th>BIL</th><th>BULAN</th><th>M</th><th>HARI</th><th>TARIKH</th><th>PROGRAM SEKOLAH</th><th>PROGRAM AKTIVITI KOKURIKULUM</th><th>TINDAKAN</th>${ubah ? '<th><span class="sr-only">Ubah</span></th>' : ''}</tr></thead><tbody>
+        ${b.map((x) => {
+          if (x.cuti) return `<tr class="cuti"><td colspan="${kol}"><span>${e(x.cuti.tajuk.toUpperCase())}</span> <b>${tarikhDM(x.cuti)}</b></td></tr>`;
+          const d = tk(x.tarikh), tent = x.ps.some((p) => p.tentatif), prog = teksProgram(x);
+          const act = x.ps.length ? `data-act="f2-baris" data-tarikh="${x.tarikh}"` : x.akt.length ? `data-act="f2-aktiviti" data-id="${x.akt[0].id}"` : '';
+          return `<tr class="${tent ? 'tentatif' : ''}${skrin && x.tarikh < hi ? ' lepas' : ''}"><td class="n">${x.bil}</td><td>${BLN_S[d.getMonth()]}</td><td class="n">${mingguIso(x.tarikh)}</td><td>${HARI[d.getDay()].toUpperCase()}</td><td class="n">${tarikhSlash(x.tarikh)}</td>
+            <td>${e(prog)}${tent ? ` <em class="tent">tentatif</em>` : ''}</td>
+            <td>${skrin && x.ps.length ? `<span class="cip-baris">${x.ps.map((p) => cipKat(p.kategori)).join('')}</span>` : ''}${e(teksKokum(x.ps))}</td><td>${e(teksTindakan(x))}</td>
+            ${ubah ? `<td>${act ? `<button class="btn kosong kecil" ${act}>Ubah</button>` : ''}</td>` : ''}</tr>`;
+        }).join('')}</tbody></table>`;
+    }
+    const amaranFormat = () => (F().adaFormat === false && penyelaras() ? '<div class="mesej amaran" style="margin-bottom:14px">Jalankan <b>takwim_format.sql</b> di Supabase dahulu supaya tema, program sekolah, tindakan dan perjumpaan gabungan boleh disimpan.</div>' : '');
+    const butangDraf = () => (penyelaras() && DRAF_TAKWIM[F().tahun] ? `<button class="btn ${F().perjumpaan.length ? '' : 'utama'}" data-act="f2-draf">Muat draf Takwim Kokum ${F().tahun} (${DRAF_TAKWIM[F().tahun].length} baris)</button>` : '');
+    function pSenarai() {
+      const b = barisSekolah(), boleh = penyelaras();
+      if (!b.some((x) => !x.cuti)) return `${amaranFormat()}<div class="panel kosong-isi"><h3>Takwim ${F().tahun} masih kosong</h3>
+        <p>${boleh ? 'Muatkan draf yang sudah disediakan, atau tambah baris satu per satu.' : 'Penyelaras belum menetapkan takwim.'}</p>
+        ${boleh ? `<div class="baris-btn" style="justify-content:center">${butangDraf()}<button class="btn" data-act="f2-baris">${IKON.tambah} Tambah baris</button></div>` : ''}</div>`;
+      const C = kiraanBidang();
+      return `${amaranFormat()}<div class="panel" style="margin-bottom:14px">
+          <div class="ringkas-takwim"><span><b>${b.filter((x) => !x.cuti).length}</b> baris</span>${URUT_S.map((k) => `<span>${cipKat(k)} <b>${C[k]}</b> perjumpaan</span>`).join('')}</div>
+          <div class="baris-btn" style="margin-top:10px">${boleh ? `<button class="btn utama" data-act="f2-baris">${IKON.tambah} Tambah baris</button>` : ''}<a class="btn" href="#/takwim/cetak?doc=takwim&tahun=${F().tahun}">${IKON.cetak} Cetak format sekolah</a></div>
+          <p class="pudar kecil" style="margin:8px 0 0">Baris kuning: tarikh tentatif. Jalur merah: cuti. M: minggu ke- dalam tahun.${boleh ? ' Tekan Ubah untuk menukar tarikh, tema, program sekolah atau tindakan. Nombor perjumpaan disusun semula ikut tarikh secara automatik.' : ''}</p></div>
+        <div class="panel" style="padding:0"><div class="skrol-x">${jadualSekolah(b, true)}</div></div>`;
+    }
+    function bukaBaris(tarikh) {
+      if (!penyelaras()) return;
+      if (F().adaFormat === false) { roti('Jalankan takwim_format.sql di Supabase dahulu.', true); return; }
+      const ps = tarikh ? F().perjumpaan.filter((p) => p.tarikh === tarikh) : [], p0 = ps[0] || {};
+      const akt = tarikh ? F().aktiviti.filter((a) => a.tarikh_mula === tarikh && (a.jenis === 'sekolah' || a.jenis === 'peperiksaan')) : [];
+      const t = F().tahun, dlg = $('#dlg');
+      dlg.innerHTML = `<div class="dk"><div><h2>${tarikh ? 'Ubah baris takwim' : 'Tambah baris takwim'}</h2>${tarikh ? `<p class="pudar kecil" style="margin:2px 0 0">${e(fmtT(tarikh, true))}</p>` : ''}</div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
+        <div class="db"><form class="borang" id="borang-f2-baris" data-tarikh="${tarikh || ''}">
+          <div class="dua"><label class="medan">Tarikh<input type="date" name="tarikh" value="${e(tarikh || '')}" min="${t}-01-01" max="${t}-12-31" required></label>
+            <label class="medan">Masa<input type="text" name="masa_mula" value="${e(p0.masa_mula || '')}" placeholder="2.30 ptg"></label></div>
+          <label class="medan">Program sekolah<input type="text" name="program" value="${e(p0.program || '')}" placeholder="Contoh: MSS SMKUSR, Sambutan Hari Guru"><span class="bantu">Kosongkan jika perjumpaan biasa.</span></label>
+          <label class="cek"><input type="checkbox" name="tentatif" ${p0.tentatif ? 'checked' : ''}> Tarikh tentatif (belum muktamad)</label>
+          <fieldset class="bidang-set"><legend>Perjumpaan</legend>
+            ${URUT_S.map((k) => { const p = ps.find((x) => x.kategori === k); return `<div class="bidang-baris"><label class="cek"><input type="checkbox" name="ada_${k}" ${p ? 'checked' : ''}> ${cipKat(k)} <span class="pudar kecil">${p ? `ke-${p.bil}` : 'baharu'}</span></label>
+              <input type="text" name="tema_${k}" value="${e((p && p.tema) || '')}" placeholder="Tema / aktiviti" aria-label="Tema ${KAT[k]}"></div>`; }).join('')}
+            <p class="bantu" style="margin:6px 0 0">Tanda lebih daripada satu bidang untuk perjumpaan gabungan. Tema yang kosong mengikut tema bidang pertama. Tema <b>PAJSK</b> untuk sesi pengisian PAJSK.</p></fieldset>
+          <label class="medan">Tindakan<input type="text" name="tindakan" value="${e(p0.tindakan || '')}" placeholder="Contoh: UNIT UB MASING-MASING"></label>
+          ${akt.length ? `<p class="kecil" style="margin:0">Aktiviti sekolah pada tarikh ini: ${akt.map((a) => `<button type="button" class="pautan" data-act="f2-aktiviti" data-id="${a.id}">${e(a.tajuk)}</button>`).join(', ')}</p>` : ''}
+        </form></div>
+        <div class="dt">${ps.length ? `<button class="btn bahaya" data-act="f2-padam-baris" data-tarikh="${tarikh}">Padam</button>` : ''}<button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="borang-f2-baris">Simpan</button></div>`;
+      dlg.dataset.id = ''; dlg.dataset.ubah = '';
+      if (!dlg.open) dlg.showModal();
+    }
+    const besar = (v) => ((v || '').trim().toUpperCase() || null);
+    async function selesaiTakwim(teks) {
+      await S.db.f2SusunPerjumpaan(F().tahun);
+      await muat(F().tahun, true);
+      const d = $('#dlg'); if (d && d.open) d.close();
+      roti(teks); S.kekalSkrol = true; render();
+    }
+    async function simpanBaris(f) {
+      const d = new FormData(f), asal = f.dataset.tarikh || null, t = d.get('tarikh'), tahun = F().tahun;
+      if (!t || +t.slice(0, 4) !== tahun) { roti(`Pilih tarikh dalam tahun ${tahun}.`, true); return; }
+      if (t !== asal && F().perjumpaan.some((p) => p.tarikh === t)) { roti(`${fmtT(t)} sudah ada perjumpaan. Ubah baris tarikh itu.`, true); return; }
+      const dipilih = URUT_S.filter((k) => d.get('ada_' + k));
+      if (!dipilih.length) { roti('Tanda sekurang-kurangnya satu bidang. Aktiviti tanpa perjumpaan dimasukkan melalui Aktiviti & cuti.', true); return; }
+      const ps = asal ? F().perjumpaan.filter((p) => p.tarikh === asal) : [];
+      const temaAsas = dipilih.map((k) => besar(d.get('tema_' + k))).find(Boolean) || null;
+      const sama = { tarikh: t, program: besar(d.get('program')), tindakan: besar(d.get('tindakan')), tentatif: !!d.get('tentatif'), masa_mula: (d.get('masa_mula') || '').trim() || null };
+      const kemas = [], baru = [], padam = [];
+      for (const k of URUT_S) {
+        const p = ps.find((x) => x.kategori === k), tema = besar(d.get('tema_' + k)) || temaAsas;
+        if (dipilih.includes(k) && p) kemas.push({ id: p.id, ...sama, tema });
+        else if (dipilih.includes(k)) {
+          const l = perjumpaanKat(k);
+          if (l.length >= 40) { roti(`${KAT[k]} sudah ada 40 perjumpaan.`, true); return; }
+          baru.push({ tahun, kategori: k, bil: Math.max(0, ...l.map((x) => x.bil)) + 1, ...sama, tema });
+        } else if (p) padam.push(p);
+      }
+      const cuti = cutiPada(t);
+      if (cuti.length && !(await sahkan(`${fmtT(t, true)} bertembung dengan ${cuti[0].tajuk}. Simpan juga?`, { ok: 'Simpan' }))) return;
+      if (padam.length && !(await sahkan(`Buang perjumpaan ${padam.map((p) => `${p.kategori} ke-${p.bil}`).join(', ')} daripada tarikh ini?\n\nRekod kehadiran dan rancangan unit bagi perjumpaan itu turut dipadam.`, { ok: 'Buang', bahaya: true }))) return;
+      if (kemas.length) await S.db.f2KemasPerjumpaan(kemas);
+      if (baru.length) await S.db.f2SimpanPerjumpaan(baru);
+      if (padam.length) await S.db.f2PadamPerjumpaan(padam.map((p) => p.id));
+      await selesaiTakwim(asal ? 'Baris takwim dikemas kini' : 'Baris takwim ditambah');
+    }
+    async function padamBaris(tarikh) {
+      const ps = F().perjumpaan.filter((p) => p.tarikh === tarikh);
+      if (!ps.length) return;
+      if (!(await sahkan(`Padam perjumpaan ${ps.map((p) => `${p.kategori} ke-${p.bil}`).join(', ')} pada ${fmtT(tarikh, true)}?\n\nRekod kehadiran dan rancangan unit bagi perjumpaan ini turut dipadam. Nombor perjumpaan selepasnya disusun semula.`, { ok: 'Padam', bahaya: true }))) return;
+      await S.db.f2PadamPerjumpaan(ps.map((p) => p.id));
+      await selesaiTakwim('Baris takwim dipadam');
+    }
+    async function muatDraf() {
+      const tahun = F().tahun, draf = DRAF_TAKWIM[tahun];
+      if (!draf || !penyelaras()) return;
+      if (F().adaFormat === false) { roti('Jalankan takwim_format.sql di Supabase dahulu.', true); return; }
+      const per = Object.fromEntries(URUT_S.map((k) => [k, []])), akt = [];
+      draf.forEach(([t, prog, ps, tind, tent]) => {
+        if (!ps.length) { akt.push({ tahun, tarikh_mula: t, tarikh_tamat: null, tajuk: prog, jenis: 'sekolah', unit_kod: null, peringkat: null, tempat: null, catatan: null, tindakan: tind || null }); return; }
+        ps.forEach(([k, tema]) => per[k].push({ tahun, kategori: k, bil: per[k].length + 1, tarikh: t, tema: tema || null, program: prog || null, tindakan: tind || null, tentatif: !!tent }));
+      });
+      const rows = URUT_S.flatMap((k) => per[k]);
+      const lebih = F().perjumpaan.filter((p) => p.bil > per[p.kategori].length);
+      const aktBaru = akt.filter((a) => !F().aktiviti.some((x) => x.tajuk === a.tajuk && x.tarikh_mula === a.tarikh_mula));
+      const kpm = kpmBaki(), ada = F().perjumpaan.length;
+      if (!(await sahkan(`Muat draf Takwim Kokum ${tahun}?\n\n• ${rows.length} perjumpaan: ${URUT_S.map((k) => `${k} ${per[k].length}`).join(', ')}\n• ${aktBaru.length} aktiviti sekolah\n• ${kpm.length} tarikh Kalendar Akademik KPM (cuti)${ada ? `\n\n${ada} perjumpaan sedia ada akan dikemas kini ikut nombor perjumpaan. Kehadiran yang sudah direkod kekal pada nombor yang sama.${lebih.length ? ` ${lebih.length} perjumpaan berlebihan dipadam.` : ''}` : ''}\n\nSemua tarikh boleh diubah selepas ini.`, { ok: 'Muat draf' }))) return;
+      await S.db.f2SimpanPerjumpaan(rows);
+      if (lebih.length) await S.db.f2PadamPerjumpaan(lebih.map((p) => p.id));
+      for (const [m, t2, t, j, c] of kpm) await S.db.f2SimpanAktiviti({ tahun, tarikh_mula: m, tarikh_tamat: t2, tajuk: t, jenis: j, unit_kod: null, peringkat: null, tempat: null, catatan: c || null });
+      for (const a of aktBaru) await S.db.f2SimpanAktiviti(a);
+      await muat(tahun, true);
+      roti(`Draf Takwim Kokum ${tahun} dimuatkan`); tetapLokasi(`#/takwim/senarai?tahun=${tahun}`); render();
     }
 
     function pPerjumpaan(q) {
@@ -3405,7 +3651,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         const units = unitKat(k).length, rancang = F().rancangan.filter((r) => r.perjumpaan_id === p.id && r.tajuk).length;
         const cuti = cutiPada(p.tarikh);
         if (ubah) return `<td><input type="date" name="t_${p.id}" value="${e(p.tarikh)}" aria-label="${k} ke-${p.bil}"></td>`;
-        return `<td><b>${e(fmtT(p.tarikh))}</b><br><span class="pudar kecil">${HARI[tk(p.tarikh).getDay()]} · ${rancang}/${units} unit merancang</span>${cuti.length ? `<br><span class="kecil" style="color:var(--bahaya)">Bertembung: ${e(cuti[0].tajuk)}</span>` : ''}</td>`;
+        return `<td><b>${e(fmtT(p.tarikh))}</b>${p.tema ? `<br><span class="kecil">${e(p.tema)}</span>` : ''}<br><span class="pudar kecil">${HARI[tk(p.tarikh).getDay()]} · ${rancang}/${units} unit merancang</span>${cuti.length ? `<br><span class="kecil" style="color:var(--bahaya)">Bertembung: ${e(cuti[0].tajuk)}</span>` : ''}</td>`;
       };
       const isi = `<div class="skrol-x"><table class="jadual"><thead><tr><th>Bil</th>${BIDANG.map((k) => `<th>${KAT[k]}</th>`).join('')}</tr></thead><tbody>
         ${Array.from({ length: maks }, (_, i) => `<tr><td><b>${i + 1}</b></td>${BIDANG.map((k) => sel(k, i)).join('')}</tr>`).join('')}</tbody></table></div>`;
@@ -3419,7 +3665,10 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const t = F().tahun;
       const asal = (k, i) => { const p = perjumpaanKat(k)[0]; return p ? p.tarikh : ''; };
       const cuti = F().aktiviti.filter((a) => a.jenis === 'cuti' || a.jenis === 'peperiksaan');
-      return `<form class="panel borang" id="borang-f2-jana">
+      return `${amaranFormat()}${DRAF_TAKWIM[t] ? `<div class="panel" style="margin-bottom:14px"><h2>Draf Takwim Kokum ${t}</h2>
+          <p class="kecil" style="margin:0">Draf format sekolah (berdasarkan Takwim Kokum 2024 dan Kalendar Akademik KPM ${t}): ${DRAF_TAKWIM[t].length} baris, termasuk tema, program sekolah, tindakan dan perjumpaan gabungan. Kalendar KPM turut dimasukkan.</p>
+          <div class="baris-btn" style="margin-top:10px">${butangDraf()}</div></div>` : ''}
+        <form class="panel borang" id="borang-f2-jana">
         <p class="kecil" style="margin:0">Tetapkan tarikh perjumpaan pertama setiap bidang. Aplikasi menjana tarikh seterusnya ikut selang minggu dan melangkau minggu cuti atau peperiksaan yang sudah dimasukkan (${cuti.length} julat).</p>
         ${BIDANG.map((k, i) => `<fieldset class="jana-baris"><legend><label class="cek"><input type="checkbox" name="ada_${k}" checked> ${KAT[k]}</label></legend>
           <div class="grid-jana"><label class="medan">Perjumpaan pertama<input type="date" name="mula_${k}" value="${e(asal(k) || '')}" min="${t}-01-01" max="${t}-12-31"></label>
@@ -3485,8 +3734,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     async function simpanTarikh(f) {
       const d = new FormData(f), rows = [];
-      F().perjumpaan.forEach((p) => { const v = d.get('t_' + p.id); if (v && v !== p.tarikh) rows.push({ ...p, tarikh: v }); });
-      if (rows.length) await S.db.f2SimpanPerjumpaan(rows);
+      F().perjumpaan.forEach((p) => { const v = d.get('t_' + p.id); if (v && v !== p.tarikh) rows.push({ id: p.id, tarikh: v }); });
+      if (rows.length) { await S.db.f2KemasPerjumpaan(rows); await S.db.f2SusunPerjumpaan(F().tahun); }
       await muat(F().tahun, true);
       roti(rows.length ? `${rows.length} tarikh dikemas kini` : 'Tiada perubahan'); tetapLokasi('#/takwim/perjumpaan'); render();
     }
@@ -3529,6 +3778,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           <div class="dua"><label class="medan">Peringkat<select name="peringkat"><option value="">—</option>${SK().PERINGKAT.map((p) => `<option ${a.peringkat === p ? 'selected' : ''}>${e(p)}</option>`).join('')}</select></label>
             <label class="medan">Tempat<input type="text" name="tempat" value="${e(a.tempat || '')}"></label></div>
           <label class="medan">Catatan<input type="text" name="catatan" value="${e(a.catatan || '')}"></label>
+          ${F().adaFormat !== false ? `<label class="medan">Tindakan<input type="text" name="tindakan" value="${e(a.tindakan || '')}" placeholder="Contoh: PENYELARAS PAJSK & GURU-GURU KELAS"><span class="bantu">Dipaparkan dalam takwim format sekolah.</span></label>` : ''}
         </form></div>
         <div class="dt">${id ? '<button class="btn bahaya" data-act="f2-padam-aktiviti" data-id="' + id + '">Padam</button>' : ''}<button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="borang-f2-aktiviti">Simpan</button></div>`;
       dlg.dataset.id = ''; dlg.dataset.ubah = '';
@@ -3539,7 +3789,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (d.tarikh_tamat && d.tarikh_tamat < d.tarikh_mula) { roti('Tarikh tamat sebelum tarikh mula.', true); return; }
       if ((d.jenis === 'unit' || d.jenis === 'luar') && !d.unit_kod && !penyelaras()) { roti('Pilih unit.', true); return; }
       const rec = await S.db.f2SimpanAktiviti({ id: f.dataset.id ? +f.dataset.id : null, tahun: +d.tarikh_mula.slice(0, 4), tajuk: d.tajuk.trim(), jenis: d.jenis,
-        unit_kod: d.unit_kod || null, tarikh_mula: d.tarikh_mula, tarikh_tamat: d.tarikh_tamat || null, peringkat: d.peringkat || null, tempat: d.tempat.trim() || null, catatan: d.catatan.trim() || null });
+        unit_kod: d.unit_kod || null, tarikh_mula: d.tarikh_mula, tarikh_tamat: d.tarikh_tamat || null, peringkat: d.peringkat || null, tempat: d.tempat.trim() || null, catatan: d.catatan.trim() || null,
+        ...('tindakan' in d ? { tindakan: d.tindakan.trim().toUpperCase() || null } : {}) });
       const i = F().aktiviti.findIndex((x) => x.id === rec.id);
       if (rec.tahun !== F().tahun) { if (i >= 0) F().aktiviti.splice(i, 1); roti(`Disimpan dalam takwim ${rec.tahun}`); }
       else { if (i >= 0) F().aktiviti[i] = rec; else F().aktiviti.push(rec); roti('Aktiviti disimpan'); }
@@ -3563,11 +3814,11 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       return `${ps.length ? `<form class="panel" id="borang-f2-rancangan" data-unit="${e(u.kod)}" style="padding:0">
           <div style="padding:14px 16px 4px"><h2 style="margin:0">Rancangan perjumpaan ${F().tahun}</h2><p class="pudar kecil" style="margin:4px 0 0">${ps.length} perjumpaan ${KAT[u.kategori]}. ${boleh ? 'Isi tajuk aktiviti setiap perjumpaan. Tajuk ini digunakan dalam OPR dan Buku Laporan.' : ''}</p></div>
           <div class="rancangan-senarai">${ps.map((p) => { const r = rancangan(p.id, u.kod) || {}; const lepas = p.tarikh < hariIniIso();
-            return `<div class="rancangan-baris ${lepas ? 'lepas' : ''}"><span class="bil">${p.bil}</span><div class="bila"><b>${e(fmtT(p.tarikh))}</b><small>${HARI[tk(p.tarikh).getDay()]}${p.masa_mula ? ', ' + e(p.masa_mula) : ''}</small></div>
-              ${boleh ? `<input type="text" name="tajuk_${p.id}" value="${e(r.tajuk || '')}" placeholder="Tajuk aktiviti" aria-label="Tajuk perjumpaan ${p.bil}">
+            return `<div class="rancangan-baris ${lepas ? 'lepas' : ''}"><span class="bil">${p.bil}</span><div class="bila"><b>${e(fmtT(p.tarikh))}</b><small>${HARI[tk(p.tarikh).getDay()]}${p.masa_mula ? ', ' + e(p.masa_mula) : ''}</small>${p.tema ? `<small class="tema">${e(p.tema)}</small>` : ''}</div>
+              ${boleh ? `<input type="text" name="tajuk_${p.id}" value="${e(r.tajuk || '')}" placeholder="${e(p.tema ? 'Tema takwim: ' + p.tema : 'Tajuk aktiviti')}" aria-label="Tajuk perjumpaan ${p.bil}">
                 <input type="text" name="tempat_${p.id}" value="${e(r.tempat || '')}" placeholder="Tempat" aria-label="Tempat">
                 <select name="status_${p.id}" aria-label="Status">${Object.entries(STATUS_R).map(([k, v]) => `<option value="${k}" ${(r.status || 'dirancang') === k ? 'selected' : ''}>${v}</option>`).join('')}</select>`
-                : `<span class="teks">${e(r.tajuk || '—')}${r.tempat ? `<small>${e(r.tempat)}</small>` : ''}</span><span class="pudar kecil">${STATUS_R[r.status || 'dirancang']}</span>`}</div>`; }).join('')}</div>
+                : `<span class="teks">${e(r.tajuk || p.tema || '—')}${r.tempat ? `<small>${e(r.tempat)}</small>` : ''}</span><span class="pudar kecil">${STATUS_R[r.status || 'dirancang']}</span>`}</div>`; }).join('')}</div>
           ${boleh ? '<div class="baris-btn" style="padding:12px 16px"><button class="btn utama" type="submit">Simpan rancangan</button></div>' : ''}</form>`
         : `<div class="panel kosong-isi"><h3>Tarikh perjumpaan ${KAT[u.kategori]} ${F().tahun} belum ditetapkan</h3><p>${penyelaras() ? '<a class="btn utama" href="#/takwim/jana">Jana tarikh perjumpaan</a>' : 'Penyelaras akan menetapkan tarikh perjumpaan dalam Takwim.'}</p></div>`}
         <div class="panel" style="margin-top:14px"><h2>Aktiviti dan pertandingan ${e(u.kod)}</h2>
@@ -3606,7 +3857,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       return `<div class="panel" style="margin-bottom:14px"><div class="cip-set">${ps.map((y) => `<a class="cip ${y.id === p.id ? 'pilih' : ''} ${direkod.has(y.id) ? 'siap' : ''}" href="#/unit/${encodeURIComponent(u.kod)}/kehadiran?p=${y.id}" title="${e(fmtT(y.tarikh))}">${y.bil}<small>${tk(y.tarikh).getDate()}/${tk(y.tarikh).getMonth() + 1}</small></a>`).join('')}</div>
           <p class="pudar kecil" style="margin:8px 0 0">Nombor bertanda hijau sudah direkod. ${direkod.size}/${ps.length} perjumpaan direkod.</p></div>
         <form class="panel" id="borang-f2-hadir" data-unit="${e(u.kod)}" data-p="${p.id}">
-          <div class="dk-kep"><h2 style="margin:0">Perjumpaan ${p.bil}: ${e(fmtT(p.tarikh, true))}</h2>${r && r.tajuk ? `<span class="pudar kecil">${e(r.tajuk)}</span>` : ''}</div>
+          <div class="dk-kep"><h2 style="margin:0">Perjumpaan ${p.bil}: ${e(fmtT(p.tarikh, true))}</h2>${(r && r.tajuk) || p.tema ? `<span class="pudar kecil">${e((r && r.tajuk) || p.tema)}</span>` : ''}</div>
           ${lagi ? '<div class="mesej amaran" style="margin:8px 0">Perjumpaan ini belum berlangsung.</div>' : ''}
           ${!rekP.size && boleh ? '<p class="kecil" style="margin:6px 0">Belum direkod. Semua ahli ditanda <b>Hadir</b>; tukar yang tidak hadir sahaja, kemudian tekan Simpan.</p>' : ''}
           ${boleh ? `<div class="baris-btn" style="margin:8px 0"><button type="button" class="btn kecil" data-act="f2-semua" data-v="H">Semua hadir</button><button type="button" class="btn kecil" data-act="f2-semua" data-v="T">Semua tidak hadir</button><span class="kecil" id="kiraan-hadir"></span></div>` : ''}
@@ -3662,7 +3913,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const p = ps.find((x) => x.id === pid);
       const r = p ? rancangan(p.id, u.kod) || {} : {};
       const hadirP = p ? F().kehUnit[u.kod].filter((k) => k.perjumpaan_id === p.id && k.status === 'H').length : null;
-      const v = o || { tarikh: p ? p.tarikh : hariIniIso(), masa: p ? p.masa_mula || '' : '', tajuk: r.tajuk || '', tempat: r.tempat || u.bilik_operasi || '', sasaran: `Ahli ${u.nama_penuh}`,
+      const v = o || { tarikh: p ? p.tarikh : hariIniIso(), masa: p ? p.masa_mula || '' : '', tajuk: r.tajuk || (p && p.tema) || '', tempat: r.tempat || u.bilik_operasi || '', sasaran: `Ahli ${u.nama_penuh}`,
         bil_hadir: hadirP || null, disediakan: S.profil.nama || '', gambar: [] };
       const gambar = v.gambar || [];
       const ta = (n, l, ph, baris) => `<label class="medan">${l}<textarea name="${n}" rows="${baris || 3}" placeholder="${e(ph || '')}">${e(v[n] || '')}</textarea></label>`;
@@ -4059,7 +4310,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const kembali = u ? `#/unit/${encodeURIComponent(u.kod)}/${{ rancangan: 'takwim', kehadiran: 'kehadiran', opr: 'opr', pajsk: 'pajsk', laporan: 'laporan' }[doc] || ''}` : doc === 'opr' && q.get('id') ? (() => { const o = F().opr.find((x) => x.id === q.get('id')); return o ? `#/unit/${encodeURIComponent(o.unit_kod)}/opr` : '#/takwim'; })() : doc === 'pajskkelas' ? '#/pajsk/rumusan' : '#/takwim/bulan';
       let isi = '', landskap = false;
       try {
-        if (doc === 'takwim') isi = dokTakwim();
+        if (doc === 'takwim') { isi = dokTakwim(); landskap = true; }
+        else if (doc === 'takwimbulan') isi = dokTakwimBulan();
         else if (doc === 'rancangan' && u) isi = dokRancangan(u);
         else if (doc === 'kehadiran' && u) { isi = dokKehadiran(u); landskap = true; }
         else if (doc === 'opr') isi = dokOpr(q.get('id') ? F().opr.filter((o) => o.id === q.get('id')) : F().opr.filter((o) => u && o.unit_kod === u.kod).sort((a, b) => a.tarikh.localeCompare(b.tarikh)));
@@ -4071,11 +4323,20 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const bil = (isi.match(/<section class="halaman/g) || []).length;
       return `<div class="panel tanpa-cetak" style="margin-bottom:14px"><p style="margin:0 0 10px"><a href="${kembali}">← Kembali</a></p>
           <div class="baris-btn">${BINGKAI ? '' : `<button class="btn utama" data-act="cetak">${IKON.cetak} Cetak (${bil} halaman)</button>`}
-            ${doc === 'takwim' ? `<button class="btn" data-act="f2-excel-takwim">${IKON.muat} Excel</button>` : ''}${doc === 'kehadiran' && u ? `<button class="btn" data-act="f2-excel-hadir" data-unit="${e(u.kod)}">${IKON.muat} Excel</button>` : ''}</div>
+            ${doc === 'takwim' || doc === 'takwimbulan' ? `<button class="btn" data-act="f2-excel-takwim">${IKON.muat} Excel</button><a class="btn" href="#/takwim/cetak?doc=${doc === 'takwim' ? 'takwimbulan' : 'takwim'}&tahun=${F().tahun}">${doc === 'takwim' ? 'Format ikut bulan' : 'Format sekolah'}</a>` : ''}${doc === 'kehadiran' && u ? `<button class="btn" data-act="f2-excel-hadir" data-unit="${e(u.kod)}">${IKON.muat} Excel</button>` : ''}</div>
           <p class="pudar kecil" style="margin:8px 0 0">${landskap ? 'Cetak pada A4 melintang (landskap). ' : 'Saiz A4. '}Matikan "Headers and footers" dalam tetapan cetak.</p></div>
         <div class="kertas-cetak">${isi}</div>`;
     }
+    const ttdKokum = () => { const x = T().ttd_kokum; return Array.isArray(x) && x.length === 2 ? x : [{ nama: '', jawatan: 'Setiausaha Kokurikulum' }, { nama: '', jawatan: 'Penolong Kanan Kokurikulum' }]; };
     function dokTakwim() {
+      const b = barisSekolah(), C = kiraanBidang();
+      if (!b.length) return '<section class="halaman dok"><p>Takwim kosong.</p></section>';
+      return `<section class="halaman dok landskap takwim-dok">${kepalaDok(`TAKWIM KOKURIKULUM ${F().tahun}`)}
+        ${jadualSekolah(b, false)}
+        <p class="nota-borang">M = minggu ke-. Jumlah perjumpaan: Unit Beruniform ${C.UB}, Kelab & Persatuan ${C.KP}, Sukan & Permainan ${C.SP}. Tarikh bertanda tentatif tertakluk kepada perubahan.</p>
+        ${ttd(ttdKokum().map((x, i) => `${i ? 'Disahkan oleh' : 'Disediakan oleh'},<br>${x.nama ? `<b>(${e(x.nama)})</b><br>` : '<br>'}${e(x.jawatan || '')}`))}</section>`;
+    }
+    function dokTakwimBulan() {
       const sem = entri(), ikut = new Map();
       sem.forEach((x) => { const b = x.mula.slice(0, 7); if (!ikut.has(b)) ikut.set(b, []); ikut.get(b).push(x); });
       return `<section class="halaman dok">${kepalaDok(`TAKWIM KOKURIKULUM ${F().tahun}`)}
@@ -4196,8 +4457,13 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
 
     /* ============================================================ excel */
     function eksportTakwim() {
+      const sekolah = [['BIL', 'BULAN', 'M', 'HARI', 'TARIKH', 'PROGRAM SEKOLAH', 'PROGRAM AKTIVITI KOKURIKULUM', 'TINDAKAN', 'TENTATIF']].concat(barisSekolah().map((x) => {
+        if (x.cuti) return ['', '', '', '', tarikhDM(x.cuti), x.cuti.tajuk.toUpperCase(), '', '', ''];
+        const d = tk(x.tarikh); return [x.bil, BLN_S[d.getMonth()], mingguIso(x.tarikh), HARI[d.getDay()].toUpperCase(), tarikhSlash(x.tarikh), teksProgram(x), teksKokum(x.ps), teksTindakan(x), x.ps.some((p) => p.tentatif) ? 'YA' : ''];
+      }));
       const rows = [['TARIKH MULA', 'TARIKH TAMAT', 'HARI', 'PERKARA', 'JENIS']].concat(entri().map((x) => [x.mula, x.tamat || '', HARI[tk(x.mula).getDay()], teksEntri(x, false), x.jenis === 'perjumpaan' ? 'PERJUMPAAN' : x.olahraga ? 'OLAHRAGA' : JENIS[x.jenis].toUpperCase()]));
-      return eksport(`TAKWIM-KOKUM-${F().tahun}.xlsx`, [['Takwim', [[`TAKWIM KOKURIKULUM ${F().tahun}`], [T().nama_sekolah || ''], []].concat(rows)]]).then((ok) => { if (ok) roti('Fail Excel disediakan'); });
+      const tajuk = [[`TAKWIM KOKURIKULUM ${F().tahun}`], [T().nama_sekolah || ''], []];
+      return eksport(`TAKWIM-KOKUM-${F().tahun}.xlsx`, [['Takwim', tajuk.concat(sekolah)], ['Ikut tarikh', tajuk.concat(rows)]]).then((ok) => { if (ok) roti('Fail Excel disediakan'); });
     }
     function eksportHadir(kod) {
       const u = S.unitPeta.get(kod), ps = perjumpaanKat(u.kategori), keh = F().kehUnit[kod] || [];
@@ -4218,6 +4484,9 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           $('#dlg').close(); roti('Aktiviti dipadam'); S.kekalSkrol = true; render(); return true;
         }
         case 'f2-kpm': await masukKpm(); return true;
+        case 'f2-draf': await muatDraf(); return true;
+        case 'f2-baris': bukaBaris(el.dataset.tarikh || null); return true;
+        case 'f2-padam-baris': await padamBaris(el.dataset.tarikh); return true;
         case 'f2-pc-baru': bukaPc({ mid: el.dataset.mid, bidang: el.dataset.bidang, kembali: el.dataset.kembali }); return true;
         case 'f2-pc-pilih': { const f = $('#borang-f2-pc'); if (!f._murid.includes(el.dataset.mid)) f._murid.push(el.dataset.mid); $('#pc-cari').value = ''; isiPc(); $('#pc-cari').focus(); return true; }
         case 'f2-pc-buang': { const f = $('#borang-f2-pc'); f._murid = f._murid.filter((x) => x !== el.dataset.mid); isiPc(); return true; }
@@ -4284,6 +4553,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       switch (f.id) {
         case 'borang-f2-jana': await simpanJana(f); return true;
         case 'borang-f2-tarikh': await simpanTarikh(f); return true;
+        case 'borang-f2-baris': await simpanBaris(f); return true;
         case 'borang-f2-aktiviti': await simpanAktiviti(f); return true;
         case 'borang-f2-rancangan': await simpanRancangan(f); return true;
         case 'borang-f2-hadir': await simpanHadir(f); return true;
@@ -4299,7 +4569,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     function selepasRender() { if ($('#borang-f2-jana')) pratontonJana(); if ($('#borang-f2-hadir')) kiraHadirBorang(); }
 
     return { papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel,
-      _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT } };
+      _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, barisSekolah } };
   };
 })();
 
@@ -5169,6 +5439,10 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           <label class="medan">Tahun<input type="number" name="tahun" value="${e(t.tahun)}" min="2020" max="2100" required></label></div>
         <label class="medan">Alamat<input type="text" name="alamat" value="${e(t.alamat)}"></label>
         <label class="medan">Senarai rumah sukan<input type="text" name="senarai_rumah" value="${e((t.senarai_rumah || []).join(', '))}" placeholder="Contoh: MERAH, BIRU, HIJAU, KUNING"><span class="bantu">Pisahkan dengan koma. Kosongkan untuk taip bebas.</span></label>
+        ${'ttd_kokum' in t ? (() => { const x = Array.isArray(t.ttd_kokum) && t.ttd_kokum.length === 2 ? t.ttd_kokum : [{ nama: '', jawatan: 'Setiausaha Kokurikulum' }, { nama: '', jawatan: 'Penolong Kanan Kokurikulum' }];
+          return `<fieldset class="bidang-set"><legend>Tandatangan takwim kokurikulum</legend>
+          <div class="dua"><label class="medan">Disediakan oleh: nama<input type="text" name="ttdk1_nama" value="${e(x[0].nama || '')}" placeholder="Contoh: KEPLE @ ZULKEPLE BIN ABAS"></label><label class="medan">Jawatan<input type="text" name="ttdk1_jawatan" value="${e(x[0].jawatan || '')}"></label></div>
+          <div class="dua"><label class="medan">Disahkan oleh: nama<input type="text" name="ttdk2_nama" value="${e(x[1].nama || '')}"></label><label class="medan">Jawatan<input type="text" name="ttdk2_jawatan" value="${e(x[1].jawatan || '')}"></label></div></fieldset>`; })() : ''}
         <div><button class="btn utama" type="submit">Simpan</button></div>
       </form></div>
       <div class="panel"><h2>Sandaran data</h2>
@@ -5497,7 +5771,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (f.id === 'borang-kata') { await S.db.tukarKataLaluan(d.pw); f.reset(); return roti('Kata laluan ditukar'); }
       if (f.id === 'borang-sekolah') {
         const rumah = d.senarai_rumah.split(',').map((x) => x.trim().toUpperCase()).filter(Boolean);
-        S.data.tetapan = await S.db.simpanTetapan({ nama_sekolah: d.nama_sekolah.trim(), kod_sekolah: d.kod_sekolah.trim(), alamat: d.alamat.trim(), tahun: +d.tahun, senarai_rumah: rumah });
+        const ttdK = 'ttdk1_nama' in d ? { ttd_kokum: [1, 2].map((i) => ({ nama: d['ttdk' + i + '_nama'].trim().toUpperCase(), jawatan: d['ttdk' + i + '_jawatan'].trim() })) } : {};
+        S.data.tetapan = await S.db.simpanTetapan({ nama_sekolah: d.nama_sekolah.trim(), kod_sekolah: d.kod_sekolah.trim(), alamat: d.alamat.trim(), tahun: +d.tahun, senarai_rumah: rumah, ...ttdK });
         roti('Maklumat sekolah disimpan'); return render();
       }
     } catch (err) { gagal(err); }
