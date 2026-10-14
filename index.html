@@ -699,6 +699,13 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .kulit-ol-trek .garis circle { fill: none; stroke: #fff; stroke-width: 1.6; opacity: .9; }
 .kulit-ol-kaki { position: relative; z-index: 1; margin: 6mm 0 0; font-size: 8pt; color: #555; letter-spacing: .06em; }
 @media print { .halaman.kulit-ol, .kulit-ol-trek, .kulit-ol-tengah .johan, .rumah-baris i { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .halaman.kulit-ol { min-height: 272mm; } }
+.grid-profil { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.grid-profil .panel { margin: 0; }
+.gpa-besar { display: grid; justify-items: end; line-height: 1.05; }
+.gpa-besar small { font-size: .7rem; font-weight: 700; letter-spacing: .08em; color: var(--kabus); }
+.gpa-besar b { font-size: 2rem; color: var(--hijau); font-variant-numeric: tabular-nums; }
+.gpa-besar span { font-size: .8rem; font-weight: 700; }
+#pc-terpilih .cip { display: inline-flex; gap: 6px; align-items: center; }
 
 </style>
 </head>
@@ -970,6 +977,7 @@ window.KOKUM_CONFIG = {
   ].map(([kod, kategori, nama_penuh, bilik_operasi, guru_penasihat, jantina], i) =>
     ({ kod, kategori, nama_penuh, bilik_operasi, guru_penasihat, jantina, had_ahli: null, susunan: i, aktif: true }));
 
+  const MEDAN_PC = ['murid_id', 'tahun', 'bidang', 'aktiviti', 'program', 'tarikh', 'peringkat', 'jenis_libat', 'kedudukan', 'catatan', 'oleh_nama'];
   const MEDAN_OPR = ['unit_kod', 'tahun', 'perjumpaan_id', 'tarikh', 'masa', 'tempat', 'tajuk', 'sasaran', 'bil_hadir', 'objektif', 'aktiviti',
     'kekuatan', 'penambahbaikan', 'rumusan', 'gambar', 'disediakan'];
   const MEDAN_KEP = ['acara_id', 'pusingan', 'siri', 'lorong', 'murid_id', 'rumah', 'ahli', 'prestasi', 'nilai', 'cubaan', 'status', 'kedudukan', 'catatan'];
@@ -1150,7 +1158,8 @@ window.KOKUM_CONFIG = {
           sb.rpc('bil_hadir', { p_tahun: tahun }).then(semak),
           sb.from('ais_kejohanan').select('nama,tahun,tarikh_mula,tarikh_tamat,tempat').eq('tahun', tahun).then((r) => r.data || [], () => []),
         ]);
-        return { perjumpaan: per, aktiviti, rancangan, opr, pajsk, laporan, hadir, kejohanan: kej };
+        const pc = await sb.from('pencapaian_murid').select('*').eq('tahun', tahun).order('dicipta');
+        return { perjumpaan: per, aktiviti, rancangan, opr, pajsk, laporan, hadir, kejohanan: kej, pencapaian: pc.error ? [] : pc.data, adaPencapaian: !pc.error };
       },
       async f2KehadiranUnit(unit_kod, perjumpaanIds) {
         if (!perjumpaanIds.length) return [];
@@ -1211,6 +1220,10 @@ window.KOKUM_CONFIG = {
         }
         return hasil;
       },
+      async f2SimpanPencapaian(rows) {
+        return semak(await sb.from('pencapaian_murid').insert(rows.map((r) => pilih(r, MEDAN_PC))).select());
+      },
+      async f2PadamPencapaian(id) { semak(await sb.from('pencapaian_murid').delete().eq('id', id)); },
       async f2SimpanLaporan(r) {
         return semak(await sb.from('laporan_unit').upsert({ ...pilih(r, ['unit_kod', 'tahun', 'data']), dikemas: new Date().toISOString() }, { onConflict: 'unit_kod,tahun' }).select().single());
       },
@@ -1518,7 +1531,8 @@ window.KOKUM_CONFIG = {
         const d = baca(); if (!d.f2) { d.f2 = { perjumpaan: [], aktiviti: [], rancangan: [], kehadiran: [], opr: [], pajsk: [], laporan: [], gambar: {}, n: 1 }; tulis(); }
         const F = d.f2, per = F.perjumpaan.filter((p) => p.tahun === tahun).sort((p, q) => p.tarikh.localeCompare(q.tarikh)), ids = new Set(per.map((p) => p.id));
         const kej = d.ais ? d.ais.kejohanan.filter((k) => k.tahun === tahun) : [];
-        return salin({ perjumpaan: per, aktiviti: F.aktiviti.filter((a) => a.tahun === tahun), rancangan: F.rancangan.filter((r) => ids.has(r.perjumpaan_id)),
+        if (!F.pencapaian) F.pencapaian = [];
+        return salin({ pencapaian: F.pencapaian.filter((x) => x.tahun === tahun), adaPencapaian: true, perjumpaan: per, aktiviti: F.aktiviti.filter((a) => a.tahun === tahun), rancangan: F.rancangan.filter((r) => ids.has(r.perjumpaan_id)),
           opr: F.opr.filter((o) => o.tahun === tahun), pajsk: F.pajsk.filter((x) => x.tahun === tahun), laporan: F.laporan.filter((x) => x.tahun === tahun),
           hadir: this._hadir(F, tahun), kejohanan: kej });
       },
@@ -1576,6 +1590,12 @@ window.KOKUM_CONFIG = {
           if (!x) { x = {}; F.pajsk.push(x); } Object.assign(x, pilih(r, ['murid_id', 'tahun', 'bidang', 'unit_kod', 'data', 'markah']), { dikemas: new Date().toISOString() }); return x; });
         tulis(); return salin(hasil);
       },
+      async f2SimpanPencapaian(rows) {
+        const F = baca().f2; if (!F.pencapaian) F.pencapaian = [];
+        const baru = rows.map((r) => ({ ...pilih(r, MEDAN_PC), id: uuid(), oleh: 'demo', dicipta: new Date().toISOString() }));
+        F.pencapaian.push(...baru); tulis(); return salin(baru);
+      },
+      async f2PadamPencapaian(id) { const F = baca().f2; F.pencapaian = (F.pencapaian || []).filter((x) => x.id !== id); tulis(); },
       async f2SimpanLaporan(r) {
         const F = baca().f2; let x = F.laporan.find((y) => y.unit_kod === r.unit_kod && y.tahun === r.tahun);
         if (!x) { x = {}; F.laporan.push(x); } Object.assign(x, pilih(r, ['unit_kod', 'tahun', 'data']), { dikemas: new Date().toISOString() }); tulis(); return salin(x);
@@ -3264,6 +3284,9 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const h = F().hadirMap.get(m.id + '|' + kat);
       return h ? { n: h.hadir, sumber: 'rekod', direkod: h.direkod } : { n: null, sumber: 'tiada' };
     }
+    const skLibat = (per, jen) => { const sk = SK(); return per && jen ? ((sk.SKOR_LIBAT[sk.PERINGKAT.indexOf(per)] || [])[sk.JENIS_LIBAT.indexOf(jen)] || 0) : 0; };
+    const skCapai = (per, ked) => { const sk = SK(); return per && ked ? ((sk.SKOR_CAPAI[sk.PERINGKAT.indexOf(per)] || [])[sk.KEDUDUKAN.indexOf(ked)] || 0) : 0; };
+    const tambahanMurid = (mid, kat) => (F().pencapaian || []).filter((x) => x.murid_id === mid && (!kat || x.bidang === kat));
     function kiraBidang(m, kat, dataGanti) {
       const sk = SK(), d = dataGanti || ((rekPajsk(m.id, kat) || {}).data) || {};
       const jaw = jawatanMoeis(m, kat);
@@ -3273,11 +3296,18 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         jawatan: skor(sk.JAWATAN[kat], jaw), hadir: skorHadir(hadir),
         komitmen: Math.min(10, kom.reduce((s, k) => s + skor(sk.KOMITMEN, k), 0)),
         khidmat: d.khidmat ? skor(sk.KHIDMAT, d.khidmat) : 0,
-        libat: d.libat_per && d.libat_jenis ? ((sk.SKOR_LIBAT[sk.PERINGKAT.indexOf(d.libat_per)] || [])[sk.JENIS_LIBAT.indexOf(d.libat_jenis)] || 0) : 0,
-        capai: d.capai_per && d.capai_ked ? ((sk.SKOR_CAPAI[sk.PERINGKAT.indexOf(d.capai_per)] || [])[sk.KEDUDUKAN.indexOf(d.capai_ked)] || 0) : 0,
+        libat: skLibat(d.libat_per, d.libat_jenis), capai: skCapai(d.capai_per, d.capai_ked),
       };
+      // aktiviti tambahan: pelibatan dan pencapaian tertinggi antara utama dan tambahan
+      let bestL = { per: d.libat_per || '', jenis: d.libat_jenis || '', sumber: 'utama' }, bestC = { per: d.capai_per || '', ked: d.capai_ked || '', sumber: 'utama' };
+      const tambahan = tambahanMurid(m.id, kat);
+      tambahan.forEach((x) => {
+        const l = skLibat(x.peringkat, x.jenis_libat), cc = skCapai(x.peringkat, x.kedudukan);
+        if (l > c.libat) { c.libat = l; bestL = { per: x.peringkat, jenis: x.jenis_libat, sumber: x.aktiviti }; }
+        if (cc > c.capai) { c.capai = cc; bestC = { per: x.peringkat, ked: x.kedudukan, sumber: x.aktiviti }; }
+      });
       const jumlah = r2(c.jawatan + c.hadir + c.komitmen + c.khidmat + c.libat + c.capai);
-      return { ...c, jaw, hadirN: hadir, jumlah, markah: r2(jumlah / 110 * 100), lengkap: hadir != null && kom.length > 0 };
+      return { ...c, jaw, hadirN: hadir, jumlah, markah: r2(jumlah / 110 * 100), lengkap: hadir != null && kom.length > 0, bestL, bestC, tambahan };
     }
     function kiraEkstra(d) {
       const sk = SK(); d = d || {};
@@ -3300,9 +3330,10 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const out = {};
       BIDANG.forEach((k) => {
         if (!m[k.toLowerCase()]) return;
-        const d = (rekPajsk(m.id, k) || {}).data || {}, h = hadirMurid(m, k).n;
-        out[k] = { jawatan: jawatanMoeis(m, k), hadir: h, komitmen: (d.komitmen || []).slice(0, 4), khidmat: d.khidmat || '', libat_per: d.libat_per || '',
-          libat_jenis: d.libat_jenis || '', capai_per: d.capai_per || '', capai_ked: d.capai_ked || '' };
+        const d = (rekPajsk(m.id, k) || {}).data || {}, h = hadirMurid(m, k).n, x = kiraBidang(m, k);
+        // Excel/Robot: pelibatan & pencapaian tertinggi (utama atau tambahan), skor MOEIS sama
+        out[k] = { jawatan: jawatanMoeis(m, k), hadir: h, komitmen: (d.komitmen || []).slice(0, 4), khidmat: d.khidmat || '', libat_per: x.bestL.per,
+          libat_jenis: x.bestL.jenis, capai_per: x.bestC.per, capai_ked: x.bestC.ked };
       });
       const ek = (rekPajsk(m.id, 'EKSTRA') || {}).data;
       if (ek) out.EKSTRA = { ...ek, kmSusun: SK().KHIDMAT_MASY.map((j) => (ek.km || {})[j] || '') };
@@ -3745,7 +3776,11 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
             <label class="medan">Pelibatan: jenis<select name="libat_jenis">${pilihan(sk.JENIS_LIBAT, d.libat_jenis)}</select></label></div>
           <div class="dua"><label class="medan">Pencapaian: peringkat<select name="capai_per">${pilihan(sk.PERINGKAT, d.capai_per)}</select></label>
             <label class="medan">Pencapaian: kedudukan<select name="capai_ked">${pilihan(sk.KEDUDUKAN, d.capai_ked)}</select></label></div>
-          <p class="pudar kecil" style="margin:0">Pelibatan dan pencapaian: ambil yang tertinggi sepanjang tahun. Peringkat sekolah memberi 0 bagi pelibatan.</p>
+          <p class="pudar kecil" style="margin:0">Pelibatan dan pencapaian aktiviti utama (${e(u.nama_penuh)}). Peringkat sekolah memberi 0 bagi pelibatan.</p>
+          <div class="medan"><span>Aktiviti tambahan ${KAT[kat]}</span>
+            ${tambahanMurid(mid, kat).length ? `<ul class="kecil" style="margin:0;padding-left:18px">${tambahanMurid(mid, kat).map((x) => `<li><b>${e(x.aktiviti)}</b>${x.program ? ` · ${e(x.program)}` : ''} · ${e(x.peringkat)} · ${e(x.jenis_libat.replace(/^PELIBATAN \d - /, ''))}${x.kedudukan ? ` · <b>${e(x.kedudukan)}</b>` : ''}</li>`).join('')}</ul>` : '<span class="bantu">Tiada. Contoh: berdaftar dalam Badminton tetapi mewakili sekolah dalam Sepak Takraw MSSD.</span>'}
+            <span class="bantu">Markah mengambil pelibatan dan pencapaian tertinggi antara aktiviti utama dan tambahan.</span>
+            <button type="button" class="btn kecil" data-act="f2-pc-baru" data-mid="${e(mid)}" data-bidang="${kat}" data-kembali="${e(kod)}" style="justify-self:start">${IKON.tambah} Tambah aktiviti tambahan</button></div>
         </form></div>
         <div class="dt"><button class="btn" data-act="tutup">Tutup</button>${seterusnya ? '<button class="btn" type="submit" form="borang-f2-pajsk" name="lagi" value="1">Simpan & seterusnya</button>' : ''}<button class="btn utama" type="submit" form="borang-f2-pajsk">Simpan</button></div>`;
       dlg.dataset.id = ''; dlg.dataset.ubah = '';
@@ -3841,13 +3876,13 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     /* ============================================================ PAJSK sekolah */
     function pPajsk(tab, q) {
       const tahun = pilihTahun(q);
-      const tabs = [['ringkasan', 'Ringkasan unit'], ['rumusan', 'Rumusan murid'], ['ekstra', 'Ekstra kurikulum']];
+      const tabs = [['ringkasan', 'Ringkasan unit'], ['rumusan', 'Rumusan murid'], ['pencapaian', 'Pencapaian & tambahan'], ['ekstra', 'Ekstra kurikulum'], ['murid', 'Profil murid']];
       if (!tabs.some((t) => t[0] === tab)) tab = 'ringkasan';
       const kepala = `<div class="kepala tanpa-cetak"><div><h1>PAJSK ${tahun}</h1><p>Markah kokurikulum (Pentaksiran Aktiviti Jasmani, Sukan dan Kokurikulum) daripada data aplikasi.</p></div>
         <div class="baris-btn">${[tahunAsal() - 1, tahunAsal(), tahunAsal() + 1].map((t) => `<a class="cip ${t === tahun ? 'pilih' : ''}" href="#/pajsk/${tab}?tahun=${t}">${t}</a>`).join('')}</div></div>
         <nav class="tab tanpa-cetak">${tabs.map(([k, l]) => `<a href="#/pajsk/${k}?tahun=${tahun}" ${k === tab ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
       const x = sedia(tahun); if (x) return kepala + x;
-      return kepala + { ringkasan: pjRingkasan, rumusan: pjRumusan, ekstra: pjEkstra }[tab](q);
+      return kepala + { ringkasan: pjRingkasan, rumusan: pjRumusan, ekstra: pjEkstra, pencapaian: pjPencapaian, murid: pjMurid }[tab](q);
     }
     function pjRingkasan() {
       return BIDANG.map((kat) => `<section class="kategori ${kat}"><div class="kategori-kepala"><h2>${KAT[kat]}</h2></div>
@@ -3869,7 +3904,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
             ${kelas ? `<a class="btn" href="#/takwim/cetak?doc=pajskkelas&kelas=${encodeURIComponent(kelas)}&tahun=${F().tahun}">${IKON.cetak} Cetak</a>` : ''}</div>
           <p class="pudar kecil" style="margin:8px 0 0">GPA = purata 2 markah terbaik (KP, UB, SP) + Ekstra (maksimum 10), had 100. Gred: A 80+, B 60+, C 40+, D 20+, E.</p></div>
         ${kelas ? `<div class="panel skrol-x" style="padding:0"><table class="jadual"><thead><tr><th>Nama</th><th class="n">KP</th><th class="n">UB</th><th class="n">SP</th><th class="n">Ekstra</th><th class="n">GPA</th><th class="n">Gred</th></tr></thead><tbody>
-          ${baris.map(({ m, k }) => `<tr><td>${e(m.nama)}</td>${BIDANG.map((b) => `<td class="n">${k.b[b] ? k.b[b].markah : '—'}</td>`).join('')}<td class="n">${k.ekstra}</td><td class="n"><b>${k.gpa == null ? '—' : k.gpa}</b></td><td class="n"><b>${e(k.gred)}</b></td></tr>`).join('')}
+          ${baris.map(({ m, k }) => `<tr><td><a href="#/pajsk/murid?tahun=${F().tahun}&id=${e(m.id)}">${e(m.nama)}</a></td>${BIDANG.map((b) => `<td class="n">${k.b[b] ? k.b[b].markah : '—'}</td>`).join('')}<td class="n">${k.ekstra}</td><td class="n"><b>${k.gpa == null ? '—' : k.gpa}</b></td><td class="n"><b>${e(k.gred)}</b></td></tr>`).join('')}
           </tbody></table></div><p class="kecil">${Object.entries(gredK).sort().map(([g, n]) => `Gred ${g}: ${n}`).join(' · ')}</p>` : '<p class="pudar">Pilih kelas untuk melihat GPA setiap murid.</p>'}`;
     }
     function pjEkstra(q) {
@@ -3906,6 +3941,113 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const i = F().pajsk.findIndex((y) => y.murid_id === rec.murid_id && y.bidang === 'EKSTRA'); if (i >= 0) F().pajsk[i] = rec; else F().pajsk.push(rec);
       roti('Ekstra kurikulum disimpan'); $('#dlg').close(); S.kekalSkrol = true; render();
     }
+    /* ------------------------------------------------------------ pencapaian & aktiviti tambahan */
+    const bolehPadamPc = (x) => penyelaras() || (S.user && x.oleh === S.user.id) || x.oleh === 'demo';
+    function pjPencapaian(q) {
+      if (!F().adaPencapaian) return '<div class="mesej amaran">Bahagian ini memerlukan fail <b>fasa2_tambahan.sql</b>. Minta penyelaras menjalankannya di Supabase.</div>';
+      const bidang = q.get('bidang') || '', cari = (q.get('q') || '').toUpperCase(), peta = new Map(S.data.murid.map((m) => [m.id, m]));
+      const l = F().pencapaian.filter((x) => (!bidang || x.bidang === bidang) && (!cari || (peta.get(x.murid_id) || { nama: '' }).nama.includes(cari) || x.aktiviti.toUpperCase().includes(cari) || (x.program || '').toUpperCase().includes(cari)));
+      const kump = new Map();
+      l.forEach((x) => { const k = [x.aktiviti, x.program || '', x.peringkat, x.tarikh || ''].join('|'); if (!kump.has(k)) kump.set(k, []); kump.get(k).push(x); });
+      return `<div class="panel" style="margin-bottom:14px"><p class="kecil" style="margin:0">Rekod penglibatan dan pencapaian murid di luar aktiviti utama (lajur <b>Tambahan</b> dalam MOEIS) serta pertandingan peringkat zon, daerah, negeri dan kebangsaan. PAJSK mengambil pelibatan dan pencapaian tertinggi antara aktiviti utama dan tambahan. Semua guru boleh menambah rekod; hanya guru yang memasukkannya atau penyelaras boleh memadam.</p>
+          <form class="penapis" id="f2-pc-tapis" style="grid-template-columns:2fr 1fr;margin-top:10px"><input class="cari" type="search" name="q" value="${e(q.get('q') || '')}" placeholder="Cari murid, aktiviti atau program" aria-label="Cari"><select name="bidang" aria-label="Bidang"><option value="">Semua bidang</option>${BIDANG.map((k) => `<option value="${k}" ${k === bidang ? 'selected' : ''}>${KAT[k]}</option>`).join('')}</select></form>
+          <div class="baris-btn" style="margin-top:10px"><button class="btn utama" data-act="f2-pc-baru">${IKON.tambah} Tambah pencapaian</button><button class="btn" data-act="f2-excel-pc">${IKON.muat} Excel</button></div></div>
+        ${kump.size ? Array.from(kump.values()).map((xs) => { const x = xs[0]; return `<div class="panel kad-pc" style="margin-bottom:12px"><div class="kecil pudar">${cipKat(x.bidang)} ${e(x.peringkat)}${x.tarikh ? ' · ' + e(fmtT(x.tarikh)) : ''}${x.oleh_nama ? ' · dimasukkan oleh ' + e(x.oleh_nama) : ''}</div>
+            <h3 style="margin:4px 0">${e(x.aktiviti)}${x.program ? ` <span class="pudar" style="font-weight:500">· ${e(x.program)}</span>` : ''}</h3>
+            <ul class="senarai-kecil">${xs.map((y) => { const m = peta.get(y.murid_id) || { nama: '?', kelas: '' }; return `<li><a href="#/pajsk/murid?tahun=${F().tahun}&id=${e(y.murid_id)}">${e(m.nama)}</a> <span class="pudar">${e(m.kelas)} · ${e(y.jenis_libat.replace(/^PELIBATAN \d - /, ''))}</span>${y.kedudukan ? ` · <b>${e(y.kedudukan)}</b>` : ''} <span class="pudar">(+${skLibat(y.peringkat, y.jenis_libat)}${y.kedudukan ? ' / +' + skCapai(y.peringkat, y.kedudukan) : ''})</span>
+              ${bolehPadamPc(y) ? `<button class="pautan kecil" data-act="f2-pc-padam" data-id="${e(y.id)}">padam</button>` : ''}</li>`; }).join('')}</ul></div>`; }).join('') : '<div class="panel kosong-isi"><h3>Belum ada rekod</h3><p>Tambah pencapaian pertandingan atau aktiviti tambahan murid.</p></div>'}`;
+    }
+    function bukaPc(pra) {
+      const sk = SK(), sedia = (pra.mid ? [pra.mid] : []);
+      const namaAkt = Array.from(new Set(S.data.units.map((u) => u.nama_penuh).concat(['OLAHRAGA', 'MERENTAS DESA', 'SUKAN TARA'])));
+      const dlg = $('#dlg');
+      dlg.innerHTML = `<div class="dk"><div><h2>Tambah pencapaian / aktiviti tambahan</h2><p class="pudar kecil" style="margin:2px 0 0">PAJSK ${F().tahun}. Satu rekod untuk setiap murid yang dipilih.</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
+        <div class="db"><form class="borang" id="borang-f2-pc" data-kembali="${e(pra.kembali || '')}">
+          <div class="medan"><span>Murid</span><div id="pc-terpilih" class="cip-set"></div>
+            <input type="search" id="pc-cari" placeholder="Taip nama atau kelas untuk menambah murid" aria-label="Cari murid" autocomplete="off"><ul class="senarai" id="pc-hasil" style="max-height:30vh;overflow:auto"></ul></div>
+          <div class="dua"><label class="medan">Bidang<select name="bidang">${BIDANG.map((k) => `<option value="${k}" ${k === (pra.bidang || 'SP') ? 'selected' : ''}>${KAT[k]}</option>`).join('')}</select></label>
+            <label class="medan">Aktiviti<input type="text" name="aktiviti" list="pc-aktiviti" required placeholder="Contoh: SEPAK TAKRAW" autocapitalize="characters"><datalist id="pc-aktiviti">${namaAkt.map((n) => `<option value="${e(n)}">`).join('')}</datalist></label></div>
+          <label class="medan">Program / pertandingan<input type="text" name="program" placeholder="Contoh: Kejohanan Sepak Takraw MSSD Ranau 2027"></label>
+          <div class="dua"><label class="medan">Peringkat<select name="peringkat" required>${pilihan(sk.PERINGKAT, 'ZON/DAERAH')}</select></label><label class="medan">Tarikh<input type="date" name="tarikh"></label></div>
+          <div class="dua"><label class="medan">Jenis pelibatan<select name="jenis_libat" required>${pilihan(sk.JENIS_LIBAT, sk.JENIS_LIBAT[0])}</select></label>
+            <label class="medan">Pencapaian<select name="kedudukan">${pilihan(sk.KEDUDUKAN, '', 'Penyertaan sahaja')}</select></label></div>
+          <p class="kecil" id="pc-skor" style="margin:0"></p>
+        </form></div>
+        <div class="dt"><button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="borang-f2-pc">Simpan</button></div>`;
+      dlg.dataset.id = ''; dlg.dataset.ubah = '';
+      const f = $('#borang-f2-pc'); f._murid = sedia.slice();
+      if (!dlg.open) dlg.showModal();
+      isiPc(); skorPc();
+    }
+    function isiPc() {
+      const f = $('#borang-f2-pc'); if (!f) return;
+      const peta = new Map(S.data.murid.map((m) => [m.id, m]));
+      $('#pc-terpilih').innerHTML = f._murid.map((id) => `<span class="cip pilih">${e((peta.get(id) || {}).nama || '?')} <button type="button" class="pautan" data-act="f2-pc-buang" data-mid="${e(id)}" aria-label="Buang" style="color:inherit">×</button></span>`).join('') || '<span class="pudar kecil">Belum ada murid dipilih.</span>';
+      const q = ($('#pc-cari').value || '').trim().toUpperCase();
+      $('#pc-hasil').innerHTML = q.length < 2 ? '' : aktif().filter((m) => !f._murid.includes(m.id) && (m.nama.includes(q) || m.kelas.includes(q))).sort(susunMurid).slice(0, 30)
+        .map((m) => `<li><button type="button" class="baris" data-act="f2-pc-pilih" data-mid="${e(m.id)}"><span><span class="nama">${e(m.nama)}</span><br><span class="meta">${e(m.kelas)}</span></span><span>${IKON.tambah}</span></button></li>`).join('') || '<li class="kosong-isi">Tiada padanan.</li>';
+    }
+    function skorPc() {
+      const f = $('#borang-f2-pc'); if (!f) return;
+      const d = new FormData(f), l = skLibat(d.get('peringkat'), d.get('jenis_libat')), c = skCapai(d.get('peringkat'), d.get('kedudukan'));
+      $('#pc-skor').textContent = `Skor PAJSK: pelibatan ${l}${d.get('kedudukan') ? `, pencapaian ${c}` : ''} (diguna jika lebih tinggi daripada aktiviti utama).`;
+    }
+    async function simpanPc(f) {
+      const d = new FormData(f);
+      if (!f._murid.length) { roti('Pilih sekurang-kurangnya seorang murid.', true); return; }
+      const asas = { tahun: F().tahun, bidang: d.get('bidang'), aktiviti: String(d.get('aktiviti')).trim().toUpperCase(), program: String(d.get('program') || '').trim() || null,
+        tarikh: d.get('tarikh') || null, peringkat: d.get('peringkat'), jenis_libat: d.get('jenis_libat'), kedudukan: d.get('kedudukan') || null, oleh_nama: S.profil.nama || S.profil.email || null };
+      const baru = await S.db.f2SimpanPencapaian(f._murid.map((mid) => ({ ...asas, murid_id: mid })));
+      F().pencapaian.push(...baru);
+      await simpanMarkahSemula(f._murid, asas.bidang);
+      roti(`${baru.length} rekod disimpan`);
+      if (f.dataset.kembali && f._murid.length === 1) bukaPajsk(f._murid[0], f.dataset.kembali);
+      else { $('#dlg').close(); S.kekalSkrol = true; render(); }
+    }
+    // kemas kini markah tersimpan bagi murid yang sudah ada rekod PAJSK (supaya laporan konsisten)
+    async function simpanMarkahSemula(ids, kat) {
+      const rows = ids.map((mid) => { const r = rekPajsk(mid, kat), m = S.data.murid.find((x) => x.id === mid); return r && m ? { ...r, markah: kiraBidang(m, kat).markah } : null; }).filter(Boolean);
+      if (!rows.length) return;
+      const hasil = await S.db.f2SimpanPajsk(rows).catch(() => []);
+      hasil.forEach((r) => { const i = F().pajsk.findIndex((y) => y.murid_id === r.murid_id && y.bidang === r.bidang); if (i >= 0) F().pajsk[i] = r; });
+    }
+    function pjMurid(q) {
+      const m = S.data.murid.find((x) => x.id === q.get('id'));
+      if (!m) {
+        const cari = (q.get('q') || '').toUpperCase();
+        const l = cari.length >= 2 ? aktif().filter((x) => x.nama.includes(cari) || x.kelas.includes(cari)).sort(susunMurid).slice(0, 50) : [];
+        return `<div class="panel" style="margin-bottom:14px"><form class="penapis" id="f2-pj-murid" style="grid-template-columns:1fr"><input class="cari" type="search" name="q" value="${e(q.get('q') || '')}" placeholder="Cari nama murid" aria-label="Cari murid"></form></div>
+          ${l.length ? `<div class="panel" style="padding:0"><ul class="senarai">${l.map((x) => `<li><a class="baris" href="#/pajsk/murid?tahun=${F().tahun}&id=${e(x.id)}"><span><span class="nama">${e(x.nama)}</span><br><span class="meta">${e(x.kelas)}</span></span></a></li>`).join('')}</ul></div>` : '<p class="pudar">Taip sekurang-kurangnya 2 huruf.</p>'}`;
+      }
+      const k = kiraMurid(m), ek = (rekPajsk(m.id, 'EKSTRA') || {}).data || {};
+      const kad = (kat) => {
+        const kod = m[kat.toLowerCase()], u = kod && S.unitPeta.get(kod), x = k.b[kat];
+        if (!x) return `<div class="panel"><h3>${KAT[kat]}</h3><p class="pudar kecil">Tiada aktiviti utama.</p>${tambahanMurid(m.id, kat).length ? '<p class="kecil">Ada aktiviti tambahan, tetapi markah bidang memerlukan aktiviti utama.</p>' : ''}</div>`;
+        const d = (rekPajsk(m.id, kat) || {}).data || {};
+        return `<div class="panel"><div class="kepala-panel"><h3 style="margin:0">${KAT[kat]}</h3><span class="markah-pajsk"><b>${x.markah}</b><small>/100</small></span></div>
+          <p class="kecil" style="margin:4px 0"><b>${e(u ? u.nama_penuh : kod)}</b> · ${e(x.jaw)}</p>
+          <table class="jadual kecil"><tbody><tr><td>Jawatan</td><td class="n">${x.jawatan}</td></tr><tr><td>Kehadiran (${x.hadirN == null ? '?' : x.hadirN}/12)</td><td class="n">${x.hadir}</td></tr>
+            <tr><td>Komitmen (${(d.komitmen || []).length})</td><td class="n">${x.komitmen}</td></tr><tr><td>Khidmat sumbangan</td><td class="n">${x.khidmat}</td></tr>
+            <tr><td>Pelibatan${x.bestL.per ? `: ${e(x.bestL.per)}${x.bestL.sumber !== 'utama' ? ` <span class="pudar">(tambahan: ${e(x.bestL.sumber)})</span>` : ''}` : ''}</td><td class="n">${x.libat}</td></tr>
+            <tr><td>Pencapaian${x.bestC.ked ? `: ${e(x.bestC.ked)} ${e(x.bestC.per)}${x.bestC.sumber !== 'utama' ? ` <span class="pudar">(tambahan: ${e(x.bestC.sumber)})</span>` : ''}` : ''}</td><td class="n">${x.capai}</td></tr>
+            <tr><td><b>Jumlah</b></td><td class="n"><b>${x.jumlah} / 110</b></td></tr></tbody></table>
+          ${x.tambahan.length ? `<p class="kecil" style="margin:8px 0 2px"><b>Aktiviti tambahan</b></p><ul class="kecil" style="margin:0;padding-left:18px">${x.tambahan.map((t) => `<li>${e(t.aktiviti)}${t.program ? ` · ${e(t.program)}` : ''} · ${e(t.peringkat)}${t.kedudukan ? ` · ${e(t.kedudukan)}` : ''}</li>`).join('')}</ul>` : ''}
+          ${u && bolehUrus(u.kod) ? `<button class="btn kecil" data-act="f2-pajsk" data-murid="${e(m.id)}" data-unit="${e(u.kod)}" style="margin-top:8px">Ubah PAJSK ${e(u.kod)}</button>` : ''}</div>`;
+      };
+      return `<div class="panel" style="margin-bottom:14px"><div class="kepala-panel"><div><h2 style="margin:0">${e(m.nama)}</h2><p class="pudar kecil" style="margin:2px 0 0">${e(m.kelas)} · PAJSK ${F().tahun} (anggaran)</p></div>
+          <div class="gpa-besar"><small>GPA</small><b>${k.gpa == null ? '—' : k.gpa}</b><span>Gred ${e(k.gred || '—')}</span></div></div>
+          <div class="baris-btn" style="margin-top:10px"><button class="btn" data-act="f2-pc-baru" data-mid="${e(m.id)}">${IKON.tambah} Pencapaian / aktiviti tambahan</button>${penyelaras() ? `<button class="btn" data-act="f2-ekstra" data-murid="${e(m.id)}">Ekstra kurikulum</button>` : ''}<a class="btn" href="#/pajsk/murid?tahun=${F().tahun}">Murid lain</a></div></div>
+        <div class="grid-profil">${BIDANG.map(kad).join('')}
+          <div class="panel"><div class="kepala-panel"><h3 style="margin:0">Ekstra kurikulum</h3><span class="markah-pajsk"><b>${k.ekstra}</b><small>/10</small></span></div>
+            <ul class="kecil" style="margin:6px 0 0;padding-left:18px">${[ek.perkhidmatan && 'Perkhidmatan: ' + ek.perkhidmatan, ek.anugerah && 'Anugerah: ' + ek.anugerah, Object.keys(ek.km || {}).length && 'Khidmat masyarakat: ' + Object.entries(ek.km).map(([j, n]) => `${j} (${n})`).join(', '), ek.nilam && 'NILAM ' + ek.nilam, ek.timss && 'TIMSS/PISA: ' + ek.timss, ek.tl && 'TIDAK LAKSANA (TL)'].filter(Boolean).map((t) => `<li>${e(t)}</li>`).join('') || '<li class="pudar">Tiada rekod.</li>'}</ul></div></div>
+        <p class="pudar kecil">GPA = purata 2 markah bidang terbaik + Ekstra (maks. 10), had 100. Anggaran untuk semakan; MOEIS adalah muktamad.</p>`;
+    }
+    function eksportPc() {
+      const peta = new Map(S.data.murid.map((m) => [m.id, m]));
+      const rows = [['NAMA', 'KELAS', 'BIDANG', 'AKTIVITI', 'PROGRAM', 'TARIKH', 'PERINGKAT', 'PELIBATAN', 'PENCAPAIAN', 'DIMASUKKAN OLEH']].concat(F().pencapaian.map((x) => { const m = peta.get(x.murid_id) || {}; return [m.nama || '', m.kelas || '', x.bidang, x.aktiviti, x.program || '', x.tarikh || '', x.peringkat, x.jenis_libat, x.kedudukan || '', x.oleh_nama || '']; }));
+      return eksport(`PENCAPAIAN-MURID-${F().tahun}.xlsx`, [['Pencapaian', [[`PENCAPAIAN DAN AKTIVITI TAMBAHAN MURID ${F().tahun}`], [T().nama_sekolah || ''], []].concat(rows)]]).then((ok) => { if (ok) roti('Fail Excel disediakan'); });
+    }
+
     async function excelPajsk(murid, kats, nama) {
       if (!SK()) throw new Error('Data skor PAJSK tiada.');
       await templatPajsk(murid, kats, nama, isiExcel);
@@ -3999,6 +4141,8 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const oprs = F().opr.filter((o) => o.unit_kod === u.kod).sort((a, b) => a.tarikh.localeCompare(b.tarikh));
       const akt = F().aktiviti.filter((a) => a.unit_kod === u.kod).sort((p, q) => p.tarikh_mula.localeCompare(q.tarikh_mula));
       const capai = ahli.map((m) => ({ m, d: (rekPajsk(m.id, kat) || {}).data || {} })).filter((x) => x.d.capai_per || (x.d.libat_per && x.d.libat_per !== 'SEKOLAH'));
+      const ahliId = new Set(ahli.map((m) => m.id)), petaM = new Map(S.data.murid.map((m) => [m.id, m]));
+      const pcUnit = (F().pencapaian || []).filter((x) => x.bidang === kat && (ahliId.has(x.murid_id) || x.aktiviti === String(u.nama_penuh).toUpperCase()));
       const ting = ['1', '2', '3', '4', '5', 'PPKI'].map((tg) => [tg, ahli.filter((m) => m.tingkatan === tg && m.jantina === 'L').length, ahli.filter((m) => m.tingkatan === tg && m.jantina === 'P').length]).filter((x) => x[1] + x[2]);
       const markah = ahli.map((m) => kiraBidang(m, kat).markah);
       const julat = [[80, 100, 'A (80–100)'], [60, 79.99, 'B (60–79)'], [40, 59.99, 'C (40–59)'], [20, 39.99, 'D (20–39)'], [0, 19.99, 'E (0–19)']].map(([a, b, l]) => [l, markah.filter((x) => x >= a && x <= b).length]);
@@ -4021,8 +4165,9 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           ${bah(no(), 'TAKWIM DAN KEHADIRAN PERJUMPAAN', `<table><thead><tr><th>Bil</th><th>Tarikh</th><th>Aktiviti</th><th>Status</th><th>Hadir</th></tr></thead><tbody>${hadirP.map(({ p, n: hn, ada }) => { const r = rancangan(p.id, u.kod) || {}; return `<tr><td>${p.bil}</td><td>${e(fmtT(p.tarikh))}</td><td>${e(r.tajuk || '')}</td><td>${STATUS_R[r.status || 'dirancang']}</td><td>${ada ? `${hn}/${ahli.length}` : ''}</td></tr>`; }).join('')}</tbody></table>
             ${purataH != null ? `<p class="kecil">Purata kehadiran: ${purataH} murid setiap perjumpaan (${ahli.length ? Math.round(purataH / ahli.length * 100) : 0}%).</p>` : ''}`)}
           ${bah(no(), 'AKTIVITI, PERTANDINGAN DAN PENCAPAIAN', `${akt.length ? `<table><thead><tr><th>Tarikh</th><th>Aktiviti</th><th>Peringkat</th><th>Tempat</th></tr></thead><tbody>${akt.map((a) => `<tr><td>${e(fmtJulat(a.tarikh_mula, a.tarikh_tamat))}</td><td>${e(a.tajuk)}</td><td>${e(a.peringkat || '')}</td><td>${e(a.tempat || '')}</td></tr>`).join('')}</tbody></table>` : ''}
+            ${pcUnit.length ? `<table><thead><tr><th>Nama</th><th>Kelas</th><th>Aktiviti / program</th><th>Peringkat</th><th>Pencapaian</th></tr></thead><tbody>${pcUnit.map((x) => { const m = petaM.get(x.murid_id) || {}; return `<tr><td>${e(m.nama || '')}</td><td>${e(m.kelas || '')}</td><td>${e(x.aktiviti)}${x.program ? ' · ' + e(x.program) : ''}</td><td>${e(x.peringkat)}</td><td>${e(x.kedudukan || 'Penyertaan')}</td></tr>`; }).join('')}</tbody></table>` : ''}
             ${capai.length ? `<table><thead><tr><th>Nama</th><th>Kelas</th><th>Pelibatan</th><th>Pencapaian</th></tr></thead><tbody>${capai.map(({ m, d }) => `<tr><td>${e(m.nama)}</td><td>${e(m.kelas)}</td><td>${e([d.libat_per, (d.libat_jenis || '').replace(/^PELIBATAN \d - /, '')].filter(Boolean).join(', '))}</td><td>${e([d.capai_ked, d.capai_per].filter(Boolean).join(', '))}</td></tr>`).join('')}</tbody></table>` : ''}
-            ${teks(L.pencapaian, akt.length || capai.length ? '' : '—')}`)}
+            ${teks(L.pencapaian, akt.length || capai.length || pcUnit.length ? '' : '—')}`)}
           ${bah(no(), 'ANALISIS PAJSK', `<table><thead><tr>${julat.map(([l]) => `<th>${l}</th>`).join('')}<th>Purata</th></tr></thead><tbody><tr>${julat.map(([, c]) => `<td>${c}</td>`).join('')}<td>${markah.length ? r2(markah.reduce((s, x) => s + x, 0) / markah.length) : ''}</td></tr></tbody></table>
             <p class="kecil">Markah bidang ${KAT[kat]} (anggaran aplikasi, sebelum disahkan dalam MOEIS).</p>`)}
           ${bah(no(), 'MASALAH DAN CABARAN', teks(L.masalah, '—'))}
@@ -4073,6 +4218,17 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           $('#dlg').close(); roti('Aktiviti dipadam'); S.kekalSkrol = true; render(); return true;
         }
         case 'f2-kpm': await masukKpm(); return true;
+        case 'f2-pc-baru': bukaPc({ mid: el.dataset.mid, bidang: el.dataset.bidang, kembali: el.dataset.kembali }); return true;
+        case 'f2-pc-pilih': { const f = $('#borang-f2-pc'); if (!f._murid.includes(el.dataset.mid)) f._murid.push(el.dataset.mid); $('#pc-cari').value = ''; isiPc(); $('#pc-cari').focus(); return true; }
+        case 'f2-pc-buang': { const f = $('#borang-f2-pc'); f._murid = f._murid.filter((x) => x !== el.dataset.mid); isiPc(); return true; }
+        case 'f2-pc-padam': {
+          const x = F().pencapaian.find((y) => y.id === el.dataset.id);
+          if (!(await sahkan(`Padam rekod ${x.aktiviti}${x.program ? ' (' + x.program + ')' : ''} bagi murid ini?`, { ok: 'Padam', bahaya: true }))) return true;
+          await S.db.f2PadamPencapaian(x.id); F().pencapaian = F().pencapaian.filter((y) => y.id !== x.id);
+          await simpanMarkahSemula([x.murid_id], x.bidang);
+          roti('Rekod dipadam'); S.kekalSkrol = true; render(); return true;
+        }
+        case 'f2-excel-pc': await eksportPc(); return true;
         case 'f2-buang-baru': { const f = $('#borang-f2-opr'); f._fail.splice(+el.dataset.i, 1); $('#opr-pratonton').innerHTML = f._fail.map((x, i) => `<span class="gambar-kecil"><img src="${URL.createObjectURL(x)}" alt="Gambar baharu ${i + 1}"><button type="button" class="pautan kecil" data-act="f2-buang-baru" data-i="${i}">Buang</button></span>`).join(''); return true; }
         case 'f2-semua': $$('#borang-f2-hadir input[type=radio]').forEach((x) => { x.checked = x.value === el.dataset.v; }); kiraHadirBorang(); return true;
         case 'f2-padam-opr': {
@@ -4106,6 +4262,14 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         $('#opr-pratonton').innerHTML = f._fail.map((x, i) => `<span class="gambar-kecil"><img src="${URL.createObjectURL(x)}" alt="Gambar baharu ${i + 1}"><button type="button" class="pautan kecil" data-act="f2-buang-baru" data-i="${i}">Buang</button></span>`).join('');
         return true;
       }
+      if (t.id === 'pc-cari') { isiPc(); return true; }
+      if (t.closest('#borang-f2-pc')) { skorPc(); return true; }
+      if (t.closest('#f2-pc-tapis') || t.closest('#f2-pj-murid')) {
+        const f = t.closest('form'), d = new FormData(f), tab = f.id === 'f2-pc-tapis' ? 'pencapaian' : 'murid';
+        tetapLokasi(`#/pajsk/${tab}?tahun=${F().tahun}&q=${encodeURIComponent(d.get('q') || '')}${tab === 'pencapaian' ? '&bidang=' + encodeURIComponent(d.get('bidang') || '') : ''}`); S.kekalSkrol = true;
+        clearTimeout(S.f2Timer); S.f2Timer = setTimeout(() => { render(); const c = $(`#${f.id} [name=q]`); if (c && t.name === 'q') { c.focus(); c.setSelectionRange(c.value.length, c.value.length); } }, t.name === 'q' ? 300 : 0);
+        return true;
+      }
       if (t.closest('#f2-pj-kelas')) { tetapLokasi(`#/pajsk/rumusan?tahun=${F().tahun}&kelas=${encodeURIComponent(t.value)}`); S.kekalSkrol = true; render(); return true; }
       if (t.closest('#f2-pj-ekstra')) {
         const f = t.closest('form'), d = new FormData(f);
@@ -4127,6 +4291,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         case 'borang-f2-pajsk': await simpanPajsk(f, lagi); return true;
         case 'borang-f2-pukal': await simpanPukal(f); return true;
         case 'borang-f2-ekstra': await simpanEkstra(f); return true;
+        case 'borang-f2-pc': await simpanPc(f); return true;
         case 'borang-f2-laporan': await simpanLaporan(f); return true;
         default: return false;
       }
