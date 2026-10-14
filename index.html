@@ -3186,6 +3186,22 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     ['penutup', 'Penutup', ''],
   ];
   const SK = () => window.KOKUM_PAJSK_SKOR;
+  // Kalendar Akademik KPM (Kumpulan B: Sabah) termasuk cuti tambahan KPM. Cuti umum lain ditanda dalam catatan.
+  const KALENDAR_KPM = {
+    2027: [
+      ['2027-01-04', null, 'Hari pertama persekolahan 2027', 'sekolah', 'Kalendar Akademik KPM 2027'],
+      ['2027-02-05', '2027-02-12', 'Cuti Tahun Baharu Cina', 'cuti', 'Termasuk cuti tambahan KPM (Kumpulan B)'],
+      ['2027-03-06', '2027-03-14', 'Cuti Penggal 1', 'cuti', 'Hari Raya Puasa 10 & 11 Mac dalam cuti ini'],
+      ['2027-03-26', null, 'Good Friday (cuti umum Sabah)', 'cuti', 'Cuti umum negeri Sabah'],
+      ['2027-05-17', '2027-05-21', 'Cuti Hari Raya Korban dan Hari Wesak', 'cuti', 'Termasuk cuti tambahan KPM (Kumpulan B)'],
+      ['2027-05-22', '2027-06-06', 'Cuti Pertengahan Tahun', 'cuti', 'Pesta Kaamatan 30 & 31 Mei dalam cuti ini'],
+      ['2027-08-28', '2027-09-05', 'Cuti Penggal 2', 'cuti', 'Hari Kebangsaan 31 Ogos dalam cuti ini'],
+      ['2027-09-16', null, 'Hari Malaysia', 'cuti', 'Cuti umum'],
+      ['2027-10-27', '2027-10-29', 'Cuti Deepavali', 'cuti', 'Termasuk cuti tambahan KPM (Kumpulan B)'],
+      ['2027-12-03', null, 'Hari akhir persekolahan 2027', 'sekolah', 'Kalendar Akademik KPM 2027'],
+      ['2027-12-04', '2027-12-31', 'Cuti Akhir Persekolahan', 'cuti', ''],
+    ],
+  };
 
   window.KokumFasa2 = function (ctx) {
     const { S, e, $, $$, IKON, roti, sahkan, gagal, render, penyelaras, aktif, eksport, susunMurid, tetapLokasi, hariIni,
@@ -3384,10 +3400,25 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         <div class="baris-btn"><button class="btn utama" type="submit">Simpan tarikh perjumpaan ${t}</button></div>
         <p class="pudar kecil">Tarikh yang sudah ada dikemas kini mengikut nombor perjumpaan. Rekod kehadiran yang sudah diisi kekal.</p></form>
         <div class="panel"><h2>Cuti dan peperiksaan ${t}</h2>${cuti.length ? `<ul class="kecil" style="margin:0;padding-left:18px">${cuti.map((a) => `<li>${e(fmtJulat(a.tarikh_mula, a.tarikh_tamat))}: ${e(a.tajuk)}</li>`).join('')}</ul>` : '<p class="pudar kecil">Belum ada. Tambah cuti penggal dan minggu peperiksaan dahulu supaya tarikh tidak bertembung.</p>'}
-          <button class="btn" data-act="f2-aktiviti" data-jenis="cuti" style="margin-top:10px">${IKON.tambah} Tambah cuti / peperiksaan</button></div>`;
+          <div class="baris-btn" style="margin-top:10px">${butangKpm()}<button class="btn" data-act="f2-aktiviti" data-jenis="cuti">${IKON.tambah} Tambah cuti / peperiksaan</button></div></div>`;
     }
     function janaTarikh(d) {
       const out = {};
+      // Giliran mingguan (contoh UB minggu 1, KP minggu 2, SP minggu 3): minggu cuti dilangkau dan giliran diteruskan
+      const ada = BIDANG.filter((k) => d.get('ada_' + k) && d.get('mula_' + k)).sort((a, b) => d.get('mula_' + a).localeCompare(d.get('mula_' + b)));
+      const giliran = ada.length > 1 && ada.every((k) => +d.get('selang_' + k) === ada.length)
+        && ada.every((k, i) => i === 0 || d.get('mula_' + k) === tambahHari(d.get('mula_' + ada[i - 1]), 7));
+      if (giliran) {
+        const perlu = Object.fromEntries(ada.map((k) => [k, Math.max(1, Math.min(40, +d.get('bil_' + k) || 12))]));
+        ada.forEach((k) => { out[k] = []; });
+        let t = d.get('mula_' + ada[0]), i = 0, cuba = 0;
+        while (ada.some((k) => out[k].length < perlu[k]) && cuba < 300) {
+          cuba++;
+          if (!(d.get('langkau') && cutiPada(t).length)) { const k = ada[i % ada.length]; if (out[k].length < perlu[k]) out[k].push(t); i++; }
+          t = tambahHari(t, 7);
+        }
+        return out;
+      }
       BIDANG.forEach((k) => {
         if (!d.get('ada_' + k) || !d.get('mula_' + k)) return;
         const n = Math.max(1, Math.min(40, +d.get('bil_' + k) || 12)), selang = +d.get('selang_' + k) || 2;
@@ -3436,11 +3467,20 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const l = F().aktiviti.filter((a) => !jenis || a.jenis === jenis).sort((p, q2) => p.tarikh_mula.localeCompare(q2.tarikh_mula));
       return `<div class="panel" style="margin-bottom:14px"><div class="cip-set"><a class="cip ${!jenis ? 'pilih' : ''}" href="#/takwim/aktiviti">Semua</a>
           ${Object.entries(JENIS).map(([k, v]) => `<a class="cip ${k === jenis ? 'pilih' : ''}" href="#/takwim/aktiviti?jenis=${k}">${v}</a>`).join('')}</div>
-        <div class="baris-btn" style="margin-top:10px"><button class="btn utama" data-act="f2-aktiviti">${IKON.tambah} Tambah aktiviti</button></div>
+        <div class="baris-btn" style="margin-top:10px"><button class="btn utama" data-act="f2-aktiviti">${IKON.tambah} Tambah aktiviti</button>${butangKpm()}</div>
         <p class="pudar kecil" style="margin:8px 0 0">${penyelaras() ? 'Penyelaras boleh menambah semua jenis aktiviti.' : 'Guru penasihat boleh menambah aktiviti dan pertandingan bagi unit sendiri.'}</p></div>
         <div class="panel" style="padding:0">${l.length ? `<ul class="senarai">${l.map((a) => `<li><div class="baris" style="cursor:default">
           <span><span class="nama">${e(a.tajuk)}</span><br><span class="meta">${e(fmtJulat(a.tarikh_mula, a.tarikh_tamat))} · ${e(JENIS[a.jenis])}${a.unit_kod ? ' · ' + e(a.unit_kod) : ''}${a.peringkat ? ' · ' + e(a.peringkat) : ''}${a.tempat ? ' · ' + e(a.tempat) : ''}</span></span>
           ${bolehUbahAktiviti(a) ? `<button class="btn kecil" data-act="f2-aktiviti" data-id="${a.id}">Ubah</button>` : ''}</div></li>`).join('')}</ul>` : '<div class="kosong-isi">Tiada aktiviti.</div>'}</div>`;
+    }
+    const kpmBaki = () => (KALENDAR_KPM[F().tahun] || []).filter(([m, , t]) => !F().aktiviti.some((a) => a.tajuk === t && a.tarikh_mula === m));
+    const butangKpm = () => (penyelaras() && kpmBaki().length ? `<button class="btn" data-act="f2-kpm">Masukkan Kalendar Akademik KPM ${F().tahun} (Sabah, ${kpmBaki().length} tarikh)</button>` : '');
+    async function masukKpm() {
+      const l = kpmBaki();
+      if (!l.length) return;
+      if (!(await sahkan(`Masukkan ${l.length} tarikh daripada Kalendar Akademik KPM ${F().tahun} (Kumpulan B, Sabah)?\n\n${l.map(([m, t2, t]) => `${fmtJulat(m, t2)}: ${t}`).join('\n')}`, { ok: 'Masukkan' }))) return;
+      for (const [m, t2, t, j, c] of l) F().aktiviti.push(await S.db.f2SimpanAktiviti({ tahun: F().tahun, tarikh_mula: m, tarikh_tamat: t2, tajuk: t, jenis: j, unit_kod: null, peringkat: null, tempat: null, catatan: c || null }));
+      roti(`${l.length} tarikh kalendar KPM dimasukkan`); S.kekalSkrol = true; render();
     }
     function bukaAktiviti(id, pra) {
       const a = id ? F().aktiviti.find((x) => x.id === +id) : { jenis: pra.jenis || (penyelaras() ? 'sekolah' : 'unit'), unit_kod: pra.unit || '', tarikh_mula: '', tahun: F().tahun };
@@ -4032,6 +4072,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           await S.db.f2PadamAktiviti(+el.dataset.id); F().aktiviti = F().aktiviti.filter((a) => a.id !== +el.dataset.id);
           $('#dlg').close(); roti('Aktiviti dipadam'); S.kekalSkrol = true; render(); return true;
         }
+        case 'f2-kpm': await masukKpm(); return true;
         case 'f2-buang-baru': { const f = $('#borang-f2-opr'); f._fail.splice(+el.dataset.i, 1); $('#opr-pratonton').innerHTML = f._fail.map((x, i) => `<span class="gambar-kecil"><img src="${URL.createObjectURL(x)}" alt="Gambar baharu ${i + 1}"><button type="button" class="pautan kecil" data-act="f2-buang-baru" data-i="${i}">Buang</button></span>`).join(''); return true; }
         case 'f2-semua': $$('#borang-f2-hadir input[type=radio]').forEach((x) => { x.checked = x.value === el.dataset.v; }); kiraHadirBorang(); return true;
         case 'f2-padam-opr': {
