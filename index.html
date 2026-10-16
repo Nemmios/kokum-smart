@@ -694,6 +694,24 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .pajsk-markah small { font-size: .74rem; color: var(--kabus); }
 .pilih-komitmen { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 2px 12px; font-weight: 400; }
 .pilih-komitmen .cek { font-size: .84rem; padding: 3px 0; }
+#borang-f2-ekstra, .borang-ekstra section { min-width: 0; max-width: 100%; }
+.borang-ekstra select { width: 100%; max-width: 100%; min-width: 0; text-overflow: ellipsis; }
+.ekstra-anug { width: 100%; table-layout: fixed; }
+.ekstra-anug th:last-child, .ekstra-anug td:last-child { width: 84px; text-align: center; }
+.ekstra-anug td:first-child { overflow-wrap: anywhere; }
+.borang-ekstra section { border-top: 1px solid var(--garis); padding-top: 12px; }
+.borang-ekstra h3 { margin: 0 0 8px; font-size: .95rem; }
+.borang-ekstra .sama { margin: 6px 0 0; text-align: right; color: var(--kabus); font-size: .85rem; }
+.borang-ekstra .sama b { color: var(--dakwat); }
+.borang-ekstra.tidak-ditaksir section { opacity: .45; }
+.ekstra-anug td { vertical-align: middle; }
+.ekstra-anug .arp { display: flex; gap: 14px; margin-top: 4px; font-weight: 600; }
+.ekstra-km .km-baris { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 0; font-size: .85rem; }
+.km-kotak { display: flex; gap: 4px; flex: none; }
+.km-kotak button { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--garis-kuat); background: var(--permukaan); color: var(--kabus); font: 600 .8rem var(--fon); cursor: pointer; }
+.km-kotak button.aktif { background: var(--hijau); border-color: var(--hijau); color: var(--atas-hijau); }
+.ekstra-nilam { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .9rem; }
+.ekstra-jumlah { margin: 14px 0 0; padding: 10px 12px; background: var(--hijau-latar); border-radius: 8px; font-weight: 600; }
 .grid-km { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; font-weight: 400; }
 .grid-km label { display: grid; gap: 3px; font-size: .78rem; }
 .semak-laporan { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 4px; font-size: .88rem; }
@@ -4518,9 +4536,11 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const jumlah = r2(c.jawatan + c.hadir + c.komitmen + c.khidmat + c.libat + c.capai);
       return { ...c, jaw, hadirN: hadir, jumlah, markah: r2(jumlah / 110 * 100), lengkap: hadir != null && kom.length > 0, bestL, bestC, tambahan };
     }
+    const KM_MATA = 2;
     function kiraEkstra(d) {
       const sk = SK(); d = d || {};
-      const km = Math.min(10, Object.values(d.km || {}).reduce((s, n) => s + (+n || 0), 0));
+      // SPPB: tanda bilangan aktiviti (maksimum 5 aktiviti), 2 markah setiap aktiviti, maksimum 10
+      const km = Math.min(10, KM_MATA * Math.min(5, Object.values(d.km || {}).reduce((s, n) => s + (+n || 0), 0)));
       return Math.min(10, Math.max(0, d.perkhidmatan ? skor(sk.PERKHIDMATAN, d.perkhidmatan) : 0, d.anugerah ? skor(sk.ANUGERAH, d.anugerah) : 0,
         km, d.nilam ? skor(sk.NILAM, d.nilam) : 0, d.timss ? skor(sk.TIMSS, d.timss) : 0));
     }
@@ -5291,25 +5311,52 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
             <span><span class="nama">${e(m.nama)}</span><br><span class="meta">${e(m.kelas)}${d ? ` · ${[d.perkhidmatan, d.anugerah, d.nilam && 'NILAM ' + d.nilam, d.timss && 'TIMSS', d.tl && 'TL'].filter(Boolean).map((x) => e(String(x).slice(0, 40))).join(' · ')}` : ''}</span></span>
             <span class="markah-pajsk ${d ? '' : 'belum'}"><b>${kiraEkstra(d)}</b><small>ekstra</small></span></button></li>`; }).join('')}</ul></div>` : '<p class="pudar">Cari nama atau pilih kelas.</p>'}`;
     }
+    // Susunan dan istilah sama seperti SPPB / IdMe (Pentaksiran PAJSK, tab Ekstra Kurikulum)
+    const ARP = 'ANUGERAH REMAJA PERDANA';
     function bukaEkstra(mid) {
       const m = S.data.murid.find((x) => x.id === mid), sk = SK(), d = (rekPajsk(mid, 'EKSTRA') || {}).data || {};
+      const anugLain = sk.ANUGERAH.map(([t]) => t).filter((t) => !t.startsWith(ARP));
+      const arp = (d.anugerah || '').startsWith(ARP) ? d.anugerah.split(' - ')[1] : '';
       const dlg = $('#dlg');
-      dlg.innerHTML = `<div class="dk"><div><h2>${e(m.nama)}</h2><p class="pudar kecil" style="margin:2px 0 0">${e(m.kelas)} · Ekstra kurikulum ${F().tahun}</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
-        <div class="db"><form class="borang" id="borang-f2-ekstra" data-mid="${e(mid)}">
-          <label class="medan">Perkhidmatan<select name="perkhidmatan">${pilihan(sk.PERKHIDMATAN, d.perkhidmatan)}</select></label>
-          <label class="medan">Anugerah khas<select name="anugerah">${pilihan(sk.ANUGERAH, d.anugerah)}</select></label>
-          <div class="medan"><span>Khidmat masyarakat (bilangan aktiviti, 0–5)</span><div class="grid-km">${sk.KHIDMAT_MASY.map((j, i) => `<label>${e(j)}<input type="number" name="km_${i}" min="0" max="5" value="${e((d.km || {})[j] || '')}"></label>`).join('')}</div></div>
-          <div class="dua"><label class="medan">NILAM<select name="nilam">${pilihan(sk.NILAM, d.nilam)}</select></label><label class="medan">TIMSS / PISA<select name="timss">${pilihan(sk.TIMSS, d.timss)}</select></label></div>
-          <label class="cek"><input type="checkbox" name="tl" ${d.tl ? 'checked' : ''}> Tidak laksana (TL): murid tidak ditaksir PAJSK</label>
+      dlg.innerHTML = `<div class="dk"><div><h2>${e(m.nama)}</h2><p class="pudar kecil" style="margin:2px 0 0">${e(m.kelas)} · Ekstra Kurikulum ${F().tahun}</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
+        <div class="db"><form class="borang borang-ekstra" id="borang-f2-ekstra" data-mid="${e(mid)}">
+          <label class="cek ditaksir"><input type="checkbox" name="ditaksir" ${d.tl ? '' : 'checked'}> <b>DITAKSIR</b> <span class="pudar kecil">(matikan jika murid tidak ditaksir PAJSK)</span></label>
+          <section><h3>Perkhidmatan</h3><select name="perkhidmatan">${pilihan(sk.PERKHIDMATAN, d.perkhidmatan, 'Sila pilih perkhidmatan')}</select><p class="sama">= <b data-skor="perkhidmatan">0</b></p></section>
+          <section><h3>Anugerah khas <span class="pudar kecil">(maksimum pilihan 1)</span></h3>
+            <table class="jadual kecil ekstra-anug"><thead><tr><th>Perkara</th><th class="n">Penerima</th></tr></thead><tbody>
+              <tr><td>${ARP}<div class="arp">${['EMAS', 'PERAK', 'GANGSA'].map((g) => `<label><input type="radio" name="anugerah" value="${ARP} - ${g}" ${arp === g ? 'checked' : ''}> ${g}</label>`).join('')}</div></td><td></td></tr>
+              ${anugLain.map((t) => `<tr><td>${e(t)}</td><td class="n"><input type="radio" name="anugerah" value="${e(t)}" ${d.anugerah === t ? 'checked' : ''} aria-label="${e(t)}"></td></tr>`).join('')}
+            </tbody></table>
+            <button type="button" class="pautan kecil" data-act="f2-ekstra-kosong" data-nama="anugerah">Kosongkan pilihan anugerah</button><p class="sama">= <b data-skor="anugerah">0</b></p></section>
+          <section><h3>Khidmat masyarakat <span class="pudar kecil">(tanda mengikut bilangan aktiviti, maksimum 5)</span></h3>
+            <div class="ekstra-km">${sk.KHIDMAT_MASY.map((j, i) => { const n = +((d.km || {})[j] || 0); return `<div class="km-baris"><span>AKTIVITI ${e(j)}</span><span class="km-kotak">${[1, 2, 3, 4, 5].map((k) => `<button type="button" class="${k <= n ? 'aktif' : ''}" data-act="f2-km" data-i="${i}" data-n="${k}" aria-label="${e(j)}: ${k} aktiviti">${k}</button>`).join('')}</span><input type="hidden" name="km_${i}" value="${n || ''}"></div>`; }).join('')}</div>
+            <p class="sama">= <b data-skor="km">0</b></p></section>
+          <section><h3>Program NILAM <span class="pudar kecil">(maksimum pilihan 1)</span></h3>
+            <div class="ekstra-nilam">${sk.NILAM.map(([t]) => `<label><input type="radio" name="nilam" value="${e(t)}" ${d.nilam === t ? 'checked' : ''}> ${e(t)}</label>`).join('')}<label><input type="radio" name="nilam" value="" ${d.nilam ? '' : 'checked'}> Tiada</label></div>
+            <p class="sama">= <b data-skor="nilam">0</b></p></section>
+          <section><h3>TIMSS dan PISA</h3><select name="timss">${pilihan(sk.TIMSS, d.timss, 'Sila pilih TIMSS / PISA')}</select><p class="sama">= <b data-skor="timss">0</b></p></section>
+          <p class="ekstra-jumlah">Skor Aktiviti Ekstra Kurikulum = <b data-skor="jumlah">0</b> <span class="pudar kecil">(skor tertinggi, maksimum 10)</span></p>
         </form></div>
-        <div class="dt"><button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="borang-f2-ekstra">Simpan</button></div>`;
+        <div class="dt"><button class="btn" data-act="tutup">Tutup</button><button class="btn utama" type="submit" form="borang-f2-ekstra">Simpan</button></div>`;
       dlg.dataset.id = ''; dlg.dataset.ubah = '';
       if (!dlg.open) dlg.showModal();
+      kiraEkstraBorang();
     }
-    async function simpanEkstra(f) {
+    function dataEkstraBorang(f) {
       const d = new FormData(f), sk = SK(), km = {};
       sk.KHIDMAT_MASY.forEach((j, i) => { const v = +d.get('km_' + i); if (v > 0) km[j] = Math.min(5, v); });
-      const data = { perkhidmatan: d.get('perkhidmatan') || '', anugerah: d.get('anugerah') || '', km, nilam: d.get('nilam') || '', timss: d.get('timss') || '', tl: !!d.get('tl') };
+      return { perkhidmatan: d.get('perkhidmatan') || '', anugerah: d.get('anugerah') || '', km, nilam: d.get('nilam') || '', timss: d.get('timss') || '', tl: !d.get('ditaksir') };
+    }
+    function kiraEkstraBorang() {
+      const f = $('#borang-f2-ekstra'); if (!f) return;
+      const x = dataEkstraBorang(f), sk = SK();
+      const n = { perkhidmatan: x.perkhidmatan ? skor(sk.PERKHIDMATAN, x.perkhidmatan) : 0, anugerah: x.anugerah ? skor(sk.ANUGERAH, x.anugerah) : 0,
+        km: kiraEkstra({ km: x.km }), nilam: x.nilam ? skor(sk.NILAM, x.nilam) : 0, timss: x.timss ? skor(sk.TIMSS, x.timss) : 0, jumlah: x.tl ? 'TL' : kiraEkstra(x) };
+      Object.entries(n).forEach(([k, v]) => { const el = f.querySelector(`[data-skor="${k}"]`); if (el) el.textContent = v; });
+      f.classList.toggle('tidak-ditaksir', x.tl);
+    }
+    async function simpanEkstra(f) {
+      const data = dataEkstraBorang(f);
       const [rec] = await S.db.f2SimpanPajsk([{ murid_id: f.dataset.mid, tahun: F().tahun, bidang: 'EKSTRA', unit_kod: null, data, markah: kiraEkstra(data) }]);
       const i = F().pajsk.findIndex((y) => y.murid_id === rec.murid_id && y.bidang === 'EKSTRA'); if (i >= 0) F().pajsk[i] = rec; else F().pajsk.push(rec);
       roti('Ekstra kurikulum disimpan'); $('#dlg').close(); S.kekalSkrol = true; render();
@@ -5644,6 +5691,16 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         case 'f2-baris': bukaBaris(el.dataset.tarikh || null); return true;
         case 'f2-padam-baris': await padamBaris(el.dataset.tarikh); return true;
         case 'f2-pc-baru': bukaPc({ mid: el.dataset.mid, bidang: el.dataset.bidang, kembali: el.dataset.kembali }); return true;
+        case 'f2-km': {
+          const f = $('#borang-f2-ekstra'), i = el.dataset.i, inp = f.querySelector(`[name=km_${i}]`), lama = +inp.value || 0;
+          let n = +el.dataset.n; if (n === lama) n -= 1; // tekan kotak yang sama sekali lagi = kurangkan
+          const lain = Array.from(f.querySelectorAll('[name^=km_]')).filter((x) => x !== inp).reduce((s2, x) => s2 + (+x.value || 0), 0);
+          if (lain + n > 5) { roti('Maksimum 5 aktiviti khidmat masyarakat.', true); return true; }
+          inp.value = n || '';
+          el.parentNode.querySelectorAll('button').forEach((b, k) => b.classList.toggle('aktif', k < n));
+          kiraEkstraBorang(); return true;
+        }
+        case 'f2-ekstra-kosong': { $$(`#borang-f2-ekstra [name=${el.dataset.nama}]`).forEach((x) => { x.checked = false; }); kiraEkstraBorang(); return true; }
         case 'f2-pc-semua': { const f = $('#borang-f2-pc'), l = padanPc(f) || []; l.forEach((m) => f._murid.push(m.id)); $('#pc-cari').value = ''; isiPc(); roti(`${l.length} murid ditambah`); return true; }
         case 'f2-pc-pilih': { const f = $('#borang-f2-pc'); if (!f._murid.includes(el.dataset.mid)) f._murid.push(el.dataset.mid); $('#pc-cari').value = ''; isiPc(); $('#pc-cari').focus(); return true; }
         case 'f2-pc-buang': { const f = $('#borang-f2-pc'); f._murid = f._murid.filter((x) => x !== el.dataset.mid); isiPc(); return true; }
@@ -5681,6 +5738,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (t.closest('#borang-f2-jana')) { pratontonJana(); return true; }
       if (t.closest('#borang-f2-hadir')) { kiraHadirBorang(); return true; }
       if (t.closest('#borang-f2-pajsk')) { kiraPajskBorang(); return true; }
+      if (t.closest('#borang-f2-ekstra')) { kiraEkstraBorang(); return true; }
       if (t.id === 'pukal-semua') { $$('#borang-f2-pukal [name=murid]').forEach((x) => { x.checked = t.checked; }); return true; }
       if (t.closest('#borang-f2-opr') && t.name === 'perjumpaan_id') { isiDariPerjumpaan(t.closest('form')); return true; }
       if (t.closest('#borang-f2-opr') && (t.name === 'gambar' || t.name === 'kamera')) {
