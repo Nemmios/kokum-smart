@@ -468,6 +468,9 @@ button.pautan:hover { text-decoration: underline; }
 .pingat.emas { background: var(--emas); color: var(--permukaan); border-color: var(--emas); }
 .pingat.perak { background: var(--perak); color: var(--permukaan); border-color: var(--perak); }
 .pingat.gangsa { background: var(--gangsa); color: var(--permukaan); border-color: var(--gangsa); }
+.senarai.padat button.baris { padding: 7px 12px; grid-template-columns: 1fr auto !important; gap: 8px; }
+.senarai.padat .nama { font-size: .92rem; }
+.senarai.padat .kosong-isi { padding: 10px 12px; }
 .senarai button.baris:disabled { opacity: .55; cursor: not-allowed; }
 @media (max-width: 600px) {
   .acara-baris { grid-template-columns: minmax(0, 1fr); }
@@ -5334,7 +5337,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       dlg.innerHTML = `<div class="dk"><div><h2>Tambah penglibatan / pencapaian</h2><p class="pudar kecil" style="margin:2px 0 0">PAJSK ${F().tahun}. Satu rekod untuk setiap murid yang dipilih.</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
         <div class="db"><form class="borang" id="borang-f2-pc" data-kembali="${e(pra.kembali || '')}">
           <div class="medan"><span>Murid</span><div id="pc-terpilih" class="cip-set"></div>
-            <input type="search" id="pc-cari" placeholder="Taip nama atau kelas untuk menambah murid" aria-label="Cari murid" autocomplete="off"><ul class="senarai" id="pc-hasil" style="max-height:30vh;overflow:auto"></ul></div>
+            <input type="search" id="pc-cari" placeholder="Taip nama atau kelas untuk menambah murid" aria-label="Cari murid" autocomplete="off"><ul class="senarai padat" id="pc-hasil" style="max-height:45vh;overflow:auto"></ul></div>
           <div class="dua"><label class="medan">Bidang<select name="bidang">${BIDANG.map((k) => `<option value="${k}" ${k === (pra.bidang || 'SP') ? 'selected' : ''}>${KAT[k]}</option>`).join('')}</select></label>
             <label class="medan">Aktiviti<input type="text" name="aktiviti" list="pc-aktiviti" required placeholder="Contoh: SEPAK TAKRAW" autocapitalize="characters"><datalist id="pc-aktiviti">${namaAkt.map((n) => `<option value="${e(n)}">`).join('')}</datalist></label></div>
           <label class="medan">Program / pertandingan<input type="text" name="program" placeholder="Contoh: Kejohanan Sepak Takraw MSSD Ranau 2027"></label>
@@ -5354,9 +5357,21 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const f = $('#borang-f2-pc'); if (!f) return;
       const peta = new Map(S.data.murid.map((m) => [m.id, m]));
       $('#pc-terpilih').innerHTML = f._murid.map((id) => `<span class="cip pilih">${e((peta.get(id) || {}).nama || '?')} <button type="button" class="pautan" data-act="f2-pc-buang" data-mid="${e(id)}" aria-label="Buang" style="color:inherit">×</button></span>`).join('') || '<span class="pudar kecil">Belum ada murid dipilih.</span>';
-      const q = ($('#pc-cari').value || '').trim().toUpperCase();
-      $('#pc-hasil').innerHTML = q.length < 2 ? '' : aktif().filter((m) => !f._murid.includes(m.id) && (m.nama.includes(q) || m.kelas.includes(q))).sort(susunMurid).slice(0, 30)
-        .map((m) => `<li><button type="button" class="baris" data-act="f2-pc-pilih" data-mid="${e(m.id)}"><span><span class="nama">${e(m.nama)}</span><br><span class="meta">${e(m.kelas)}</span></span><span>${IKON.tambah}</span></button></li>`).join('') || '<li class="kosong-isi">Tiada padanan.</li>';
+      const l = padanPc(f);
+      $('#pc-hasil').innerHTML = l == null ? '' : (l.length > 1 ? `<li><button type="button" class="baris" data-act="f2-pc-semua"><span><b>Pilih semua ${l.length} murid</b> <span class="meta">· tambah semua padanan</span></span><span>${IKON.tambah}</span></button></li>` : '')
+        + (l.slice(0, 40).map((m) => `<li><button type="button" class="baris" data-act="f2-pc-pilih" data-mid="${e(m.id)}"><span><span class="nama">${e(m.nama)}</span> <span class="meta">· ${e(m.kelas)}</span></span><span>${IKON.tambah}</span></button></li>`).join('') || '<li class="kosong-isi">Tiada padanan.</li>')
+        + (l.length > 40 ? `<li class="kosong-isi kecil">${l.length - 40} lagi. Taip lebih spesifik, atau tekan Pilih semua.</li>` : '');
+    }
+    // carian murid: setiap perkataan mesti ada dalam nama atau kelas; ruang / tanda baca diabaikan ("4 di" = kelas 4 DIAMOND)
+    const normCari = (x) => String(x || '').toUpperCase().replace(/[^A-Z0-9@']+/g, ' ').trim();
+    function padanPc(f) {
+      const kata = normCari($('#pc-cari').value).split(' ').filter(Boolean);
+      if (!kata.length || kata.join('').length < 2) return null;
+      return aktif().filter((m) => {
+        if (f._murid.includes(m.id)) return false;
+        const h = normCari(m.nama + ' ' + m.kelas), rapat = h.replace(/ /g, '');
+        return kata.every((k) => h.includes(k) || rapat.includes(k));
+      }).sort(susunMurid);
     }
     function skorPc() {
       const f = $('#borang-f2-pc'); if (!f) return;
@@ -5629,6 +5644,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         case 'f2-baris': bukaBaris(el.dataset.tarikh || null); return true;
         case 'f2-padam-baris': await padamBaris(el.dataset.tarikh); return true;
         case 'f2-pc-baru': bukaPc({ mid: el.dataset.mid, bidang: el.dataset.bidang, kembali: el.dataset.kembali }); return true;
+        case 'f2-pc-semua': { const f = $('#borang-f2-pc'), l = padanPc(f) || []; l.forEach((m) => f._murid.push(m.id)); $('#pc-cari').value = ''; isiPc(); roti(`${l.length} murid ditambah`); return true; }
         case 'f2-pc-pilih': { const f = $('#borang-f2-pc'); if (!f._murid.includes(el.dataset.mid)) f._murid.push(el.dataset.mid); $('#pc-cari').value = ''; isiPc(); $('#pc-cari').focus(); return true; }
         case 'f2-pc-buang': { const f = $('#borang-f2-pc'); f._murid = f._murid.filter((x) => x !== el.dataset.mid); isiPc(); return true; }
         case 'f2-pc-padam': {
@@ -5674,7 +5690,12 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         $('#opr-pratonton').innerHTML = f._fail.map((x, i) => `<span class="gambar-kecil"><img src="${URL.createObjectURL(x)}" alt="Gambar baharu ${i + 1}"><button type="button" class="pautan kecil" data-act="f2-buang-baru" data-i="${i}">Buang</button></span>`).join('');
         return true;
       }
-      if (t.id === 'pc-cari') { isiPc(); return true; }
+      if (t.id === 'pc-cari') {
+        isiPc();
+        // telefon: naikkan kotak carian ke atas supaya senarai murid kelihatan di atas papan kekunci
+        if (!t._naik && window.innerWidth < 700) { t._naik = true; t.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+        return true;
+      }
       if (t.closest('#borang-f2-pc')) { skorPc(); return true; }
       if (t.closest('#f2-pc-tapis') || t.closest('#f2-pj-murid')) {
         const f = t.closest('form'), d = new FormData(f), tab = f.id === 'f2-pc-tapis' ? 'pencapaian' : 'murid';
