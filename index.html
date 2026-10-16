@@ -5313,13 +5313,13 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     // Susunan dan istilah sama seperti SPPB / IdMe (Pentaksiran PAJSK, tab Ekstra Kurikulum)
     const ARP = 'ANUGERAH REMAJA PERDANA';
-    function bukaEkstra(mid) {
+    function bukaEkstra(mid, kembali) {
       const m = S.data.murid.find((x) => x.id === mid), sk = SK(), d = (rekPajsk(mid, 'EKSTRA') || {}).data || {};
       const anugLain = sk.ANUGERAH.map(([t]) => t).filter((t) => !t.startsWith(ARP));
       const arp = (d.anugerah || '').startsWith(ARP) ? d.anugerah.split(' - ')[1] : '';
       const dlg = $('#dlg');
       dlg.innerHTML = `<div class="dk"><div><h2>${e(m.nama)}</h2><p class="pudar kecil" style="margin:2px 0 0">${e(m.kelas)} · Ekstra Kurikulum ${F().tahun}</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
-        <div class="db"><form class="borang borang-ekstra" id="borang-f2-ekstra" data-mid="${e(mid)}">
+        <div class="db"><form class="borang borang-ekstra" id="borang-f2-ekstra" data-mid="${e(mid)}" data-kembali="${e(kembali || '')}">
           <label class="cek ditaksir"><input type="checkbox" name="ditaksir" ${d.tl ? '' : 'checked'}> <b>DITAKSIR</b> <span class="pudar kecil">(matikan jika murid tidak ditaksir PAJSK)</span></label>
           <section><h3>Perkhidmatan</h3><select name="perkhidmatan">${pilihan(sk.PERKHIDMATAN, d.perkhidmatan, 'Sila pilih perkhidmatan')}</select><p class="sama">= <b data-skor="perkhidmatan">0</b></p></section>
           <section><h3>Anugerah khas <span class="pudar kecil">(maksimum pilihan 1)</span></h3>
@@ -5359,7 +5359,9 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const data = dataEkstraBorang(f);
       const [rec] = await S.db.f2SimpanPajsk([{ murid_id: f.dataset.mid, tahun: F().tahun, bidang: 'EKSTRA', unit_kod: null, data, markah: kiraEkstra(data) }]);
       const i = F().pajsk.findIndex((y) => y.murid_id === rec.murid_id && y.bidang === 'EKSTRA'); if (i >= 0) F().pajsk[i] = rec; else F().pajsk.push(rec);
-      roti('Ekstra kurikulum disimpan'); $('#dlg').close(); S.kekalSkrol = true; render();
+      roti('Ekstra kurikulum disimpan');
+      if (f.dataset.kembali === 'murid' && ctx.bukaMurid) { ctx.bukaMurid(f.dataset.mid); return; }
+      $('#dlg').close(); S.kekalSkrol = true; render();
     }
     /* ------------------------------------------------------------ pencapaian & aktiviti tambahan */
     const bolehPadamPc = (x) => penyelaras() || (S.user && x.oleh === S.user.id) || x.oleh === 'demo';
@@ -5440,8 +5442,25 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     function pcMurid(mid) {
       const t = tahunAsal();
       if (S.f2 && S.f2.tahun === t && !memuat) return `<div id="slot-pc">${pcMuridIsi(mid)}</div>`;
-      muat(t).then(() => { const el = $('#slot-pc'); if (el) el.innerHTML = pcMuridIsi(mid); });
+      muat(t).then(() => { const el = $('#slot-pc'); if (el) el.innerHTML = pcMuridIsi(mid); const ek = $('#slot-ekstra'); if (ek) ek.innerHTML = ekstraMuridIsi(mid); });
       return '<div id="slot-pc"><p class="pudar kecil">Memuatkan rekod…</p></div>';
+    }
+    // Ekstra Kurikulum dalam dialog murid (permintaan SU Data): ringkasan + butang isi (penyelaras)
+    function ekstraMuridIsi(mid) {
+      if (F().ralat) return '';
+      const d = (rekPajsk(mid, 'EKSTRA') || {}).data || null, sk = SK();
+      const baris = d ? [d.tl && '<b>TIDAK DITAKSIR</b>', d.perkhidmatan && `Perkhidmatan: ${e(d.perkhidmatan.split('|')[0])} (${skor(sk.PERKHIDMATAN, d.perkhidmatan)})`,
+        d.anugerah && `Anugerah: ${e(d.anugerah)} (${skor(sk.ANUGERAH, d.anugerah)})`,
+        Object.keys(d.km || {}).length && `Khidmat masyarakat: ${Object.values(d.km).reduce((a, n) => a + (+n || 0), 0)} aktiviti (${kiraEkstra({ km: d.km })})`,
+        d.nilam && `NILAM ${e(d.nilam)} (${skor(sk.NILAM, d.nilam)})`, d.timss && `TIMSS / PISA: ${e(d.timss)} (${skor(sk.TIMSS, d.timss)})`].filter(Boolean) : [];
+      return `${baris.length ? `<ul class="senarai-pc"><li><div class="kecil">${baris.join('<br>')}</div></li></ul>` : `<p class="pudar kecil" style="margin:0 0 8px">Belum diisi untuk ${F().tahun}.</p>`}
+        <p class="kecil" style="margin:0 0 8px">Skor Aktiviti Ekstra Kurikulum = <b>${d && d.tl ? 'TL' : kiraEkstra(d || {})}</b> / 10</p>
+        ${penyelaras() ? `<button type="button" class="btn kecil" data-act="f2-ekstra" data-murid="${e(mid)}" data-kembali="murid">${d ? 'Ubah' : 'Isi'} ekstra kurikulum</button>` : '<p class="pudar kecil" style="margin:0">Hanya penyelaras boleh mengisi ekstra kurikulum.</p>'}`;
+    }
+    function ekstraMurid(mid) {
+      const t = tahunAsal();
+      if (S.f2 && S.f2.tahun === t && !memuat) return `<div id="slot-ekstra">${ekstraMuridIsi(mid)}</div>`;
+      return '<div id="slot-ekstra"><p class="pudar kecil">Memuatkan…</p></div>';
     }
     async function simpanPc(f) {
       const d = new FormData(f);
@@ -5724,7 +5743,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         }
         case 'f2-pajsk': bukaPajsk(el.dataset.murid, el.dataset.unit); return true;
         case 'f2-pukal': bukaPukal(el.dataset.unit); return true;
-        case 'f2-ekstra': bukaEkstra(el.dataset.murid); return true;
+        case 'f2-ekstra': bukaEkstra(el.dataset.murid, el.dataset.kembali); return true;
         case 'f2-excel-unit': { const u = S.unitPeta.get(el.dataset.unit); await excelPajsk(ahliUnit(u), [u.kategori], u.kod); return true; }
         case 'f2-excel-kelas': await excelPajsk(aktif().filter((m) => m.kelas === el.dataset.kelas), BIDANG, 'KELAS-' + el.dataset.kelas); return true;
         case 'f2-excel-semua': await excelPajsk(aktif(), BIDANG, 'SEMUA'); return true;
@@ -5790,7 +5809,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     function selepasRender() { if ($('#borang-f2-jana')) pratontonJana(); if ($('#borang-f2-hadir')) kiraHadirBorang(); }
 
-    return { pcMurid, papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
+    return { pcMurid, ekstraMurid, papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
       _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, teksBaris, tanda, barisSekolah } };
   };
 })();
@@ -7526,6 +7545,9 @@ window.KOKUM_SURAT_ASET = {
           <h3 style="margin:20px 0 6px">Penglibatan & pencapaian ${e(t.tahun || '')}</h3>
           <p class="pudar kecil" style="margin:0 0 8px">Pertandingan, program dan anugerah murid. Semua guru (penasihat atau pengiring) boleh menambah rekod.</p>
           ${S.hs ? '' : F2.pcMurid(m.id)}
+          <h3 style="margin:20px 0 6px">Ekstra Kurikulum ${e(t.tahun || '')}</h3>
+          <p class="pudar kecil" style="margin:0 0 8px">Perkhidmatan, anugerah khas, khidmat masyarakat, NILAM dan TIMSS/PISA, sama seperti SPPB.</p>
+          ${S.hs ? '' : F2.ekstraMurid(m.id)}
           <h3 style="margin:20px 0 10px">Maklumat murid</h3>` : ''}
         <form class="borang" id="borang-murid">
           <label class="medan">Nama penuh<input type="text" name="nama" required value="${e(m.nama)}" ${boleh ? '' : 'readonly'}></label>
