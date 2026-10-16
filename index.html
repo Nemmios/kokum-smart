@@ -698,6 +698,9 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .semak-laporan li.ok span:first-child { color: var(--hijau); }
 .kepala-panel { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; }
 .kepala-panel h2 { margin: 0; }
+.senarai-pc { list-style: none; margin: 0 0 10px; padding: 0; border: 1px solid var(--garis); border-radius: var(--jejari); }
+.senarai-pc li { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 9px 12px; }
+.senarai-pc li + li { border-top: 1px solid var(--garis); }
 .senarai-kecil { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: .88rem; }
 .jadual td.ok { color: var(--hijau); font-weight: 800; }
 
@@ -5321,14 +5324,14 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           <div class="baris-btn" style="margin-top:10px"><button class="btn utama" data-act="f2-pc-baru">${IKON.tambah} Tambah pencapaian</button><button class="btn" data-act="f2-excel-pc">${IKON.muat} Excel</button></div></div>
         ${kump.size ? Array.from(kump.values()).map((xs) => { const x = xs[0]; return `<div class="panel kad-pc" style="margin-bottom:12px"><div class="kecil pudar">${cipKat(x.bidang)} ${e(x.peringkat)}${x.tarikh ? ' · ' + e(fmtT(x.tarikh)) : ''}${x.oleh_nama ? ' · dimasukkan oleh ' + e(x.oleh_nama) : ''}</div>
             <h3 style="margin:4px 0">${e(x.aktiviti)}${x.program ? ` <span class="pudar" style="font-weight:500">· ${e(x.program)}</span>` : ''}</h3>
-            <ul class="senarai-kecil">${xs.map((y) => { const m = peta.get(y.murid_id) || { nama: '?', kelas: '' }; return `<li><a href="#/pajsk/murid?tahun=${F().tahun}&id=${e(y.murid_id)}">${e(m.nama)}</a> <span class="pudar">${e(m.kelas)} · ${e(y.jenis_libat.replace(/^PELIBATAN \d - /, ''))}</span>${y.kedudukan ? ` · <b>${e(y.kedudukan)}</b>` : ''} <span class="pudar">(+${skLibat(y.peringkat, y.jenis_libat)}${y.kedudukan ? ' / +' + skCapai(y.peringkat, y.kedudukan) : ''})</span>
+            <ul class="senarai-kecil">${xs.map((y) => { const m = peta.get(y.murid_id) || { nama: '?', kelas: '' }; return `<li><a href="#/pajsk/murid?tahun=${F().tahun}&id=${e(y.murid_id)}">${e(m.nama)}</a> <span class="pudar">${e(m.kelas)} · ${e(y.jenis_libat.replace(/^PELIBATAN \d - /, ''))}</span>${y.kedudukan ? ` · <b>${e(y.kedudukan)}</b>` : ''}${y.catatan ? ` · ${e(y.catatan)}` : ''} <span class="pudar">(+${skLibat(y.peringkat, y.jenis_libat)}${y.kedudukan ? ' / +' + skCapai(y.peringkat, y.kedudukan) : ''})</span>
               ${bolehPadamPc(y) ? `<button class="pautan kecil" data-act="f2-pc-padam" data-id="${e(y.id)}">padam</button>` : ''}</li>`; }).join('')}</ul></div>`; }).join('') : '<div class="panel kosong-isi"><h3>Belum ada rekod</h3><p>Tambah pencapaian pertandingan atau aktiviti tambahan murid.</p></div>'}`;
     }
     function bukaPc(pra) {
       const sk = SK(), sedia = (pra.mid ? [pra.mid] : []);
       const namaAkt = Array.from(new Set(S.data.units.map((u) => u.nama_penuh).concat(['OLAHRAGA', 'MERENTAS DESA', 'SUKAN TARA'])));
       const dlg = $('#dlg');
-      dlg.innerHTML = `<div class="dk"><div><h2>Tambah pencapaian / aktiviti tambahan</h2><p class="pudar kecil" style="margin:2px 0 0">PAJSK ${F().tahun}. Satu rekod untuk setiap murid yang dipilih.</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
+      dlg.innerHTML = `<div class="dk"><div><h2>Tambah penglibatan / pencapaian</h2><p class="pudar kecil" style="margin:2px 0 0">PAJSK ${F().tahun}. Satu rekod untuk setiap murid yang dipilih.</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
         <div class="db"><form class="borang" id="borang-f2-pc" data-kembali="${e(pra.kembali || '')}">
           <div class="medan"><span>Murid</span><div id="pc-terpilih" class="cip-set"></div>
             <input type="search" id="pc-cari" placeholder="Taip nama atau kelas untuk menambah murid" aria-label="Cari murid" autocomplete="off"><ul class="senarai" id="pc-hasil" style="max-height:30vh;overflow:auto"></ul></div>
@@ -5338,6 +5341,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           <div class="dua"><label class="medan">Peringkat<select name="peringkat" required>${pilihan(sk.PERINGKAT, 'ZON/DAERAH')}</select></label><label class="medan">Tarikh<input type="date" name="tarikh"></label></div>
           <div class="dua"><label class="medan">Jenis pelibatan<select name="jenis_libat" required>${pilihan(sk.JENIS_LIBAT, sk.JENIS_LIBAT[0])}</select></label>
             <label class="medan">Pencapaian<select name="kedudukan">${pilihan(sk.KEDUDUKAN, '', 'Penyertaan sahaja')}</select></label></div>
+          <label class="medan">Anugerah / catatan (jika ada)<input type="text" name="catatan" maxlength="120" placeholder="Contoh: Pemain Terbaik, Anugerah Khas, Saguhati"></label>
           <p class="kecil" id="pc-skor" style="margin:0"></p>
         </form></div>
         <div class="dt"><button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="borang-f2-pc">Simpan</button></div>`;
@@ -5359,16 +5363,36 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const d = new FormData(f), l = skLibat(d.get('peringkat'), d.get('jenis_libat')), c = skCapai(d.get('peringkat'), d.get('kedudukan'));
       $('#pc-skor').textContent = `Skor PAJSK: pelibatan ${l}${d.get('kedudukan') ? `, pencapaian ${c}` : ''} (diguna jika lebih tinggi daripada aktiviti utama).`;
     }
+    // Rekod penglibatan & pencapaian dalam dialog murid (klik nama murid): semua guru boleh menambah bila-bila masa
+    function pcMuridIsi(mid) {
+      if (F().ralat) return `<p class="pudar kecil">${e(F().ralat)}</p>`;
+      if (!F().adaPencapaian) return '<p class="pudar kecil">Bahagian ini memerlukan fail <b>fasa2_tambahan.sql</b> di Supabase.</p>';
+      const l = F().pencapaian.filter((x) => x.murid_id === mid).sort((p, q) => String(q.tarikh || q.dicipta || '').localeCompare(String(p.tarikh || p.dicipta || '')));
+      return `${l.length ? `<ul class="senarai-pc">${l.map((y) => `<li><div><b>${e(y.aktiviti)}</b>${y.program ? ` <span class="pudar">· ${e(y.program)}</span>` : ''}
+          <div class="kecil">${cipKat(y.bidang)} ${e(y.peringkat)} · ${e(y.jenis_libat.replace(/^PELIBATAN \d - /, ''))}${y.kedudukan ? ` · <b>${e(y.kedudukan)}</b>` : ''}${y.catatan ? ` · <b>${e(y.catatan)}</b>` : ''}</div>
+          <div class="pudar kecil">${y.tarikh ? e(fmtT(y.tarikh)) + ' · ' : ''}${y.oleh_nama ? 'oleh ' + e(y.oleh_nama) : ''}</div></div>
+          ${bolehPadamPc(y) ? `<button type="button" class="pautan kecil" data-act="f2-pc-padam" data-id="${e(y.id)}" data-dari="murid">padam</button>` : ''}</li>`).join('')}</ul>`
+        : `<p class="pudar kecil" style="margin:0 0 8px">Belum ada rekod penglibatan atau pencapaian ${F().tahun}.</p>`}
+        <button type="button" class="btn kecil" data-act="f2-pc-baru" data-mid="${e(mid)}" data-kembali="murid">${IKON.tambah} Tambah penglibatan / pencapaian</button>`;
+    }
+    function pcMurid(mid) {
+      const t = tahunAsal();
+      if (S.f2 && S.f2.tahun === t && !memuat) return `<div id="slot-pc">${pcMuridIsi(mid)}</div>`;
+      muat(t).then(() => { const el = $('#slot-pc'); if (el) el.innerHTML = pcMuridIsi(mid); });
+      return '<div id="slot-pc"><p class="pudar kecil">Memuatkan rekod…</p></div>';
+    }
     async function simpanPc(f) {
       const d = new FormData(f);
       if (!f._murid.length) { roti('Pilih sekurang-kurangnya seorang murid.', true); return; }
       const asas = { tahun: F().tahun, bidang: d.get('bidang'), aktiviti: String(d.get('aktiviti')).trim().toUpperCase(), program: String(d.get('program') || '').trim() || null,
-        tarikh: d.get('tarikh') || null, peringkat: d.get('peringkat'), jenis_libat: d.get('jenis_libat'), kedudukan: d.get('kedudukan') || null, oleh_nama: S.profil.nama || S.profil.email || null };
+        tarikh: d.get('tarikh') || null, peringkat: d.get('peringkat'), jenis_libat: d.get('jenis_libat'), kedudukan: d.get('kedudukan') || null,
+        catatan: String(d.get('catatan') || '').trim() || null, oleh_nama: S.profil.nama || S.profil.email || null };
       const baru = await S.db.f2SimpanPencapaian(f._murid.map((mid) => ({ ...asas, murid_id: mid })));
       F().pencapaian.push(...baru);
       await simpanMarkahSemula(f._murid, asas.bidang);
       roti(`${baru.length} rekod disimpan`);
-      if (f.dataset.kembali && f._murid.length === 1) bukaPajsk(f._murid[0], f.dataset.kembali);
+      if (f.dataset.kembali === 'murid' && f._murid.length === 1 && ctx.bukaMurid) ctx.bukaMurid(f._murid[0]);
+      else if (f.dataset.kembali && f.dataset.kembali !== 'murid' && f._murid.length === 1) bukaPajsk(f._murid[0], f.dataset.kembali);
       else { $('#dlg').close(); S.kekalSkrol = true; render(); }
     }
     // kemas kini markah tersimpan bagi murid yang sudah ada rekod PAJSK (supaya laporan konsisten)
@@ -5612,7 +5636,9 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           if (!(await sahkan(`Padam rekod ${x.aktiviti}${x.program ? ' (' + x.program + ')' : ''} bagi murid ini?`, { ok: 'Padam', bahaya: true }))) return true;
           await S.db.f2PadamPencapaian(x.id); F().pencapaian = F().pencapaian.filter((y) => y.id !== x.id);
           await simpanMarkahSemula([x.murid_id], x.bidang);
-          roti('Rekod dipadam'); S.kekalSkrol = true; render(); return true;
+          roti('Rekod dipadam');
+          if (el.dataset.dari === 'murid') { const slot = $('#slot-pc'); if (slot) slot.innerHTML = pcMuridIsi(x.murid_id); return true; }
+          S.kekalSkrol = true; render(); return true;
         }
         case 'f2-excel-pc': await eksportPc(); return true;
         case 'f2-buang-baru': { const f = $('#borang-f2-opr'); f._fail.splice(+el.dataset.i, 1); $('#opr-pratonton').innerHTML = f._fail.map((x, i) => `<span class="gambar-kecil"><img src="${URL.createObjectURL(x)}" alt="Gambar baharu ${i + 1}"><button type="button" class="pautan kecil" data-act="f2-buang-baru" data-i="${i}">Buang</button></span>`).join(''); return true; }
@@ -5685,7 +5711,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     function selepasRender() { if ($('#borang-f2-jana')) pratontonJana(); if ($('#borang-f2-hadir')) kiraHadirBorang(); }
 
-    return { papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
+    return { pcMurid, papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
       _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, teksBaris, tanda, barisSekolah } };
   };
 })();
@@ -7128,7 +7154,7 @@ window.KOKUM_SURAT_ASET = {
   const MENU_BAWAH = ['utama', 'murid', 'unit', 'takwim', 'olahraga', 'tetapan'];  // Cetak ada dalam setiap halaman
   const AIS = window.KokumAIS({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
     eksport, KI, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI });
-  const F2 = window.KokumFasa2({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
+  const F2 = window.KokumFasa2({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(), bukaMurid: (id) => bukaMurid(id),
     eksport, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI, KAT, bolehUrus, ahliUnit: (u) => ahliUnit(u), unitKat: (k, s) => unitKat(k, s), KP_,
     templatPajsk: (m, k, n, isi) => templatPajsk(m, k, n, isi) });
   const LG = window.KokumLantikan({ S, e, $, IKON, roti, sahkan, render: () => render(), penyelaras, eksport, tetapLokasi, hariIni, LOGO, BINGKAI, unitKat: (k, s) => unitKat(k, s) });
@@ -7418,6 +7444,9 @@ window.KOKUM_SURAT_ASET = {
           ${isu.length ? `<ul class="isu">${isu.map((x) => `<li>${e(x)}</li>`).join('')}</ul>` : ''}</div>
           <h3 style="margin-bottom:6px">Keahlian kokurikulum</h3>
           <div id="slot-ahli">${KATS.map((kat) => slotAhli(m, kat)).join('')}</div>
+          <h3 style="margin:20px 0 6px">Penglibatan & pencapaian ${e(t.tahun || '')}</h3>
+          <p class="pudar kecil" style="margin:0 0 8px">Pertandingan, program dan anugerah murid. Semua guru (penasihat atau pengiring) boleh menambah rekod.</p>
+          ${S.hs ? '' : F2.pcMurid(m.id)}
           <h3 style="margin:20px 0 10px">Maklumat murid</h3>` : ''}
         <form class="borang" id="borang-murid">
           <label class="medan">Nama penuh<input type="text" name="nama" required value="${e(m.nama)}" ${boleh ? '' : 'readonly'}></label>
