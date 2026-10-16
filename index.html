@@ -349,6 +349,61 @@ dialog .dt { padding: 12px 20px; border-top: 1px solid var(--garis); display: fl
 .kemajuan > div { height: 100%; background: var(--hijau); transition: width .2s; }
 .lencana-demo { display: inline-block; background: var(--amaran-latar); color: var(--amaran); font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 5px; }
 
+/* ---------- Mod Hari Sukan ---------- */
+.lencana-hs { background: var(--hijau-latar); color: var(--hijau); margin-left: 6px; }
+@media (max-width: 860px) { .nav-bawah[style*="--bil"] { grid-template-columns: repeat(var(--bil), minmax(0, 1fr)); } }
+.hs-rumah { color: var(--w); background: color-mix(in srgb, var(--w) 14%, var(--permukaan)); }
+.hs-url { font: 800 clamp(1.3rem, 3vw, 2rem) var(--fon); letter-spacing: .01em; padding: 10px 14px; margin: 6px 0; border-radius: 8px; background: var(--hijau-latar); color: var(--hijau); word-break: break-all; }
+.hs-url.kecil { font-size: 1rem; background: transparent; padding: 2px 14px; }
+.hs-pin { display: flex; align-items: center; gap: 12px; margin: 14px 0 8px; flex-wrap: wrap; }
+.hs-pin span { color: var(--kabus); font-size: .85rem; }
+.hs-pin b { font-size: 2rem; letter-spacing: .2em; }
+.hs-kad { margin-bottom: 12px; }
+.hs-kad.siap { opacity: .6; }
+.hs-kad-atas { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.hs-pemenang { list-style: none; margin: 0 0 10px; padding: 0; }
+.hs-pemenang li { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--garis); flex-wrap: wrap; font-size: 1.05rem; }
+.hs-pemenang .n { font-weight: 700; flex: 1 1 140px; min-width: 0; }
+.hs-pemenang .p { font-variant-numeric: tabular-nums; font-weight: 700; }
+.rb { display: inline-block; background: var(--bahaya); color: #fff; font-size: .7rem; font-weight: 800; padding: 2px 7px; border-radius: 5px; letter-spacing: .04em; }
+
+/* papan markah untuk TV / projektor */
+.papan { min-height: 100vh; display: flex; flex-direction: column; background: #0d1512; color: #f3f6f4; padding: 2.2vh 2.4vw; gap: 2vh; font-size: clamp(14px, 1.25vw, 30px); position: relative; }
+.papan .pemuat { color: #cfd8d3; }
+.papan-atas { display: flex; align-items: center; gap: 1.4vw; }
+.papan-atas img { height: 9vh; width: auto; }
+.papan-atas h1 { margin: 0; font-size: 2.1em; line-height: 1.1; letter-spacing: -.01em; }
+.papan-atas p { margin: .3em 0 0; color: #9fb2a9; font-size: .95em; }
+.papan-jam { margin-left: auto; font-size: 2.6em; font-weight: 800; font-variant-numeric: tabular-nums; }
+.papan-isi { flex: 1; display: grid; grid-template-columns: 1.25fr 1fr; gap: 2vw; min-height: 0; }
+.papan-kedudukan { display: flex; flex-direction: column; gap: 1.4vh; justify-content: center; }
+.papan-baris { display: grid; grid-template-columns: 2.4em 1fr repeat(4, 4.6em); grid-template-rows: auto 6px; align-items: center; column-gap: .8em;
+  background: #16211c; border-left: .5em solid var(--w); border-radius: 10px; padding: 1.4vh 1.2vw .9vh; }
+.papan-baris .tempat { font-size: 2.2em; font-weight: 800; color: #9fb2a9; }
+.papan-baris .nama { font-size: 1.9em; font-weight: 800; letter-spacing: .02em; color: var(--w); filter: brightness(1.25); }
+.papan-baris .kira { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.papan-baris .kira b { font-size: 2.3em; font-variant-numeric: tabular-nums; }
+.papan-baris .kira small { font-size: .62em; color: #9fb2a9; text-transform: uppercase; letter-spacing: .08em; margin-top: .35em; }
+.papan-baris .kira.emas b { color: #f2c94c; } .papan-baris .kira.perak b { color: #d5dce1; } .papan-baris .kira.gangsa b { color: #e09a63; }
+.papan-baris .bar { grid-column: 1 / -1; height: 6px; background: #22302a; border-radius: 3px; overflow: hidden; margin-top: .8vh; }
+.papan-baris .bar i { display: block; height: 100%; background: var(--w); }
+.papan-terkini h2 { margin: 0 0 1.2vh; font-size: 1.35em; color: #9fb2a9; text-transform: uppercase; letter-spacing: .08em; }
+.papan-acara { background: #16211c; border-radius: 10px; padding: 1.2vh 1vw; margin-bottom: 1.2vh; }
+.papan-acara .tajuk { font-weight: 800; font-size: 1.1em; margin-bottom: .5vh; }
+.papan-acara .tajuk span { color: #9fb2a9; font-weight: 600; margin-right: .3em; }
+.papan-acara .pemenang { display: flex; align-items: center; gap: .6em; padding: .35vh 0; }
+.papan-acara .pemenang .n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.papan-acara .pemenang .p { font-variant-numeric: tabular-nums; font-weight: 700; }
+.papan .pingat { width: 1.6em; height: 1.6em; font-size: .85em; }
+.papan .rumah { font-size: .7em; }
+.papan .hs-rumah { color: #fff; background: var(--w); border-color: var(--w); }
+.papan-bawah { display: flex; flex-wrap: wrap; align-items: center; gap: .6em 1.6em; background: #16211c; border-radius: 10px; padding: 1.2vh 1.2vw; font-size: .95em; }
+.papan-bawah b { color: #f2c94c; text-transform: uppercase; letter-spacing: .06em; }
+.papan-bawah .rb-jumlah { margin-left: auto; background: var(--bahaya); color: #fff; padding: .2em .7em; border-radius: 6px; font-weight: 800; }
+.papan-keluar { position: absolute; top: 8px; right: 10px; color: #4b5b54; text-decoration: none; font-size: 1.2rem; opacity: 0; }
+.papan:hover .papan-keluar { opacity: 1; }
+@media (max-width: 900px) { .papan-isi { grid-template-columns: 1fr; } .papan-baris { grid-template-columns: 2em 1fr repeat(4, 3.4em); } }
+
 /* ---------- Cetak ---------- */
 .kertas-cetak { background: #fff; color: #000; padding: 24px; border: 1px solid var(--garis); border-radius: 8px; overflow-x: auto; }
 @media (max-width: 600px) { .kertas-cetak { padding: 14px; } .kertas-cetak table { font-size: 8.5pt; } }
@@ -2089,7 +2144,9 @@ window.KOKUM_CONFIG = {
   };
 
   // ------------------------------------------------------------------ pembalut
-  function balut(asal) {
+  function balut(asal, opsyen = {}) {
+    const TEKS = { tiadaData: 'Tiada sambungan internet, dan data ini belum pernah dibuka pada peranti ini. Buka bahagian ini sekali semasa ada internet supaya ia tersimpan untuk kegunaan luar talian.',
+      perluTalian: 'Tiada sambungan internet. Perubahan jenis ini perlu disimpan semasa ada internet. (Kehadiran, OPR, PAJSK dan keputusan olahraga boleh disimpan tanpa internet.)', ...(opsyen.teks || {}) };
     let uid = null;
     let luar = typeof navigator !== 'undefined' && navigator.onLine === false;
     let cacheDiguna = null; // masa data simpanan tertua yang sedang dipaparkan
@@ -2140,7 +2197,7 @@ window.KOKUM_CONFIG = {
         luar = true;
         if (c) { cacheDiguna = Math.min(cacheDiguna || Infinity, c.masa); umum(); return tampalSemua(nama, args, c.data); }
         umum();
-        const e2 = new Error('Tiada sambungan internet, dan data ini belum pernah dibuka pada peranti ini. Buka bahagian ini sekali semasa ada internet supaya ia tersimpan untuk kegunaan luar talian.');
+        const e2 = new Error(TEKS.tiadaData);
         e2.rangkaian = true;
         throw e2;
       }
@@ -2198,7 +2255,7 @@ window.KOKUM_CONFIG = {
         try { const h = await f(...args); return h; } catch (err) {
           if (rangkaian(err) && !['masuk', 'daftar', 'lupa', 'sesi', 'keluar', 'f2UrlGambar'].includes(nama)) {
             luar = true; umum();
-            const e2 = new Error('Tiada sambungan internet. Perubahan jenis ini perlu disimpan semasa ada internet. (Kehadiran, OPR, PAJSK dan keputusan olahraga boleh disimpan tanpa internet.)');
+            const e2 = new Error(TEKS.perluTalian);
             e2.rangkaian = true; e2.asal = err;
             throw e2;
           }
@@ -2241,6 +2298,8 @@ window.KOKUM_CONFIG = {
       hantar: (cubaGagal) => hantar(cubaGagal),
       async buang(n) { await outboxPadam(n); await kiraSemula(); },
       kiraSemula,
+      // isyarat daripada luar (contoh: denyutan ke laptop hari sukan)
+      tandaTalian(ok) { if (ok) { const tadi = luar; tandaDalam(); if (tadi && bil.menunggu) hantar(); } else tandaLuar(); },
       // gambar OPR yang belum dimuat naik: papar daripada peranti
       async urlTempatan(paths) {
         const l = (await itemSaya()).filter((x) => x.nama === 'f2MuatNaikGambar' && paths.includes(x.args[0]));
@@ -2265,6 +2324,437 @@ window.KOKUM_CONFIG = {
   }
 
   window.KokumLuarTalian = { balut, uuid, rangkaian };
+})();
+
+</script>
+<script>
+/* KOKUM SMART · Mod Hari Sukan (intranet di padang, tanpa internet)
+   Laptop TIC menjalankan hari-sukan/pelayan.py. Telefon pencatat bersambung ke WiFi laptop dan membuka
+   http://<ip-laptop>:8080. Semua data kejohanan disimpan di laptop; papan markah dan juruhebah dikemas kini langsung.
+   Sebelum/selepas kejohanan, laptop memuat turun / menghantar data ke Supabase apabila ada internet. */
+(function () {
+  'use strict';
+  if (!window.KOKUM_HARI_SUKAN) return;
+
+  const LOKAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  const K_SESI = 'kokum_hs_sesi', K_UMUM = 'kokum_hs_diumum';
+  const URL_SB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  const MEDAN_KEP = ['acara_id', 'pusingan', 'siri', 'lorong', 'murid_id', 'rumah', 'ahli', 'prestasi', 'nilai', 'cubaan', 'status', 'kedudukan', 'catatan'];
+  const MEDAN_JADUAL = ['no_acara', 'hari', 'masa', 'no_saringan', 'hari_saringan', 'masa_saringan'];
+  const LABEL_KAT = { P15: 'Perempuan 15', L15: 'Lelaki 15', P18: 'Perempuan 18', L18: 'Lelaki 18', PT: 'Perempuan Terbuka', LT: 'Lelaki Terbuka', P12: 'Perempuan 12', L12: 'Lelaki 12' };
+  // warna rasmi rumah sukan SMK Ulu Sugut (kertas kerja olahraga)
+  const WARNA_RUMAH = { ARIES: '#e8730c', CAPRICORN: '#1f6fb8', LEO: '#c62828', SCORPIO: '#e0b000', TAURUS: '#2e8b3e' };
+  const pilih = (o, medan) => Object.fromEntries(medan.filter((k) => k in o).map((k) => [k, o[k] === '' ? null : o[k]]));
+  const kini = () => new Date().toISOString();
+  const uuid = () => window.KokumLuarTalian.uuid();
+  const bacaJ = (k, lalai) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? lalai; } catch (err) { return lalai; } };
+  const tulisJ = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (err) { /* abaikan */ } };
+  const sesiHS = () => bacaJ(K_SESI, null);
+
+  // ------------------------------------------------------------------ panggilan ke laptop
+  async function api(laluan, { kaedah = 'GET', badan, had = 12000 } = {}) {
+    const s = sesiHS();
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), had);
+    let res;
+    try {
+      res = await fetch(laluan, { method: kaedah, cache: 'no-store', signal: ac.signal,
+        headers: { 'Content-Type': 'application/json', 'X-PIN': (s && s.pin) || '' }, body: badan ? JSON.stringify(badan) : undefined });
+    } catch (err) {
+      const e2 = new TypeError('Failed to fetch (laptop TIC)'); e2.rangkaian = true; throw e2;
+    } finally { clearTimeout(t); }
+    let d = null;
+    try { d = await res.json(); } catch (err) { d = null; }
+    if (!res.ok) { const e2 = new Error((d && d.ralat) || `Ralat laptop (${res.status})`); e2.kod = res.status; throw e2; }
+    return d;
+  }
+
+  // ------------------------------------------------------------------ pangkalan data tempatan (laptop)
+  const PROFIL_LAPTOP = { id: 'laptop-tic', email: 'laptop', nama: 'LAPTOP TIC', peranan: 'penyelaras', aktif: true, ais_pencatat: true };
+  const namaSaya = () => (LOKAL ? 'LAPTOP TIC' : ((sesiHS() || {}).profil || {}).nama || '');
+
+  function susunAis(d) {
+    const kejohanan = d.ais_kejohanan || [];
+    const k = kejohanan.find((x) => x.aktif) || kejohanan[0] || null;
+    const acara = (d.ais_acara || []).filter((x) => !k || x.kejohanan_id === k.id).sort((p, q) => (p.susunan ?? 0) - (q.susunan ?? 0) || p.id - q.id);
+    const ids = new Set(acara.map((x) => x.id));
+    return {
+      kejohanan, k, acara,
+      penyertaan: (d.ais_penyertaan || []).filter((x) => ids.has(x.acara_id)),
+      keputusan: (d.ais_keputusan || []).filter((x) => ids.has(x.acara_id)),
+      bib: (d.ais_bib || []).filter((x) => !k || x.kejohanan_id === k.id),
+      rekod: d.ais_rekod || [], sejarah: d.ais_sejarah || [], tetapan: (d.tetapan || [])[0] || null,
+      fasaB: true, kotor: d.kotor || [], versi: d.versi,
+    };
+  }
+
+  function DB() {
+    const data = () => api('/api/data', { had: 20000 });
+    const tulis = (ops) => api('/api/tulis', { kaedah: 'POST', badan: { ops, oleh: namaSaya() } });
+    const tiada = (apa) => async () => { throw new Error(`${apa} tidak tersedia dalam Mod Hari Sukan. Gunakan KOKUM SMART biasa (dengan internet).`); };
+    const db = {
+      mod: 'harisukan',
+      async sesi() { if (LOKAL) return { id: PROFIL_LAPTOP.id, email: 'laptop' }; const s = sesiHS(); return s && s.profil ? { id: s.profil.id, email: s.profil.email || '' } : null; },
+      onAuth() {},
+      async keluar() { try { localStorage.removeItem(K_SESI); } catch (err) { /* abaikan */ } },
+      async profilSaya() { if (LOKAL) return { ...PROFIL_LAPTOP }; const s = sesiHS(); return s ? { ...s.profil } : null; },
+      async muatSemua() {
+        const d = await data();
+        return { tetapan: (d.tetapan || [])[0] || { senarai_rumah: [] }, units: d.unit || [], murid: d.murid || [], profiles: d.profiles || [], guruUnit: [] };
+      },
+      async aisMuat() { return susunAis(await data()); },
+      async aisMuatRekod() { return (await data()).ais_rekod || []; },
+      async aisMuatSejarah() { return (await data()).ais_sejarah || []; },
+      async aisSimpanKeputusan(rows) {
+        if (!rows.length) return [];
+        const r = await tulis([{ op: 'upsert', jadual: 'ais_keputusan', baris: rows.map((x) => ({ ...pilih(x, MEDAN_KEP), id: x.id, dikemas: kini() })) }]);
+        return r.baris;
+      },
+      async aisGantiKeputusan(acara_id, pusingan, rows) {
+        const baru = rows.map((r) => ({ siri: 1, lorong: null, murid_id: null, ahli: null, prestasi: null, nilai: null, cubaan: null, status: null, kedudukan: null, catatan: null,
+          ...pilih(r, MEDAN_KEP), id: r.id || uuid(), acara_id, pusingan, dikemas: kini() }));
+        await tulis([{ op: 'padam', jadual: 'ais_keputusan', tapis: { acara_id, pusingan } }].concat(baru.length ? [{ op: 'upsert', jadual: 'ais_keputusan', baris: baru }] : []));
+        return baru;
+      },
+      // sama seperti fungsi ais_sahkan di Supabase; Supabase akan mengira semula rekod semasa keputusan dihantar
+      async aisSahkan(acara_id, rasmi) {
+        const d = await data();
+        const a = (d.ais_acara || []).find((x) => x.id === acara_id);
+        if (!a) throw new Error('Acara tidak wujud');
+        const k = (d.ais_kejohanan || []).find((x) => x.id === a.kejohanan_id) || (d.ais_kejohanan || [])[0] || {};
+        const ops = [{ op: 'padam', jadual: 'ais_rekod', tapis: { acara_id } }];
+        let baru = false;
+        if (rasmi) {
+          const kp = (d.ais_keputusan || []).filter((x) => x.acara_id === acara_id);
+          if (!kp.some((x) => x.pusingan === 'akhir' && x.kedudukan != null)) throw new Error(`Keputusan akhir ${a.acara} ${a.kategori} belum diisi`);
+          const tinggi = a.unit === 'm';
+          const t = kp.filter((x) => !x.status && +x.nilai > 0).sort((p, q) => (tinggi ? q.nilai - p.nilai : p.nilai - q.nilai) || (p.pusingan === 'akhir' ? -1 : 1))[0];
+          const rs = (d.ais_rekod || []).filter((r) => r.acara_id !== acara_id && r.peringkat === 'SEKOLAH' && r.kategori === a.kategori && r.acara === a.acara && r.nilai != null).map((r) => +r.nilai);
+          const rek = rs.length ? (tinggi ? Math.max(...rs) : Math.min(...rs)) : null;
+          if (t && (rek == null || (tinggi ? +t.nilai > rek : +t.nilai < rek))) {
+            const m = (d.murid || []).find((x) => x.id === t.murid_id);
+            ops.push({ op: 'upsert', jadual: 'ais_rekod', baris: [{ id: 'hs-' + uuid(), peringkat: 'SEKOLAH', kategori: a.kategori, acara: a.acara, prestasi: t.prestasi, nilai: +t.nilai,
+              nama: m ? m.nama : 'KUARTET ' + t.rumah, pasukan: t.rumah, tahun: k.tahun, acara_id, tempatan: true }] });
+            baru = true;
+          }
+        }
+        ops.push({ op: 'upsert', jadual: 'ais_acara', baris: [{ id: acara_id, rasmi, rasmi_pada: rasmi ? kini() : null }] });
+        await tulis(ops);
+        return { rekod_baharu: baru };
+      },
+      async aisSimpanJadual(rows) {
+        if (!rows.length) return;
+        await tulis([{ op: 'upsert', jadual: 'ais_acara', baris: rows.map((r) => ({ id: r.id, ...pilih(r, MEDAN_JADUAL) })) }]);
+      },
+      async aisSimpanKejohanan(k) {
+        const medan = ['nama', 'tahun', 'tarikh_mula', 'tarikh_tamat', 'tempat', 'had_acara', 'kuota', 'kuota_gandaan', 'kira_gandaan', 'pendaftaran_dibuka', 'aktif', 'bil_lorong', 'tetapan'];
+        const r = await tulis([{ op: 'upsert', jadual: 'ais_kejohanan', baris: [{ id: k.id, ...pilih(k, medan) }] }]);
+        return r.baris[0];
+      },
+    };
+    const lain = { masuk: 'Log masuk e-mel', daftar: 'Pendaftaran akaun', lupa: 'Set semula kata laluan', tukarKataLaluan: 'Tukar kata laluan',
+      simpanMurid: 'Perubahan data murid', padamMurid: 'Padam murid', setAhli: 'Perubahan keahlian', importMurid: 'Import murid', simpanUnit: 'Perubahan unit', padamUnit: 'Padam unit',
+      simpanTetapan: 'Tetapan sekolah', simpanProfil: 'Perubahan profil', aisGantiBib: 'Susun nombor BIB', aisTambahBib: 'Tambah nombor BIB', aisArkib: 'Pindah ke keputusan lalu',
+      aisKejohananBaharu: 'Kejohanan baharu', aisDaftar: 'Pendaftaran atlet', aisBatal: 'Batal penyertaan', setRumahPukal: 'Agihan rumah sukan', setGuruUnit: 'Guru unit', log: 'Log perubahan' };
+    Object.entries(lain).forEach(([n, l]) => { db[n] = tiada(l); });
+    return db;
+  }
+
+  // ------------------------------------------------------------------ paparan (memerlukan konteks aplikasi)
+  let X = null; // { S, e, $, IKON, roti, sahkan, gagal, render, AIS, LOGO }
+  function pasang(ctx) { X = ctx; }
+
+  /* ---------- log masuk telefon pencatat (nama + PIN) */
+  async function skrinMasuk(el, selesai) {
+    const { e } = X;
+    el.innerHTML = '<div class="pemuat">Menghubungi laptop TIC…</div>';
+    let info;
+    try { info = await api('/api/info', { had: 8000 }); } catch (err) {
+      el.innerHTML = `<div class="skrin-masuk"><div class="panel kad-masuk"><h2>Tidak dapat menghubungi laptop TIC</h2>
+        <p>Pastikan telefon bersambung ke WiFi hari sukan (hotspot laptop / router), kemudian cuba lagi.</p>
+        <button class="btn utama" onclick="location.reload()">Cuba lagi</button></div></div>`;
+      return;
+    }
+    const s = sesiHS();
+    el.innerHTML = `<div class="skrin-masuk"><div class="panel kad-masuk">
+      <img src="${X.LOGO}" alt="" class="logo-masuk" style="width:64px;height:auto">
+      <h2>Mod Hari Sukan</h2><p class="pudar kecil" style="margin-top:0">${e(info.kejohanan || 'Kejohanan olahraga')} ${e(info.tahun || '')}</p>
+      ${info.ada_data ? `<form class="borang" id="borang-hs-masuk">
+        <label class="medan">Nama anda<select name="profil" required><option value="">Pilih nama…</option>${info.profiles.sort((p, q) => String(p.nama).localeCompare(String(q.nama)))
+          .map((p) => `<option value="${e(p.id)}" ${s && s.profil && s.profil.id === p.id ? 'selected' : ''}>${e(p.nama)}</option>`).join('')}</select></label>
+        <label class="medan">PIN hari sukan<input name="pin" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required placeholder="Dipaparkan di skrin laptop TIC"></label>
+        <p class="mesej ralat" id="hs-masuk-ralat" hidden></p>
+        <button class="btn utama" type="submit" style="width:100%">Masuk</button></form>`
+        : '<div class="mesej amaran">Laptop TIC belum memuat turun data kejohanan. Minta TIC tekan "Muat turun dari KOKUM SMART" di Pusat kawalan.</div>'}
+      </div></div>`;
+    const f = el.querySelector('#borang-hs-masuk');
+    if (f) f.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const d = Object.fromEntries(new FormData(f)), r = f.querySelector('#hs-masuk-ralat'), btn = f.querySelector('button');
+      btn.disabled = true; r.hidden = true;
+      try {
+        const h = await api('/api/masuk', { kaedah: 'POST', badan: { id: d.profil, pin: d.pin.trim() } });
+        tulisJ(K_SESI, { pin: d.pin.trim(), profil: h.profil });
+        selesai({ id: h.profil.id, email: h.profil.email || '' });
+      } catch (err) { r.textContent = err.rangkaian ? 'Tiada sambungan ke laptop TIC.' : err.message; r.hidden = false; btn.disabled = false; }
+    });
+  }
+
+  /* ---------- denyutan: kesan perubahan daripada telefon lain, kemas kini paparan */
+  let denyut = null, versiDiketahui = null;
+  function mulaDenyut(padaPerubahan) {
+    if (denyut) return;
+    const sekali = async () => {
+      try {
+        const r = await api(`/api/versi?n=${encodeURIComponent(namaSaya())}`, { had: 6000 });
+        if (X.S.db.luar) X.S.db.luar.tandaTalian(true);
+        if (versiDiketahui != null && r.versi !== versiDiketahui) await padaPerubahan();
+        versiDiketahui = r.versi;
+      } catch (err) {
+        if (err.kod === 401 && !LOKAL) { X.roti('PIN hari sukan telah ditukar. Sila log masuk semula.', true); await X.S.db.keluar(); location.reload(); return; }
+        if (err.rangkaian && X.S.db.luar) X.S.db.luar.tandaTalian(false);
+      }
+    };
+    denyut = setInterval(sekali, 3000);
+    sekali();
+  }
+
+  /* ---------- bantuan paparan */
+  const warnaRumah = (r) => WARNA_RUMAH[String(r || '').toUpperCase()] || null;
+  function cip(r) {
+    const { e, S } = X, w = warnaRumah(r);
+    if (w) return `<span class="rumah hs-rumah" style="--w:${w}">${e(r)}</span>`;
+    const i = ((S.data.tetapan || {}).senarai_rumah || []).indexOf(r);
+    return `<span class="rumah r${i < 0 ? 0 : (i % 6) + 1}">${e(r || '')}</span>`;
+  }
+  const labelAcara = (a) => `${a.acara} · ${LABEL_KAT[a.kategori] || a.kategori}`;
+  const denganUnit = (a, p) => (p ? (/^\d/.test(p) ? `${p} ${a.unit === 'm' ? 'm' : 's'}` : p) : '');
+  const namaPeserta = (x) => { const m = X.S.data.murid.find((y) => y.id === x.murid_id); return m ? m.nama : `KUARTET ${x.rumah}`; };
+  const PINGAT = { 1: 'emas', 2: 'perak', 3: 'gangsa' };
+  const lencana = (k) => `<span class="pingat ${PINGAT[k] || ''}">${k}</span>`;
+  const keputusanAkhir = (id) => X.S.ais.keputusan.filter((x) => x.acara_id === id && x.pusingan === 'akhir' && x.kedudukan && !x.status).sort((p, q) => p.kedudukan - q.kedudukan);
+  const masaAcara = (a) => a.rasmi_pada || X.S.ais.keputusan.filter((x) => x.acara_id === a.id).reduce((m, x) => (String(x.dikemas || '') > m ? String(x.dikemas) : m), '');
+  function pastikanAis() {
+    if (X.S.ais) return true;
+    X.AIS.muat().then(() => X.render(), (err) => X.gagal(err));
+    return false;
+  }
+  function seterusnya(n) {
+    const B = X.AIS.bantu(), fj = B._uji.fmtJam;
+    const slot = [];
+    X.S.ais.acara.forEach((a) => {
+      const st = B.statusAcara(a)[0];
+      if (a.rasmi || st === 'sedia') return;
+      const adaAkhir = X.S.ais.keputusan.some((x) => x.acara_id === a.id && x.pusingan === 'akhir');
+      if (a.no_saringan && !adaAkhir && B.bilPeserta(a) > ((X.S.ais.k || {}).bil_lorong || 6)) slot.push({ a, no: a.no_saringan, hari: a.hari_saringan, masa: a.masa_saringan, pus: 'Saringan' });
+      slot.push({ a, no: a.no_acara, hari: a.hari, masa: a.masa, pus: 'Akhir' });
+    });
+    return slot.filter((s) => s.no || s.masa).sort((p, q) => (p.hari || 99) - (q.hari || 99) || String(p.masa || '').padStart(4, '0').localeCompare(String(q.masa || '').padStart(4, '0')) || (p.no || 0) - (q.no || 0))
+      .slice(0, n).map((s) => ({ ...s, jam: fj(s.masa) }));
+  }
+
+  /* ---------- PAPAN MARKAH (TV / projektor, skrin penuh) */
+  let jamPapan = null;
+  function papan(q) {
+    const { e, S, LOGO } = X;
+    if (!pastikanAis()) return '<div class="papan"><p class="pemuat">Memuatkan papan markah…</p></div>';
+    const k = S.ais.k;
+    if (!k) return '<div class="papan"><p class="pemuat">Belum ada data kejohanan.</p></div>';
+    const B = X.AIS.bantu(), semua = q.get('semua') === '1', P = B.kiraPingat(semua);
+    const rasmi = S.ais.acara.filter((a) => a.rasmi);
+    const terkini = rasmi.slice().sort((p, r) => String(r.rasmi_pada || '').localeCompare(String(p.rasmi_pada || ''))).slice(0, 4);
+    const maks = Math.max(1, ...P.jadual.map((r) => r.E + r.P + r.G));
+    const rb = S.ais.rekod.filter((r) => r.acara_id && S.ais.acara.some((a) => a.id === r.acara_id));
+    if (!jamPapan) jamPapan = setInterval(() => { const j = document.getElementById('papan-jam'); if (j) j.textContent = new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' }); else { clearInterval(jamPapan); jamPapan = null; } }, 15000);
+    return `<div class="papan">
+      <header class="papan-atas"><img src="${LOGO}" alt=""><div><h1>${e(k.nama)} ${e(k.tahun)}</h1><p>Kedudukan pingat · ${rasmi.length} daripada ${S.ais.acara.length} acara disahkan${semua ? ' · termasuk keputusan belum disahkan' : ''}</p></div>
+        <div class="papan-jam" id="papan-jam">${new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' })}</div></header>
+      <main class="papan-isi">
+        <section class="papan-kedudukan">${P.jadual.map((r, i) => { const w = warnaRumah(r.r) || 'var(--hijau)', j = r.E + r.P + r.G; return `
+          <div class="papan-baris" style="--w:${w}"><span class="tempat">${i + 1}</span><span class="nama">${e(r.r)}</span>
+            <span class="kira emas"><b>${r.E}</b><small>Emas</small></span><span class="kira perak"><b>${r.P}</b><small>Perak</small></span><span class="kira gangsa"><b>${r.G}</b><small>Gangsa</small></span>
+            <span class="kira jumlah"><b>${j}</b><small>Jumlah</small></span><span class="bar"><i style="width:${Math.round((j / maks) * 100)}%"></i></span></div>`; }).join('')}</section>
+        <section class="papan-terkini"><h2>Keputusan terkini</h2>${terkini.length ? terkini.map((a) => `<div class="papan-acara"><div class="tajuk"><span>No ${e(a.no_acara || '')}</span> ${e(labelAcara(a))}</div>
+          ${keputusanAkhir(a.id).slice(0, 3).map((x) => `<div class="pemenang">${lencana(x.kedudukan)}<span class="n">${e(a.jenis === 'gandaan' ? x.rumah : namaPeserta(x))}</span>${cip(x.rumah)}<span class="p">${e(denganUnit(a, x.prestasi))}${/RB/.test(x.catatan || '') ? ' <b class="rb">RB</b>' : ''}</span></div>`).join('')}</div>`).join('')
+          : '<p class="pudar">Belum ada acara disahkan.</p>'}</section>
+      </main>
+      <footer class="papan-bawah"><b>Acara seterusnya</b>${seterusnya(5).map((s) => `<span>${s.no ? `No ${e(s.no)} · ` : ''}${e(s.jam || '')} · ${e(labelAcara(s.a))}${s.pus === 'Saringan' ? ' (saringan)' : ''}</span>`).join('') || '<span>—</span>'}
+        ${rb.length ? `<span class="rb-jumlah">${rb.length} rekod baharu</span>` : ''}</footer>
+      <a class="papan-keluar" href="#/olahraga/pingat" title="Keluar dari papan markah">✕</a>
+    </div>`;
+  }
+
+  /* ---------- JURUHEBAH */
+  function juruhebah() {
+    const { e, S, IKON } = X;
+    if (!pastikanAis()) return '<p class="pudar">Memuatkan…</p>';
+    if (!S.ais.k) return '<div class="panel kosong-isi"><h3>Belum ada data kejohanan</h3></div>';
+    const B = X.AIS.bantu(), umum = new Set(bacaJ(K_UMUM, []));
+    const sedia = S.ais.acara.filter((a) => ['rasmi', 'sedia'].includes(B.statusAcara(a)[0])).map((a) => ({ a, t: masaAcara(a) })).sort((p, q) => q.t.localeCompare(p.t));
+    const belum = sedia.filter((x) => !umum.has(x.a.id)), sudah = sedia.filter((x) => umum.has(x.a.id)).slice(0, 8);
+    const kad = ({ a }, siap) => `<div class="panel hs-kad ${siap ? 'siap' : ''}">
+        <div class="hs-kad-atas"><b>No ${e(a.no_acara || '')} · ${e(labelAcara(a))}</b><span class="status-acara ${a.rasmi ? 'rasmi' : 'sedia'}">${a.rasmi ? 'Rasmi' : 'Belum disahkan'}</span></div>
+        <ol class="hs-pemenang">${keputusanAkhir(a.id).slice(0, a.jenis === 'balapan' && parseInt(a.acara, 10) >= 3000 ? 6 : 3).map((x) => `<li>${lencana(x.kedudukan)}<span class="n">${e(a.jenis === 'gandaan' ? 'KUARTET ' + x.rumah : namaPeserta(x))}</span>${cip(x.rumah)}<span class="p">${e(denganUnit(a, x.prestasi))}</span>
+          ${/RB/.test(x.catatan || '') ? '<span class="rb">REKOD BAHARU</span>' : ''}</li>`).join('')}</ol>
+        ${siap ? '' : `<button class="btn kecil" data-act="hs-umum" data-id="${a.id}">✓ Sudah diumumkan</button>`}</div>`;
+    return `<div class="kepala"><div><h1>Juruhebah</h1><p>Keputusan terkini untuk diumumkan. Paparan dikemas kini sendiri apabila pencatat menyimpan keputusan.</p></div>
+        <a class="btn kecil" href="#/papan">${IKON.olahraga} Papan markah</a></div>
+      <h2 style="margin:0 0 10px">Untuk diumumkan (${belum.length})</h2>
+      ${belum.length ? belum.map((x) => kad(x, false)).join('') : '<p class="pudar">Tiada keputusan baharu.</p>'}
+      <h2 style="margin:22px 0 10px">Panggilan acara seterusnya</h2>
+      <div class="panel" style="padding:0"><table class="jadual"><tbody>${seterusnya(8).map((s) => `<tr><td class="n">${e(s.no || '')}</td><td>${e(s.jam || '')}</td><td><b>${e(labelAcara(s.a))}</b></td><td>${e(s.pus)}</td></tr>`).join('') || '<tr><td>Semua acara selesai.</td></tr>'}</tbody></table></div>
+      ${sudah.length ? `<h2 style="margin:22px 0 10px">Sudah diumumkan</h2>${sudah.map((x) => kad(x, true)).join('')}` : ''}`;
+  }
+
+  /* ---------- PUSAT KAWALAN (laptop sahaja) */
+  function pusat() {
+    if (!LOKAL) return '<div class="panel kosong-isi"><h3>Pusat kawalan hanya di laptop TIC</h3><p>Buka Keputusan untuk merekod keputusan acara.</p></div>';
+    return `<div class="kepala"><div><h1>Pusat kawalan hari sukan</h1><p>Laptop ini ialah pelayan tempatan. Biarkan tetingkap hitam pelayan terbuka sepanjang kejohanan.</p></div></div>
+      <div id="hs-pusat"><p class="pudar">Memuatkan…</p></div>`;
+  }
+  let pusatTimer = null;
+  async function isiPusat() {
+    const el = document.getElementById('hs-pusat'); if (!el) { clearInterval(pusatTimer); pusatTimer = null; return; }
+    if (!pusatTimer) pusatTimer = setInterval(isiPusat, 5000);
+    const { e, IKON } = X;
+    let i;
+    try { i = await api('/api/info'); } catch (err) { el.innerHTML = `<div class="mesej ralat">Pelayan laptop tidak berjalan. Klik dua kali MULA-HARI-SUKAN.bat.</div>`; return; }
+    const url = (i.ip || []).map((ip) => `http://${ip}:${i.port}`);
+    el.innerHTML = `<div class="grid2 hs-pusat">
+      <div class="panel"><h2>Sambungkan telefon pencatat</h2>
+        <ol class="kecil" style="padding-left:18px"><li>Laptop dan semua telefon pencatat sambung ke WiFi yang sama: router hari sukan, atau hotspot sebuah telefon Android di khemah TIC (data mudah alih boleh dimatikan).</li><li>Pada telefon pencatat, matikan data mudah alih supaya telefon kekal pada WiFi itu.</li><li>Buka Chrome dan taip alamat ini:</li></ol>
+        ${url.length ? url.map((u, n) => `<div class="hs-url ${n ? 'kecil' : ''}">${e(u)}</div>`).join('') : '<div class="mesej amaran">Laptop belum bersambung ke mana-mana WiFi. Sambungkan laptop ke router atau hotspot telefon hari sukan.</div>'}
+        <div class="hs-pin"><span>PIN hari sukan</span><b>${e(i.pin)}</b><button class="btn kecil" data-act="hs-pin">Tukar PIN</button></div>
+        <p class="pudar kecil">Alamat ini boleh berubah jika laptop bersambung semula ke WiFi; sentiasa rujuk skrin ini. Jika telefon tidak dapat membuka alamat, semak firewall Windows: benarkan Python pada rangkaian Private dan Public.</p></div>
+      <div class="panel"><h2>Peranti bersambung (${(i.peranti || []).length})</h2>
+        ${(i.peranti || []).length ? `<table class="jadual kecil"><tbody>${i.peranti.map((p) => `<tr><td><b>${e(p.nama || 'Belum log masuk')}</b></td><td class="pudar">${e(p.ip)}</td><td class="n">${p.saat < 10 ? '<span style="color:var(--hijau)">● aktif</span>' : `${p.saat} saat lalu`}</td></tr>`).join('')}</tbody></table>` : '<p class="pudar kecil">Belum ada telefon bersambung.</p>'}</div>
+      <div class="panel"><h2>Data kejohanan</h2>
+        ${i.ada_data ? `<p style="margin:0 0 6px"><b>${e(i.kejohanan || '')} ${e(i.tahun || '')}</b></p>
+          <div class="stat-baris" style="margin:0 0 10px"><div><b>${i.bil_acara}</b>acara</div><div><b>${i.bil_rasmi}</b>disahkan</div><div><b>${i.kotor}</b>acara belum dihantar</div></div>
+          <p class="kecil pudar" style="margin:0">Dimuat turun: ${e(i.dimuat_turun || '–')}<br>Perubahan terakhir: ${e(i.diubah || '–')}<br>Dihantar ke KOKUM SMART: ${e(i.dihantar || 'belum')}</p>`
+          : '<div class="mesej amaran">Belum ada data. Semasa ada internet, tekan <b>Muat turun dari KOKUM SMART</b>.</div>'}
+        <div class="baris-btn" style="margin-top:12px"><button class="btn ${i.ada_data ? '' : 'utama'}" data-act="hs-muat-turun">⬇ Muat turun dari KOKUM SMART</button>
+          ${i.ada_data ? `<button class="btn ${i.kotor ? 'utama' : ''}" data-act="hs-hantar">⬆ Hantar ke KOKUM SMART${i.kotor ? ` (${i.kotor})` : ''}</button>` : ''}</div>
+        <p class="pudar kecil" style="margin:8px 0 0">Kedua-dua butang memerlukan internet dan akaun penyelaras KOKUM SMART.</p></div>
+      <div class="panel"><h2>Paparan</h2>
+        <div class="baris-btn"><a class="btn utama" href="#/papan" target="_blank" rel="noopener">${IKON.olahraga} Papan markah (TV)</a><a class="btn" href="#/juruhebah">Juruhebah</a><a class="btn" href="#/olahraga/jadual">Jadual & keputusan</a></div>
+        <p class="pudar kecil">Sambungkan TV/projektor ke laptop dengan kabel HDMI, buka Papan markah, kemudian tekan F11 untuk skrin penuh.</p>
+        <h2 style="margin-top:16px">Keselamatan data</h2>
+        <p class="kecil" style="margin:0">Setiap perubahan disimpan terus dalam fail <b>data-hari-sukan.json</b>. Salinan sandaran dibuat setiap 5 minit dalam folder <b>sandaran</b>${i.sandaran ? ` (terakhir ${e(i.sandaran)})` : ''}.<br><span class="pudar">${e(i.folder || '')}</span></p></div>
+    </div>`;
+  }
+
+  /* ---------- Supabase (perlu internet): muat turun & hantar */
+  let sb = null;
+  function muatSkripSB() {
+    if (window.supabase) return Promise.resolve();
+    return new Promise((ok, tolak) => { const s = document.createElement('script'); s.src = URL_SB; s.onload = ok; s.onerror = () => tolak(new Error('Tiada internet. Muat turun dan hantar memerlukan internet.')); document.head.appendChild(s); });
+  }
+  function dialogMasukSB() {
+    return new Promise((selesai) => {
+      const { e } = X, d = document.getElementById('dlg');
+      d.innerHTML = `<div class="dk"><div><h2>Log masuk KOKUM SMART</h2><p class="pudar kecil" style="margin:2px 0 0">Akaun penyelaras (perlu internet)</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${X.IKON.tutup}</button></div>
+        <div class="db"><form class="borang" id="hs-sb-masuk"><label class="medan">E-mel<input type="email" name="email" required autocomplete="username"></label>
+          <label class="medan">Kata laluan<input type="password" name="pw" required autocomplete="current-password"></label><p class="mesej ralat" id="hs-sb-ralat" hidden></p></form></div>
+        <div class="dt"><button class="btn" data-act="tutup">Batal</button><button class="btn utama" type="submit" form="hs-sb-masuk">Log masuk</button></div>`;
+      const f = d.querySelector('form');
+      f.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const v = Object.fromEntries(new FormData(f)), r = f.querySelector('#hs-sb-ralat');
+        try { await sb.masuk(v.email.trim(), v.pw); d.onclose = null; d.close(); selesai(true); } catch (err) { r.textContent = err.message; r.hidden = false; }
+      });
+      d.onclose = () => selesai(false);
+      d.showModal();
+      void e;
+    });
+  }
+  async function sambungSB() {
+    await muatSkripSB();
+    const C = window.KOKUM_CONFIG || {};
+    if (!sb) sb = window.KokumDB.SupabaseDB(C.supabaseUrl, C.supabaseAnonKey);
+    let u = await sb.sesi().catch(() => null);
+    if (!u) { if (!(await dialogMasukSB())) return null; u = await sb.sesi(); }
+    const p = await sb.profilSaya(u.id);
+    if (!p || !p.aktif || !(p.peranan === 'penyelaras' || p.ais_pencatat)) throw new Error('Akaun ini bukan penyelaras atau pencatat keputusan.');
+    return p;
+  }
+  function kemajuan(teks) {
+    const d = document.getElementById('dlg');
+    d.innerHTML = `<div class="db" style="padding-top:22px"><p style="margin:0" id="hs-kemajuan">${X.e(teks)}</p></div>`;
+    if (!d.open) d.showModal();
+    return (t) => { const el = document.getElementById('hs-kemajuan'); if (el) el.textContent = t; };
+  }
+  async function muatTurun() {
+    const { S, roti, sahkan } = X;
+    const info = await api('/api/info');
+    if (info.kotor && !(await sahkan(`${info.kotor} acara ada keputusan yang BELUM dihantar ke KOKUM SMART.\nMuat turun akan menggantikan semua data di laptop ini. Hantar dahulu jika perlu.\n\nTeruskan muat turun?`, { ok: 'Muat turun juga', bahaya: true }))) return;
+    const p = await sambungSB(); if (!p) return;
+    const tulisK = kemajuan('Memuat turun data murid…');
+    const semua = await sb.muatSemua(true);
+    tulisK('Memuat turun data olahraga…');
+    const ais = await sb.aisMuat();
+    if (!ais.k) throw new Error('Tiada kejohanan aktif dalam KOKUM SMART.');
+    // hanya murid yang terlibat (atlet); MyKad dipendekkan kepada tarikh lahir sahaja
+    const atlet = new Set([...ais.penyertaan.map((x) => x.murid_id), ...ais.keputusan.map((x) => x.murid_id), ...ais.bib.map((x) => x.murid_id)].filter(Boolean));
+    const murid = semua.murid.filter((m) => atlet.has(m.id)).map((m) => ({ id: m.id, nama: m.nama, tingkatan: m.tingkatan, kelas: m.kelas, jantina: m.jantina, rumah_sukan: m.rumah_sukan, status: m.status,
+      mykad: /^\d{12}$/.test(m.mykad || '') ? m.mykad.slice(0, 6) + '000000' : null, ub: m.ub, kp: m.kp, sp: m.sp }));
+    const data = {
+      tetapan: [semua.tetapan], unit: semua.units, murid,
+      profiles: semua.profiles.filter((x) => x.aktif).map((x) => ({ id: x.id, email: x.email, nama: x.nama || x.email, peranan: x.peranan, aktif: x.aktif, ais_pencatat: !!x.ais_pencatat, rumah_sukan: x.rumah_sukan || null })),
+      ais_kejohanan: ais.kejohanan.filter((x) => x.id === ais.k.id), ais_acara: ais.acara, ais_penyertaan: ais.penyertaan, ais_keputusan: ais.keputusan, ais_bib: ais.bib,
+      ais_rekod: ais.rekod, ais_sejarah: ais.sejarah,
+    };
+    tulisK('Menyimpan ke laptop…');
+    await api('/api/import', { kaedah: 'POST', badan: { data }, had: 60000 });
+    document.getElementById('dlg').close();
+    S.ais = null; S.data = null;
+    roti(`Data dimuat turun: ${ais.acara.length} acara, ${murid.length} atlet`);
+    await X.muatData();
+  }
+  async function hantar() {
+    const { S, roti } = X;
+    const d = await api('/api/data', { had: 30000 });
+    if (!(d.kotor || []).length) { roti('Tiada perubahan untuk dihantar'); return; }
+    const p = await sambungSB(); if (!p) return;
+    const tulisK = kemajuan('Menyemak data di KOKUM SMART…');
+    const pelayan = await sb.aisMuat(), peta = new Map(pelayan.acara.map((a) => [a.id, a]));
+    let ok = 0; const gagal = [];
+    for (const [n, id] of d.kotor.entries()) {
+      const a = d.ais_acara.find((x) => String(x.id) === String(id));
+      if (!a) { await api('/api/bersih', { kaedah: 'POST', badan: { acara: [id] } }); continue; }
+      tulisK(`Menghantar ${n + 1}/${d.kotor.length}: ${labelAcara(a)}`);
+      try {
+        const sv = peta.get(a.id);
+        if (!sv) throw new Error('acara ini tiada dalam KOKUM SMART (kejohanan sudah ditukar?)');
+        if (sv.rasmi) await sb.aisSahkan(a.id, false);
+        for (const pus of ['saringan', 'akhir']) await sb.aisGantiKeputusan(a.id, pus, d.ais_keputusan.filter((x) => x.acara_id === a.id && x.pusingan === pus));
+        if (MEDAN_JADUAL.some((m) => (a[m] ?? null) !== (sv[m] ?? null)) && p.peranan === 'penyelaras') await sb.aisSimpanJadual([{ id: a.id, ...pilih(a, MEDAN_JADUAL) }]);
+        if (a.rasmi) await sb.aisSahkan(a.id, true);
+        await api('/api/bersih', { kaedah: 'POST', badan: { acara: [id] } });
+        ok++;
+      } catch (err) { gagal.push(`${labelAcara(a)}: ${err.message}`); if (err.rangkaian || /Tiada sambungan/.test(err.message)) break; }
+    }
+    document.getElementById('dlg').close();
+    if (gagal.length) await X.sahkan(`${ok} acara dihantar. ${gagal.length} gagal:\n\n${gagal.slice(0, 8).join('\n')}\n\nCuba tekan Hantar sekali lagi.`, { ok: 'Faham' });
+    else roti(`${ok} acara dihantar ke KOKUM SMART`);
+    S.ais = null; X.render();
+  }
+
+  /* ---------- tindakan */
+  async function tindakan(act, el) {
+    if (!act.startsWith('hs-')) return false;
+    const { roti, render } = X;
+    if (act === 'hs-umum') { const s = new Set(bacaJ(K_UMUM, [])); s.add(+el.dataset.id); tulisJ(K_UMUM, [...s].slice(-300)); X.S.kekalSkrol = true; render(); return true; }
+    if (act === 'hs-pin') {
+      const pin = prompt('PIN baharu (4 hingga 8 digit). Semua telefon perlu log masuk semula.');
+      if (!pin) return true;
+      await api('/api/pin', { kaedah: 'POST', badan: { pin: pin.trim() } }); roti('PIN ditukar'); isiPusat(); return true;
+    }
+    if (act === 'hs-muat-turun') { await muatTurun(); return true; }
+    if (act === 'hs-hantar') { await hantar(); isiPusat(); return true; }
+    return false;
+  }
+
+  window.KokumHariSukan = { LOKAL, DB, pasang, skrinMasuk, mulaDenyut, papan, juruhebah, pusat, isiPusat, tindakan, api, _uji: { susunAis } };
 })();
 
 </script>
@@ -2967,7 +3457,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
 
     B = window.KokumAISB(ctx, { A, K, senaraiRumah, cipRumah, idxRumah, katAtlet, LABEL_KAT, muridPeta, acaraId, rekodBagi, lencanaPingat, muat, tarikhPendek });
-    return { papar, muat, tindakan, ubah, hantar, katAtlet };
+    return { papar, muat, tindakan, ubah, hantar, katAtlet, bantu: () => B };
   };
 })();
 
@@ -6342,6 +6832,9 @@ window.KOKUM_SURAT_ASET = {
     olahraga: P('<circle cx="14.5" cy="4.5" r="2"/><path d="M8 21l3-6 3 2v5M6 11l3-3 4 1 3 3 3-1M11 15l2-6"/>'),
     mesyuarat: P('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'),
     kem: P('<path d="M12 4L3 20h18z"/><path d="M12 4v16M9 20l3-6 3 6"/>'),
+    juruhebah: P('<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>'),
+    papan: P('<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M7 13v-3M11 13V8M15 13v-5"/>'),
+    hs: P('<rect x="4" y="4" width="16" height="11" rx="1.5"/><path d="M2 19h20M9 8h6M9 11h4"/>'),
     takwim: P('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2"/>'),
   };
 
@@ -6354,7 +6847,7 @@ window.KOKUM_SURAT_ASET = {
     // simpanan luar talian baru sahaja beratur: beritahu guru
     const st = S.db && S.db.luar ? S.db.luar.status() : null;
     if (!/…$/.test(teks)) {
-      if (st && !ralat && st.menunggu > rotiMenunggu) teks += ' · disimpan dalam peranti, akan dihantar apabila ada internet';
+      if (st && !ralat && st.menunggu > rotiMenunggu) teks += S.hs ? ' · disimpan dalam telefon, akan dihantar ke laptop apabila sambungan pulih' : ' · disimpan dalam peranti, akan dihantar apabila ada internet';
       rotiMenunggu = st ? st.menunggu : 0;
     }
     el.textContent = teks;
@@ -6510,7 +7003,13 @@ window.KOKUM_SURAT_ASET = {
     S.tiadaKonfig = !adaKonfig;
     app().innerHTML = '<div class="pemuat">Memuatkan KOKUM SMART…</div>';
     try {
-      if (S.demo) S.db = window.KokumDB.DemoDB();
+      if (HS) {
+        S.hs = true; S.demo = false;
+        S.db = window.KokumLuarTalian.balut(HS.DB(), { teks: {
+          tiadaData: 'Tiada sambungan ke laptop TIC, dan data ini belum pernah dibuka pada telefon ini. Dekatkan telefon ke WiFi hari sukan dan cuba lagi.',
+          perluTalian: 'Tiada sambungan ke laptop TIC. Tindakan ini perlu sambungan ke laptop. (Keputusan acara boleh disimpan dahulu dan dihantar sendiri apabila sambungan pulih.)' } });
+        S.db.luar.dengar(kemasTalian);
+      } else if (S.demo) S.db = window.KokumDB.DemoDB();
       else {
         await muatSkrip(URL_SB);
         const asal = window.KokumDB.SupabaseDB(C.supabaseUrl, C.supabaseAnonKey);
@@ -6533,6 +7032,7 @@ window.KOKUM_SURAT_ASET = {
     const pulih = /type=recovery/.test(location.hash + location.search);
     const user = await S.db.sesi().catch(() => null);
     if (pulih && user) { S.user = user; return skrinMasuk('baharu'); }
+    if (S.hs && !user) return HS.skrinMasuk(app(), (u) => selepasMasuk(u));
     if (!user) return skrinMasuk('masuk');
     await selepasMasuk(user);
   }
@@ -6558,6 +7058,7 @@ window.KOKUM_SURAT_ASET = {
     S.berganda = KI.cariBerganda(aktif());
     S.bergandaId = new Set(S.berganda.flat().filter((x) => x && x.id).map((x) => x.id));
     S.dimuatPada = new Date();
+    if (S.hs) HS.mulaDenyut(segarHS);
     render();
   }
 
@@ -6636,9 +7137,27 @@ window.KOKUM_SURAT_ASET = {
   const KEM = window.KokumKem({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
     eksport, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI, bolehUrus, ahliUnit: (u) => ahliUnit(u), unitKat: (k, s) => unitKat(k, s) });
 
+  // Mod Hari Sukan (intranet laptop TIC)
+  const HS = window.KOKUM_HARI_SUKAN && window.KokumHariSukan;
+  if (HS) HS.pasang({ S, e, $, IKON, roti, sahkan, gagal, render: () => render(), AIS, LOGO, muatData: () => muatData() });
+  const MENU_HS = [['olahraga', 'Keputusan'], ['juruhebah', 'Juruhebah'], ['papan', 'Papan markah']].concat(HS && HS.LOKAL ? [['hs', 'Pusat kawalan']] : []);
+  const LALUAN_HS = ['olahraga', 'juruhebah', 'papan', 'hs'];
+  // kemas kini paparan apabila telefon lain menyimpan keputusan (tanpa mengganggu borang yang sedang diisi)
+  let borangDiubah = false;
+  document.addEventListener('input', (ev) => { if (ev.target.closest && ev.target.closest('#isi form, #dlg form')) borangDiubah = true; }, true);
+  async function segarHS() {
+    if (!S.data) return;
+    try { await AIS.muat(true); } catch (err) { return; }
+    const laluan = hashBahagian().bahagian[0] || 'utama';
+    const a = document.activeElement, dlg = $('#dlg');
+    const sibuk = borangDiubah || (dlg && dlg.open) || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.closest('#isi'));
+    if (laluan === 'papan' || laluan === 'juruhebah' || !sibuk) { S.kekalSkrol = true; render(); }
+  }
+
   function rangka(aktifMenu, isi) {
     const t = S.data.tetapan || {};
-    const nav = (kelas) => `<nav class="nav ${kelas}" aria-label="Menu utama">${MENU.filter(([k]) => kelas !== 'nav-bawah' || MENU_BAWAH.includes(k)).map(([k, l]) =>
+    const SENARAI = S.hs ? MENU_HS : MENU;
+    const nav = (kelas) => `<nav class="nav ${kelas}" aria-label="Menu utama" ${S.hs ? `style="--bil:${SENARAI.length}"` : ''}>${SENARAI.filter(([k]) => S.hs || kelas !== 'nav-bawah' || MENU_BAWAH.includes(k)).map(([k, l]) =>
       `<a href="#/${k}" ${k === aktifMenu ? 'aria-current="page"' : ''}>${IKON[k]}<span>${l}</span></a>`).join('')}</nav>`;
     return `
       <div class="rangka">
@@ -6648,10 +7167,11 @@ window.KOKUM_SURAT_ASET = {
           <img class="slogan-rel" src="${SLOGAN}" alt="SMKUSR Tekad Berapi">
           <div class="bawah">
             <div><b>${e(S.profil.nama || S.profil.email)}</b></div>
-            <div class="pudar">${penyelaras() ? 'Penyelaras' : S.unitSaya.size ? 'Guru penasihat' : 'Guru'}${S.demo ? ' <span class="lencana-demo">Demo</span>' : ''}</div>
+            <div class="pudar">${S.hs ? 'Mod Hari Sukan' : penyelaras() ? 'Penyelaras' : S.unitSaya.size ? 'Guru penasihat' : 'Guru'}${S.demo ? ' <span class="lencana-demo">Demo</span>' : ''}</div>
+            ${S.hs && !HS.LOKAL ? '<button class="pautan kecil" data-act="keluar">Log keluar</button>' : ''}
           </div>
         </aside>
-        <header class="atas-mudah"><img src="${LOGO}" alt=""><b>KOKUM SMART</b>${S.demo ? '<span class="lencana-demo">Demo</span>' : ''}</header>
+        <header class="atas-mudah"><img src="${LOGO}" alt=""><b>KOKUM SMART</b>${S.demo ? '<span class="lencana-demo">Demo</span>' : ''}${S.hs ? '<span class="lencana-demo lencana-hs">Hari Sukan</span>' : ''}${S.hs && !HS.LOKAL ? '<button class="pautan kecil" data-act="keluar" style="margin-left:auto">Log keluar</button>' : ''}</header>
         <main class="isi" id="isi">${S.demo ? bannerDemo() : ''}${isi}</main>
         ${nav('nav-bawah')}
       </div>
@@ -6666,7 +7186,7 @@ window.KOKUM_SURAT_ASET = {
     if (!el) { el = document.createElement('button'); el.id = 'cip-talian'; el.type = 'button'; el.dataset.act = 'talian'; el.className = 'cip-talian tanpa-cetak'; document.body.appendChild(el); }
     const masa = (t) => new Date(t).toLocaleString('ms-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     let kelas = '', teks = '';
-    if (st.luar) { kelas = 'luar'; teks = `Luar talian${st.menunggu ? ` · ${st.menunggu} menunggu` : ''}`; }
+    if (st.luar) { kelas = 'luar'; teks = `${S.hs ? 'Terputus dari laptop' : 'Luar talian'}${st.menunggu ? ` · ${st.menunggu} menunggu` : ''}`; }
     else if (st.menghantar && st.menunggu) { kelas = 'hantar'; teks = `Menghantar ${st.menunggu} rekod…`; }
     else if (st.menunggu) { kelas = 'hantar'; teks = `${st.menunggu} rekod menunggu`; }
     else if (st.gagal) { kelas = 'gagal'; teks = `${st.gagal} rekod gagal dihantar`; }
@@ -6683,10 +7203,11 @@ window.KOKUM_SURAT_ASET = {
     const d = $('#dlg'); if (!d || !S.db.luar) return;
     const st = S.db.luar.status(), l = await S.db.luar.senarai();
     const masa = (t) => new Date(t).toLocaleString('ms-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    d.innerHTML = `<div class="dk"><div><h2>${st.luar ? 'Luar talian' : 'Sambungan'}</h2><p class="pudar kecil" style="margin:2px 0 0">${st.luar ? 'Tiada sambungan ke pelayan buat masa ini.' : 'Bersambung ke pelayan.'}</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
+    const pelayan = S.hs ? 'laptop TIC' : 'pelayan';
+    d.innerHTML = `<div class="dk"><div><h2>${st.luar ? (S.hs ? 'Terputus dari laptop' : 'Luar talian') : 'Sambungan'}</h2><p class="pudar kecil" style="margin:2px 0 0">${st.luar ? `Tiada sambungan ke ${pelayan} buat masa ini.` : `Bersambung ke ${pelayan}.`}</p></div><button class="btn kosong kecil" data-act="tutup" aria-label="Tutup">${IKON.tutup}</button></div>
       <div class="db">
         ${st.cacheDiguna ? `<div class="mesej amaran">Data yang dipaparkan ialah salinan yang disimpan dalam peranti ini pada <b>${e(masa(st.cacheDiguna))}</b>. Perubahan guru lain selepas itu belum kelihatan.</div>` : ''}
-        <p class="kecil">Kehadiran, rancangan, OPR (termasuk gambar), PAJSK, pencapaian, buku laporan, keputusan olahraga dan pendaftaran perkhemahan boleh disimpan tanpa internet. Rekod disimpan dalam peranti dan dihantar sendiri apabila talian pulih. <b>Jangan padam data pelayar (clear data)</b> sebelum rekod dihantar.</p>
+        <p class="kecil">${S.hs ? 'Keputusan acara yang disimpan semasa terputus disimpan dalam telefon dan dihantar sendiri ke laptop TIC apabila telefon kembali dalam liputan WiFi. Pengesahan keputusan perlu sambungan ke laptop.' : 'Kehadiran, rancangan, OPR (termasuk gambar), PAJSK, pencapaian, buku laporan, keputusan olahraga dan pendaftaran perkhemahan boleh disimpan tanpa internet.'} Rekod disimpan dalam peranti dan dihantar sendiri apabila talian pulih. <b>Jangan padam data pelayar (clear data)</b> sebelum rekod dihantar.</p>
         ${l.length ? `<ul class="senarai senarai-talian">${l.map((x) => `<li><div><b>${e(x.label)}</b><small class="pudar">${e(masa(x.masa))}${x.ralat ? '' : ' · menunggu'}</small>${x.ralat ? `<small class="teks-ralat">Ditolak pelayan: ${e(x.ralat)}</small>` : ''}</div>
           ${x.ralat ? `<button class="btn kecil bahaya" data-act="talian-buang" data-n="${x.n}">Buang</button>` : ''}</li>`).join('')}</ul>`
           : '<p class="pudar">Tiada rekod menunggu. Semua perubahan sudah dihantar.</p>'}
@@ -6710,7 +7231,9 @@ window.KOKUM_SURAT_ASET = {
 
   function render() {
     const { bahagian, q } = hashBahagian();
-    const [laluan = 'utama', a1, a2] = bahagian;
+    let [laluan = 'utama', a1, a2] = bahagian;
+    if (S.hs && !LALUAN_HS.includes(laluan)) { laluan = HS.LOKAL ? 'hs' : 'olahraga'; a1 = laluan === 'olahraga' ? 'jadual' : undefined; }
+    if (S.hs && laluan === 'papan') { borangDiubah = false; app().innerHTML = HS.papan(q); return; }
     let html, menu = laluan;
     try {
       if (laluan === 'murid') {
@@ -6728,9 +7251,13 @@ window.KOKUM_SURAT_ASET = {
       else if (laluan === 'kem') html = KEM.papar(a1, a2, q);
       else if (laluan === 'mesyuarat') html = MSY.papar(a1, a2, q);
       else if (laluan === 'lantikan') { menu = 'unit'; html = LG.papar(a1, q); }
+      else if (S.hs && laluan === 'juruhebah') html = HS.juruhebah(q);
+      else if (S.hs && laluan === 'hs') html = HS.pusat();
       else { menu = 'utama'; html = paparUtama(); }
     } catch (err) { console.error(err); html = `<div class="mesej ralat">${e(err.message)}</div>`; }
+    borangDiubah = false;
     app().innerHTML = rangka(menu, html);
+    if (S.hs && laluan === 'hs') HS.isiPusat();
     if (laluan === 'murid') isiSenaraiMurid();
     if (laluan === 'tetapan' && a1 === 'log') isiLog();
     F2.selepasRender();
@@ -7397,7 +7924,9 @@ window.KOKUM_SURAT_ASET = {
         case 'keluar': {
           const st = S.db.luar ? S.db.luar.status() : null;
           if (st && (st.menunggu || st.gagal) && !(await sahkan(`${st.menunggu + st.gagal} rekod belum dihantar ke pelayan.\nJika anda log keluar, rekod ini akan dihantar apabila anda log masuk semula dengan akaun yang sama pada peranti ini.`, { ok: 'Log keluar juga', bahaya: true }))) return;
-          await S.db.keluar(); S.user = null; S.data = null; return skrinMasuk('masuk');
+          await S.db.keluar(); S.user = null; S.data = null;
+          if (S.hs) return HS.skrinMasuk(app(), (u) => selepasMasuk(u));
+          return skrinMasuk('masuk');
         }
         case 'talian': return bukaTalian();
         case 'talian-hantar': {
@@ -7505,7 +8034,8 @@ window.KOKUM_SURAT_ASET = {
         case 'pasang': if (S.pasang) { S.pasang.prompt(); S.pasang = null; } return;
         case 'isi-contoh': S.db.isiContoh(); await muatData(); return roti('Data contoh dimuatkan');
         case 'reset-demo': if (await sahkan('Padam semua data dalam pelayar ini? Anda boleh import semula fail Excel selepas ini.', { ok: 'Padam data', bahaya: true })) { S.db.reset(); await muatData(); roti('Data demo dipadam'); } return;
-        default: if (!(await AIS.tindakan(act, el)) && !(await KEM.tindakan(act, el)) && !(await LG.tindakan(act, el)) && !(await MSY.tindakan(act, el))) await F2.tindakan(act, el);
+        default: if (HS && (await HS.tindakan(act, el))) return;
+          if (!(await AIS.tindakan(act, el)) && !(await KEM.tindakan(act, el)) && !(await LG.tindakan(act, el)) && !(await MSY.tindakan(act, el))) await F2.tindakan(act, el);
       }
     } catch (err) { gagal(err); }
   });
