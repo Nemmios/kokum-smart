@@ -1364,6 +1364,7 @@ window.KOKUM_CONFIG = {
         if ('aktif' in p) data.aktif = p.aktif;
         if ('rumah_sukan' in p) data.rumah_sukan = p.rumah_sukan || null;
         if ('ais_pencatat' in p) data.ais_pencatat = !!p.ais_pencatat;
+        if ('guru_kelas' in p) data.guru_kelas = p.guru_kelas || null;
         return semak(await sb.from('profiles').update(data).eq('id', p.id).select().single());
       },
 
@@ -1723,7 +1724,7 @@ window.KOKUM_CONFIG = {
       },
       async simpanTetapan(t) { const d = baca(); Object.assign(d.tetapan, t); tulis(); return salin(d.tetapan); },
       async simpanProfil(p) {
-        Object.assign(profil, { nama: p.nama }, 'rumah_sukan' in p ? { rumah_sukan: p.rumah_sukan || null } : {}, 'ais_pencatat' in p ? { ais_pencatat: !!p.ais_pencatat } : {});
+        Object.assign(profil, { nama: p.nama }, 'rumah_sukan' in p ? { rumah_sukan: p.rumah_sukan || null } : {}, 'ais_pencatat' in p ? { ais_pencatat: !!p.ais_pencatat } : {}, 'guru_kelas' in p ? { guru_kelas: p.guru_kelas || null } : {});
         return { ...profil };
       },
 
@@ -5302,12 +5303,12 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     function pjEkstra(q) {
       const cari = (q.get('q') || '').toUpperCase(), kelasL = Array.from(new Set(aktif().map((m) => m.kelas))).sort((a, b) => a.localeCompare(b, 'ms', { numeric: true }));
-      const kelas = q.get('kelas') || '';
+      const kelas = q.has('kelas') ? q.get('kelas') : (kelasL.find((k) => normKelas(k) === kelasSaya()) || '');
       const l = (cari || kelas) ? aktif().filter((m) => (!kelas || m.kelas === kelas) && (!cari || m.nama.includes(cari))).sort(susunMurid).slice(0, 200) : [];
       const ada = F().pajsk.filter((x) => x.bidang === 'EKSTRA');
       return `<div class="panel" style="margin-bottom:14px"><form class="penapis" id="f2-pj-ekstra" style="grid-template-columns:2fr 1fr"><input class="cari" type="search" name="q" value="${e(q.get('q') || '')}" placeholder="Cari nama murid" aria-label="Cari"><select name="kelas" aria-label="Kelas"><option value="">Semua kelas</option>${kelasL.map((k) => `<option ${k === kelas ? 'selected' : ''}>${e(k)}</option>`).join('')}</select></form>
-          <p class="pudar kecil" style="margin:8px 0 0">Ekstra kurikulum: perkhidmatan (pengawas, ketua kelas), anugerah, khidmat masyarakat, NILAM dan TIMSS. Skor tertinggi diambil, maksimum 10. ${penyelaras() ? 'Penyelaras boleh mengisi.' : 'Hanya penyelaras boleh mengisi.'} ${ada.length} murid sudah ada rekod.</p></div>
-        ${l.length ? `<div class="panel" style="padding:0"><ul class="senarai">${l.map((m) => { const d = (rekPajsk(m.id, 'EKSTRA') || {}).data; return `<li><button class="baris" data-act="f2-ekstra" data-murid="${e(m.id)}" ${penyelaras() ? '' : 'disabled'}>
+          <p class="pudar kecil" style="margin:8px 0 0">Ekstra kurikulum: perkhidmatan (pengawas, ketua kelas), anugerah, khidmat masyarakat, NILAM dan TIMSS. Skor tertinggi diambil, maksimum 10. ${penyelaras() ? 'Penyelaras boleh mengisi semua murid.' : kelasSaya() ? `Anda boleh mengisi murid kelas ${e(S.profil.guru_kelas)}.` : 'Diisi oleh guru kelas atau penyelaras.'} ${ada.length} murid sudah ada rekod.</p></div>
+        ${l.length ? `<div class="panel" style="padding:0"><ul class="senarai">${l.map((m) => { const d = (rekPajsk(m.id, 'EKSTRA') || {}).data; return `<li><button class="baris" data-act="f2-ekstra" data-murid="${e(m.id)}" ${bolehEkstra(m) ? '' : 'disabled'}>
             <span><span class="nama">${e(m.nama)}</span><br><span class="meta">${e(m.kelas)}${d ? ` · ${[d.perkhidmatan, d.anugerah, d.nilam && 'NILAM ' + d.nilam, d.timss && 'TIMSS', d.tl && 'TL'].filter(Boolean).map((x) => e(String(x).slice(0, 40))).join(' · ')}` : ''}</span></span>
             <span class="markah-pajsk ${d ? '' : 'belum'}"><b>${kiraEkstra(d)}</b><small>ekstra</small></span></button></li>`; }).join('')}</ul></div>` : '<p class="pudar">Cari nama atau pilih kelas.</p>'}`;
     }
@@ -5364,6 +5365,10 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       $('#dlg').close(); S.kekalSkrol = true; render();
     }
     /* ------------------------------------------------------------ pencapaian & aktiviti tambahan */
+    const normKelas = (k) => String(k || '').toUpperCase().replace(/\s+/g, ' ').trim();
+    const kelasSaya = () => normKelas(S.profil && S.profil.guru_kelas);
+    // Ekstra Kurikulum: penyelaras, atau guru kelas bagi murid kelasnya (sama seperti dasar RLS di guru_kelas.sql)
+    const bolehEkstra = (m) => penyelaras() || (!!kelasSaya() && !!m && normKelas(m.kelas) === kelasSaya());
     const bolehPadamPc = (x) => penyelaras() || (S.user && x.oleh === S.user.id) || x.oleh === 'demo';
     function pjPencapaian(q) {
       if (!F().adaPencapaian) return '<div class="mesej amaran">Bahagian ini memerlukan fail <b>fasa2_tambahan.sql</b>. Minta penyelaras menjalankannya di Supabase.</div>';
@@ -5455,7 +5460,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         d.nilam && `NILAM ${e(d.nilam)} (${skor(sk.NILAM, d.nilam)})`, d.timss && `TIMSS / PISA: ${e(d.timss)} (${skor(sk.TIMSS, d.timss)})`].filter(Boolean) : [];
       return `${baris.length ? `<ul class="senarai-pc"><li><div class="kecil">${baris.join('<br>')}</div></li></ul>` : `<p class="pudar kecil" style="margin:0 0 8px">Belum diisi untuk ${F().tahun}.</p>`}
         <p class="kecil" style="margin:0 0 8px">Skor Aktiviti Ekstra Kurikulum = <b>${d && d.tl ? 'TL' : kiraEkstra(d || {})}</b> / 10</p>
-        ${penyelaras() ? `<button type="button" class="btn kecil" data-act="f2-ekstra" data-murid="${e(mid)}" data-kembali="murid">${d ? 'Ubah' : 'Isi'} ekstra kurikulum</button>` : '<p class="pudar kecil" style="margin:0">Hanya penyelaras boleh mengisi ekstra kurikulum.</p>'}`;
+        ${bolehEkstra(S.data.murid.find((x) => x.id === mid)) ? `<button type="button" class="btn kecil" data-act="f2-ekstra" data-murid="${e(mid)}" data-kembali="murid">${d ? 'Ubah' : 'Isi'} ekstra kurikulum</button>` : '<p class="pudar kecil" style="margin:0">Diisi oleh guru kelas murid ini atau penyelaras.</p>'}`;
     }
     function ekstraMurid(mid) {
       const t = tahunAsal();
@@ -5508,7 +5513,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       };
       return `<div class="panel" style="margin-bottom:14px"><div class="kepala-panel"><div><h2 style="margin:0">${e(m.nama)}</h2><p class="pudar kecil" style="margin:2px 0 0">${e(m.kelas)} · PAJSK ${F().tahun} (anggaran)</p></div>
           <div class="gpa-besar"><small>GPA</small><b>${k.gpa == null ? '—' : k.gpa}</b><span>Gred ${e(k.gred || '—')}</span></div></div>
-          <div class="baris-btn" style="margin-top:10px"><button class="btn" data-act="f2-pc-baru" data-mid="${e(m.id)}">${IKON.tambah} Pencapaian / aktiviti tambahan</button>${penyelaras() ? `<button class="btn" data-act="f2-ekstra" data-murid="${e(m.id)}">Ekstra kurikulum</button>` : ''}<a class="btn" href="#/pajsk/murid?tahun=${F().tahun}">Murid lain</a></div></div>
+          <div class="baris-btn" style="margin-top:10px"><button class="btn" data-act="f2-pc-baru" data-mid="${e(m.id)}">${IKON.tambah} Pencapaian / aktiviti tambahan</button>${bolehEkstra(m) ? `<button class="btn" data-act="f2-ekstra" data-murid="${e(m.id)}">Ekstra kurikulum</button>` : ''}<a class="btn" href="#/pajsk/murid?tahun=${F().tahun}">Murid lain</a></div></div>
         <div class="grid-profil">${BIDANG.map(kad).join('')}
           <div class="panel"><div class="kepala-panel"><h3 style="margin:0">Ekstra kurikulum</h3><span class="markah-pajsk"><b>${k.ekstra}</b><small>/10</small></span></div>
             <ul class="kecil" style="margin:6px 0 0;padding-left:18px">${[ek.perkhidmatan && 'Perkhidmatan: ' + ek.perkhidmatan, ek.anugerah && 'Anugerah: ' + ek.anugerah, Object.keys(ek.km || {}).length && 'Khidmat masyarakat: ' + Object.entries(ek.km).map(([j, n]) => `${j} (${n})`).join(', '), ek.nilam && 'NILAM ' + ek.nilam, ek.timss && 'TIMSS/PISA: ' + ek.timss, ek.tl && 'TIDAK LAKSANA (TL)'].filter(Boolean).map((t) => `<li>${e(t)}</li>`).join('') || '<li class="pudar">Tiada rekod.</li>'}</ul></div></div>
@@ -5809,7 +5814,20 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     }
     function selepasRender() { if ($('#borang-f2-jana')) pratontonJana(); if ($('#borang-f2-hadir')) kiraHadirBorang(); }
 
-    return { pcMurid, ekstraMurid, papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
+    // Panel "Kelas saya" di halaman Utama untuk guru kelas
+    function panelKelasSaya() {
+      const k = kelasSaya(); if (!k || S.hs) return '';
+      const murid = aktif().filter((m) => normKelas(m.kelas) === k), nama = S.profil.guru_kelas;
+      const tiadaUnit = murid.filter((m) => !m.ub || !m.kp || !m.sp).length;
+      const t = tahunAsal(), sedia2 = S.f2 && S.f2.tahun === t && !S.f2.ralat;
+      if (!sedia2) muat(t).then(renderLatar);
+      const ekstra = sedia2 ? murid.filter((m) => rekPajsk(m.id, 'EKSTRA')).length : null;
+      return `<div class="panel" style="margin-bottom:18px"><div class="kepala" style="margin:0 0 10px"><div><h2 style="margin:0">Kelas saya: ${e(nama)}</h2><p class="kecil">Guru kelas · ${murid.length} murid aktif</p></div></div>
+        <div class="stat-baris" style="margin:0 0 12px"><div><b>${tiadaUnit}</b>belum lengkap UB/KP/SP</div><div><b>${ekstra == null ? '…' : ekstra + '/' + murid.length}</b>ekstra kurikulum diisi</div></div>
+        <div class="baris-btn"><a class="btn" href="#/murid?kelas=${encodeURIComponent(murid[0] ? murid[0].kelas : nama)}">Senarai murid kelas</a>
+          <a class="btn utama" href="#/pajsk/ekstra?tahun=${t}&kelas=${encodeURIComponent(murid[0] ? murid[0].kelas : nama)}">Isi ekstra kurikulum</a></div></div>`;
+    }
+    return { pcMurid, ekstraMurid, panelKelasSaya, papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
       _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, teksBaris, tanda, barisSekolah } };
   };
 })();
@@ -7291,7 +7309,7 @@ window.KOKUM_SURAT_ASET = {
           <img class="slogan-rel" src="${SLOGAN}" alt="SMKUSR Tekad Berapi">
           <div class="bawah">
             <div><b>${e(S.profil.nama || S.profil.email)}</b></div>
-            <div class="pudar">${S.hs ? 'Mod Hari Sukan' : penyelaras() ? 'Penyelaras' : S.unitSaya.size ? 'Guru penasihat' : 'Guru'}${S.demo ? ' <span class="lencana-demo">Demo</span>' : ''}</div>
+            <div class="pudar">${S.hs ? 'Mod Hari Sukan' : penyelaras() ? 'Penyelaras' : S.unitSaya.size ? 'Guru penasihat' : 'Guru'}${!S.hs && S.profil.guru_kelas ? ` · Guru kelas ${e(S.profil.guru_kelas)}` : ''}${S.demo ? ' <span class="lencana-demo">Demo</span>' : ''}</div>
             ${S.hs && !HS.LOKAL ? '<button class="pautan kecil" data-act="keluar">Log keluar</button>' : ''}
           </div>
         </aside>
@@ -7446,7 +7464,7 @@ window.KOKUM_SURAT_ASET = {
       <div class="kepala"><div><h1>Selamat datang, ${e((S.profil.nama || '').split(' ')[0] || 'cikgu')}</h1>
         <p>${e(t.nama_sekolah)} · Kokurikulum ${e(t.tahun)}</p></div>
         <button class="btn kecil" data-act="muat-semula" title="Muat semula data">${IKON.segar} Muat semula</button></div>
-      ${KEM.panelUtama()}${F2.panelUtama()}
+      ${F2.panelKelasSaya()}${KEM.panelUtama()}${F2.panelUtama()}
       ${unitSaya.length ? `<div class="panel" style="margin-bottom:18px"><h2>Unit yang anda urus</h2><div class="unit-grid">${unitSaya.map((u) => kadUnit(u, bil)).join('')}</div></div>` : ''}
       <div class="ringkas">
         <a class="kotak" href="#/murid?keg=&ting=&kelas=&unit=&status=aktif"><b>${m.length}</b><span>Murid aktif, ${L} lelaki, ${Pp} perempuan</span></a>
@@ -7937,7 +7955,7 @@ window.KOKUM_SURAT_ASET = {
       <div class="skrol-x"><table class="jadual"><thead><tr><th>Nama</th><th>Peranan</th><th>Unit diurus</th><th>Status</th><th></th></tr></thead><tbody>
       ${senarai.map((p) => `<tr><td><b>${e(p.nama)}</b><br><span class="pudar kecil">${e(p.email)}</span></td>
         <td>${p.peranan === 'penyelaras' ? 'Penyelaras' : 'Guru'}</td>
-        <td>${p.peranan === 'penyelaras' ? '<span class="pudar">Semua</span>' : e(unitGuru(p.id).join(', ') || '—')}${p.rumah_sukan ? `<br><span class="pudar kecil">Guru rumah ${e(p.rumah_sukan)}</span>` : ''}${p.ais_pencatat ? '<br><span class="pudar kecil">Pencatat keputusan olahraga</span>' : ''}</td>
+        <td>${p.peranan === 'penyelaras' ? '<span class="pudar">Semua</span>' : e(unitGuru(p.id).join(', ') || '—')}${p.rumah_sukan ? `<br><span class="pudar kecil">Guru rumah ${e(p.rumah_sukan)}</span>` : ''}${p.ais_pencatat ? '<br><span class="pudar kecil">Pencatat keputusan olahraga</span>' : ''}${p.guru_kelas ? `<br><span class="pudar kecil">Guru kelas ${e(p.guru_kelas)}</span>` : ''}</td>
         <td>${p.aktif ? 'Aktif' : '<b style="color:var(--amaran)">Menunggu pengesahan</b>'}</td>
         <td>${!p.aktif ? `<button class="btn utama kecil" data-act="sahkan-akaun" data-id="${e(p.id)}">Sahkan</button> ` : ''}<button class="btn kecil" data-act="akaun-ubah" data-id="${e(p.id)}">Ubah</button></td></tr>`).join('')}
       </tbody></table></div></div>`;
@@ -7953,6 +7971,7 @@ window.KOKUM_SURAT_ASET = {
         <div class="dua"><label class="medan">Peranan<select name="peranan"><option value="guru" ${p.peranan === 'guru' ? 'selected' : ''}>Guru</option><option value="penyelaras" ${p.peranan === 'penyelaras' ? 'selected' : ''}>Penyelaras</option></select></label>
           <label class="medan">Status<select name="aktif"><option value="1" ${p.aktif ? 'selected' : ''}>Aktif</option><option value="0" ${!p.aktif ? 'selected' : ''}>Tidak aktif (sekat akses)</option></select></label></div>
         <label class="medan">Guru rumah sukan (olahraga)<select name="rumah_sukan"><option value="">Bukan guru rumah</option>${((S.data.tetapan || {}).senarai_rumah || []).map((r) => `<option ${p.rumah_sukan === r ? 'selected' : ''}>${e(r)}</option>`).join('')}</select><span class="bantu">Guru rumah boleh mendaftar atlet bagi rumah ini.</span></label>
+        ${'guru_kelas' in p ? `<label class="medan">Guru kelas<select name="guru_kelas"><option value="">Bukan guru kelas</option>${Array.from(new Set(S.data.murid.filter((m) => m.status !== 'keluar').map((m) => m.kelas))).sort((a, b) => a.localeCompare(b, 'ms', { numeric: true })).map((k) => `<option ${p.guru_kelas === k ? 'selected' : ''}>${e(k)}</option>`).join('')}</select><span class="bantu">Guru kelas boleh mengisi Ekstra Kurikulum (jawatan, anugerah, khidmat masyarakat, NILAM) bagi murid kelasnya.</span></label>` : '<p class="pudar kecil">Untuk menetapkan guru kelas, jalankan fail <b>guru_kelas.sql</b> di Supabase.</p>'}
         <label class="cek"><input type="checkbox" name="ais_pencatat" ${p.ais_pencatat ? 'checked' : ''}> Pencatat keputusan olahraga <span class="pudar kecil">(boleh menjana senarai mula, mengisi dan mengesahkan keputusan)</span></label>
         <div><b class="kecil">Unit yang diurus sebagai guru penasihat</b>
         ${KATS.map((k) => `<p class="kecil pudar" style="margin:10px 0 4px">${KAT[k]}</p><div class="cip-set">${unitKat(k, true).map((u) => `<label class="cip"><input type="checkbox" name="unit" value="${e(u.kod)}" ${ada.has(u.kod) ? 'checked' : ''}>${e(u.kod)}</label>`).join('')}</div>`).join('')}</div>
@@ -8155,7 +8174,7 @@ window.KOKUM_SURAT_ASET = {
         case 'akaun-ubah': return bukaAkaun(el.dataset.id);
         case 'simpan-akaun': {
           const f = $('#borang-akaun'), d = new FormData(f), id = el.dataset.id;
-          await S.db.simpanProfil({ id, nama: String(d.get('nama')).trim().toUpperCase(), peranan: d.get('peranan'), aktif: d.get('aktif') === '1', rumah_sukan: d.get('rumah_sukan') || null, ais_pencatat: d.get('ais_pencatat') === 'on' });
+          await S.db.simpanProfil({ id, nama: String(d.get('nama')).trim().toUpperCase(), peranan: d.get('peranan'), aktif: d.get('aktif') === '1', rumah_sukan: d.get('rumah_sukan') || null, ais_pencatat: d.get('ais_pencatat') === 'on', ...(d.has('guru_kelas') ? { guru_kelas: d.get('guru_kelas') || null } : {}) });
           await S.db.setGuruUnit(id, d.getAll('unit'));
           dlg.close(); await muatData(); return roti('Akaun dikemas kini');
         }
