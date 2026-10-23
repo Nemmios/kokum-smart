@@ -5059,22 +5059,26 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       const lagi = p.tarikh > hariIniIso();
       const r = rancangan(p.id, u.kod);
       const hadirN = (mid) => keh.filter((k) => k.murid_id === mid && k.status === 'H').length;
+      // perjumpaan gabungan: bidang lain bertemu pada tarikh yang sama (contoh mesyuarat agung semua unit)
+      const gab = F().perjumpaan.filter((y) => y.tarikh === p.tarikh && y.kategori !== p.kategori).sort((a, b) => URUT_S.indexOf(a.kategori) - URUT_S.indexOf(b.kategori));
+      const disalin = [...rekP.values()].filter((k) => k.disalin_dari).length;
       return `<div class="panel" style="margin-bottom:14px"><div class="cip-set">${ps.map((y) => `<a class="cip ${y.id === p.id ? 'pilih' : ''} ${direkod.has(y.id) ? 'siap' : ''}" href="#/unit/${encodeURIComponent(u.kod)}/kehadiran?p=${y.id}" title="${e(fmtT(y.tarikh))}">${y.bil}<small>${tk(y.tarikh).getDate()}/${tk(y.tarikh).getMonth() + 1}</small></a>`).join('')}</div>
           <p class="pudar kecil" style="margin:8px 0 0">Nombor bertanda hijau sudah direkod. ${direkod.size}/${ps.length} perjumpaan direkod.</p></div>
         <form class="panel" id="borang-f2-hadir" data-unit="${e(u.kod)}" data-p="${p.id}">
           <div class="dk-kep"><h2 style="margin:0">Perjumpaan ${p.bil}: ${e(fmtT(p.tarikh, true))}</h2>${(r && r.tajuk) || p.tema ? `<span class="pudar kecil">${e((r && r.tajuk) || p.tema)}</span>` : ''}</div>
           ${lagi ? '<div class="mesej amaran" style="margin:8px 0">Perjumpaan ini belum berlangsung.</div>' : ''}
+          ${gab.length ? `<div class="mesej ok kecil" style="margin:8px 0"><b>Perjumpaan gabungan</b> dengan ${gab.map((y) => `${KAT[y.kategori]} ke-${y.bil}`).join(' dan ')}. Kehadiran yang disimpan di sini disalin sendiri ke unit ${gab.map((y) => y.kategori).join(' dan ')} setiap murid, kecuali murid yang sudah direkod sendiri oleh guru unit itu.${disalin ? ` ${disalin} rekod di bawah disalin daripada unit lain; ubah jika perlu, kemudian Simpan.` : ''}</div>` : ''}
           ${!rekP.size && boleh ? '<p class="kecil" style="margin:6px 0">Belum direkod. Semua ahli ditanda <b>Hadir</b>; tukar yang tidak hadir sahaja, kemudian tekan Simpan.</p>' : ''}
           ${boleh ? `<div class="baris-btn" style="margin:8px 0"><button type="button" class="btn kecil" data-act="f2-semua" data-v="H">Semua hadir</button><button type="button" class="btn kecil" data-act="f2-semua" data-v="T">Semua tidak hadir</button><span class="kecil" id="kiraan-hadir"></span></div>` : ''}
-          <div class="hadir-senarai">${ahli.map((m, i) => { const st = (rekP.get(m.id) || {}).status || (boleh ? 'H' : ''); return `<div class="hadir-baris"><span class="bil">${i + 1}</span><span class="siapa"><b>${e(m.nama)}</b><small>${e(m.kelas)} · ${hadirN(m.id)} kali hadir</small></span>
+          <div class="hadir-senarai">${ahli.map((m, i) => { const st = (rekP.get(m.id) || {}).status || (boleh ? 'H' : ''); return `<div class="hadir-baris"><span class="bil">${i + 1}</span><span class="siapa"><b>${e(m.nama)}</b><small>${e(m.kelas)} · ${hadirN(m.id)} kali hadir${(rekP.get(m.id) || {}).disalin_dari ? ` · <i>disalin daripada ${e(rekP.get(m.id).disalin_dari)}</i>` : ''}</small></span>
             ${boleh ? `<span class="seg" role="radiogroup" aria-label="Kehadiran ${e(m.nama)}">${Object.keys(STATUS_H).map((k) => `<label class="s-${k}"><input type="radio" name="h_${e(m.id)}" value="${k}" ${st === k ? 'checked' : ''}><span>${k === 'H' ? 'Hadir' : k === 'T' ? 'Tidak' : 'Sebab'}</span></label>`).join('')}</span>`
               : `<span class="status-h s-${st}">${st ? STATUS_H[st] : '—'}</span>`}</div>`; }).join('') || '<div class="kosong-isi">Unit ini belum ada ahli.</div>'}</div>
           ${boleh && ahli.length ? `<div class="baris-btn" style="margin-top:12px"><button class="btn utama" type="submit">Simpan kehadiran perjumpaan ${p.bil}</button></div>` : ''}</form>
         <div class="panel" style="margin-top:14px"><h2>Ringkasan kehadiran ${F().tahun}</h2>
           <div class="skrol-x"><table class="jadual kecil grid-hadir"><thead><tr><th>Nama</th>${ps.map((y) => `<th class="n" title="${e(fmtT(y.tarikh))}">${y.bil}</th>`).join('')}<th class="n">Hadir</th><th class="n">Skor</th></tr></thead><tbody>
-          ${ahli.map((m) => { const n = hadirN(m.id); return `<tr><td>${e(m.nama)}</td>${ps.map((y) => { const k = keh.find((z) => z.perjumpaan_id === y.id && z.murid_id === m.id); return `<td class="n s-${k ? k.status : 'x'}">${k ? (k.status === 'H' ? '✓' : k.status === 'B' ? 'B' : '✗') : ''}</td>`; }).join('')}<td class="n"><b>${n}</b></td><td class="n">${skorHadir(n)}</td></tr>`; }).join('')}
+          ${ahli.map((m) => { const n = hadirN(m.id); return `<tr><td>${e(m.nama)}</td>${ps.map((y) => { const k = keh.find((z) => z.perjumpaan_id === y.id && z.murid_id === m.id); return `<td class="n s-${k ? k.status : 'x'}" ${k && k.disalin_dari ? `title="Disalin daripada ${e(k.disalin_dari)} (perjumpaan gabungan)"` : ''}>${k ? (k.status === 'H' ? '✓' : k.status === 'B' ? 'B' : '✗') : ''}${k && k.disalin_dari ? '<sup>s</sup>' : ''}</td>`; }).join('')}<td class="n"><b>${n}</b></td><td class="n">${skorHadir(n)}</td></tr>`; }).join('')}
           </tbody></table></div>
-          <p class="pudar kecil">✓ hadir · ✗ tidak hadir · B bersebab (tidak dikira hadir). Skor kehadiran PAJSK: 12 kali = 40.</p>
+          <p class="pudar kecil">✓ hadir · ✗ tidak hadir · B bersebab (tidak dikira hadir) · <sup>s</sup> disalin daripada unit lain (perjumpaan gabungan). Skor kehadiran PAJSK: 12 kali = 40.</p>
           <a class="btn" href="#/takwim/cetak?doc=kehadiran&unit=${encodeURIComponent(u.kod)}&tahun=${F().tahun}">${IKON.cetak} Cetak rekod kehadiran</a></div>`;
     }
     function kiraHadirBorang() {
@@ -5090,7 +5094,10 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       try {
         const hasil = await S.db.f2SimpanKehadiran(rows);
         const keh = F().kehUnit[kod];
-        hasil.forEach((r) => { const i = keh.findIndex((k) => k.perjumpaan_id === r.perjumpaan_id && k.murid_id === r.murid_id); if (i >= 0) keh[i] = r; else keh.push(r); });
+        hasil.forEach((r) => { const i = keh.findIndex((k) => k.perjumpaan_id === r.perjumpaan_id && k.murid_id === r.murid_id); if (i >= 0) keh[i] = { ...r, disalin_dari: null }; else keh.push({ ...r, disalin_dari: null }); });
+        // perjumpaan gabungan: pelayan menyalin ke unit lain, jadi rekod unit lain dimuat semula apabila dibuka
+        const pj = F().perjumpaan.find((y) => y.id === pid);
+        if (pj && F().perjumpaan.some((y) => y.tarikh === pj.tarikh && y.kategori !== pj.kategori)) Object.keys(F().kehUnit).forEach((k) => { if (k !== kod) delete F().kehUnit[k]; });
         try { S.f2.hadir = await S.db.f2HadirRingkas(F().tahun); } catch (err) { S.f2.hadir = S.f2.hadir || []; }
         // kemas kini kiraan hadir unit ini daripada rekod tempatan (tepat walaupun luar talian)
         const kat = S.unitPeta.get(kod).kategori, kira = new Map();
