@@ -1007,6 +1007,10 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .sem-slot { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--kertas); }
 .sem-suis { align-items: flex-start; }
 @media (max-width: 560px) { .sem-pb > li { grid-template-columns: 1fr; } .sem-pb-btn { justify-content: flex-start; } }
+.belum-rekod { color: var(--amaran); font-weight: 700; }
+.salin-hadir summary { cursor: pointer; list-style-position: inside; }
+.salin-baris { align-items: center; }
+.salin-baris select { width: 100%; min-width: 0; }
 
 </style>
 </head>
@@ -1577,6 +1581,7 @@ window.KOKUM_CONFIG = {
         return semak(await sb.from('rancangan_unit').upsert(rows.map((r) => ({ ...pilih(r, ['perjumpaan_id', 'unit_kod', 'tajuk', 'tempat', 'catatan', 'status']), dikemas: new Date().toISOString() })),
           { onConflict: 'perjumpaan_id,unit_kod' }).select());
       },
+      async f2SalinKehadiran(o) { return semak(await sb.rpc('salin_kehadiran', { p_dari: o.dari, p_unit: o.unit || null, p_ke: o.ke, p_timpa: !!o.timpa })); },
       async f2SimpanKehadiran(rows) {
         const hasil = [];
         for (let i = 0; i < rows.length; i += 300) {
@@ -2040,6 +2045,18 @@ window.KOKUM_CONFIG = {
         const hasil = rows.map((r) => { let x = F.rancangan.find((y) => y.perjumpaan_id === r.perjumpaan_id && y.unit_kod === r.unit_kod);
           if (!x) { x = { status: 'dirancang' }; F.rancangan.push(x); } Object.assign(x, pilih(r, ['perjumpaan_id', 'unit_kod', 'tajuk', 'tempat', 'catatan', 'status']), { dikemas: new Date().toISOString() }); return x; });
         tulis(); return salin(hasil);
+      },
+      async f2SalinKehadiran(o) {
+        const d = baca(), F = d.f2, ke = F.perjumpaan.filter((p) => o.ke.includes(p.id)); let n = 0;
+        F.kehadiran.filter((h) => h.perjumpaan_id === o.dari && (!o.unit || h.unit_kod === o.unit)).forEach((h) => {
+          const m = d.murid.find((x) => x.id === h.murid_id); if (!m) return;
+          ke.forEach((p) => { const unit = m[p.kategori.toLowerCase()]; if (!unit) return;
+            let x = F.kehadiran.find((y) => y.perjumpaan_id === p.id && y.murid_id === h.murid_id);
+            if (x && !o.timpa && !x.disalin_dari) return;
+            if (!x) { x = { perjumpaan_id: p.id, murid_id: h.murid_id }; F.kehadiran.push(x); }
+            Object.assign(x, { unit_kod: unit, status: h.status, disalin_dari: h.unit_kod, dikemas: new Date().toISOString() }); n++; });
+        });
+        tulis(); return n;
       },
       async f2SimpanKehadiran(rows) {
         const F = baca().f2;
@@ -5062,18 +5079,24 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       // perjumpaan gabungan: bidang lain bertemu pada tarikh yang sama (contoh mesyuarat agung semua unit)
       const gab = F().perjumpaan.filter((y) => y.tarikh === p.tarikh && y.kategori !== p.kategori).sort((a, b) => URUT_S.indexOf(a.kategori) - URUT_S.indexOf(b.kategori));
       const disalin = [...rekP.values()].filter((k) => k.disalin_dari).length;
+      // perekod utama perjumpaan gabungan: UB (atau bidang pertama yang bertemu pada tarikh itu); bidang lain hanya menyemak
+      const utama = URUT_S.find((k) => k === p.kategori || gab.some((y) => y.kategori === k));
+      const ikut = gab.length > 0 && p.kategori !== utama;
+      const belum = ikut ? ahli.filter((m) => !rekP.has(m.id)).length : 0;
       return `<div class="panel" style="margin-bottom:14px"><div class="cip-set">${ps.map((y) => `<a class="cip ${y.id === p.id ? 'pilih' : ''} ${direkod.has(y.id) ? 'siap' : ''}" href="#/unit/${encodeURIComponent(u.kod)}/kehadiran?p=${y.id}" title="${e(fmtT(y.tarikh))}">${y.bil}<small>${tk(y.tarikh).getDate()}/${tk(y.tarikh).getMonth() + 1}</small></a>`).join('')}</div>
           <p class="pudar kecil" style="margin:8px 0 0">Nombor bertanda hijau sudah direkod. ${direkod.size}/${ps.length} perjumpaan direkod.</p></div>
         <form class="panel" id="borang-f2-hadir" data-unit="${e(u.kod)}" data-p="${p.id}">
           <div class="dk-kep"><h2 style="margin:0">Perjumpaan ${p.bil}: ${e(fmtT(p.tarikh, true))}</h2>${(r && r.tajuk) || p.tema ? `<span class="pudar kecil">${e((r && r.tajuk) || p.tema)}</span>` : ''}</div>
           ${lagi ? '<div class="mesej amaran" style="margin:8px 0">Perjumpaan ini belum berlangsung.</div>' : ''}
-          ${gab.length ? `<div class="mesej ok kecil" style="margin:8px 0"><b>Perjumpaan gabungan</b> dengan ${gab.map((y) => `${KAT[y.kategori]} ke-${y.bil}`).join(' dan ')}. Kehadiran yang disimpan di sini disalin sendiri ke unit ${gab.map((y) => y.kategori).join(' dan ')} setiap murid, kecuali murid yang sudah direkod sendiri oleh guru unit itu.${disalin ? ` ${disalin} rekod di bawah disalin daripada unit lain; ubah jika perlu, kemudian Simpan.` : ''}</div>` : ''}
-          ${!rekP.size && boleh ? '<p class="kecil" style="margin:6px 0">Belum direkod. Semua ahli ditanda <b>Hadir</b>; tukar yang tidak hadir sahaja, kemudian tekan Simpan.</p>' : ''}
+          ${gab.length && !ikut ? `<div class="mesej ok kecil" style="margin:8px 0"><b>Perjumpaan gabungan</b> dengan ${gab.map((y) => `${KAT[y.kategori]} ke-${y.bil}`).join(' dan ')}. ${KAT[utama]} ialah <b>perekod utama</b>: kehadiran yang disimpan di sini disalin sendiri ke unit ${gab.map((y) => y.kategori).join(' dan ')} setiap murid.</div>` : ''}
+          ${ikut ? `<div class="mesej ok kecil" style="margin:8px 0"><b>Perjumpaan gabungan</b> dengan ${[utama].concat(gab.map((y) => y.kategori).filter((k) => k !== utama)).map((k) => { const y = k === p.kategori ? p : gab.find((z) => z.kategori === k); return `${KAT[k]} ke-${y.bil}`; }).join(' dan ')}. Kehadiran direkod oleh guru ${KAT[utama]} dan disalin ke sini. <b>Anda hanya perlu menyemak.</b>${belum ? ` <b style="color:var(--amaran)">${belum} murid belum direkod</b>: tandakan kehadiran mereka (atau tunggu guru ${utama} merekod), kemudian Simpan.` : ' Semua murid sudah direkod.'} Hanya murid yang anda ubah akan disimpan.</div>` : ''}
+          ${!rekP.size && boleh && !ikut ? '<p class="kecil" style="margin:6px 0">Belum direkod. Semua ahli ditanda <b>Hadir</b>; tukar yang tidak hadir sahaja, kemudian tekan Simpan.</p>' : ''}
           ${boleh ? `<div class="baris-btn" style="margin:8px 0"><button type="button" class="btn kecil" data-act="f2-semua" data-v="H">Semua hadir</button><button type="button" class="btn kecil" data-act="f2-semua" data-v="T">Semua tidak hadir</button><span class="kecil" id="kiraan-hadir"></span></div>` : ''}
-          <div class="hadir-senarai">${ahli.map((m, i) => { const st = (rekP.get(m.id) || {}).status || (boleh ? 'H' : ''); return `<div class="hadir-baris"><span class="bil">${i + 1}</span><span class="siapa"><b>${e(m.nama)}</b><small>${e(m.kelas)} · ${hadirN(m.id)} kali hadir${(rekP.get(m.id) || {}).disalin_dari ? ` · <i>disalin daripada ${e(rekP.get(m.id).disalin_dari)}</i>` : ''}</small></span>
+          <div class="hadir-senarai">${ahli.map((m, i) => { const st = (rekP.get(m.id) || {}).status || (boleh && !ikut ? 'H' : ''); return `<div class="hadir-baris"><span class="bil">${i + 1}</span><span class="siapa"><b>${e(m.nama)}</b><small>${e(m.kelas)} · ${hadirN(m.id)} kali hadir${(rekP.get(m.id) || {}).disalin_dari ? ` · <i>disalin daripada ${e(rekP.get(m.id).disalin_dari)}</i>` : ''}${ikut && !rekP.has(m.id) ? ' · <b class="belum-rekod">belum direkod</b>' : ''}</small></span>
             ${boleh ? `<span class="seg" role="radiogroup" aria-label="Kehadiran ${e(m.nama)}">${Object.keys(STATUS_H).map((k) => `<label class="s-${k}"><input type="radio" name="h_${e(m.id)}" value="${k}" ${st === k ? 'checked' : ''}><span>${k === 'H' ? 'Hadir' : k === 'T' ? 'Tidak' : 'Sebab'}</span></label>`).join('')}</span>`
               : `<span class="status-h s-${st}">${st ? STATUS_H[st] : '—'}</span>`}</div>`; }).join('') || '<div class="kosong-isi">Unit ini belum ada ahli.</div>'}</div>
           ${boleh && ahli.length ? `<div class="baris-btn" style="margin-top:12px"><button class="btn utama" type="submit">Simpan kehadiran perjumpaan ${p.bil}</button></div>` : ''}</form>
+        ${boleh && rekP.size ? borangSalin(u, p, rekP) : ''}
         <div class="panel" style="margin-top:14px"><h2>Ringkasan kehadiran ${F().tahun}</h2>
           <div class="skrol-x"><table class="jadual kecil grid-hadir"><thead><tr><th>Nama</th>${ps.map((y) => `<th class="n" title="${e(fmtT(y.tarikh))}">${y.bil}</th>`).join('')}<th class="n">Hadir</th><th class="n">Skor</th></tr></thead><tbody>
           ${ahli.map((m) => { const n = hadirN(m.id); return `<tr><td>${e(m.nama)}</td>${ps.map((y) => { const k = keh.find((z) => z.perjumpaan_id === y.id && z.murid_id === m.id); return `<td class="n s-${k ? k.status : 'x'}" ${k && k.disalin_dari ? `title="Disalin daripada ${e(k.disalin_dari)} (perjumpaan gabungan)"` : ''}>${k ? (k.status === 'H' ? '✓' : k.status === 'B' ? 'B' : '✗') : ''}${k && k.disalin_dari ? '<sup>s</sup>' : ''}</td>`; }).join('')}<td class="n"><b>${n}</b></td><td class="n">${skorHadir(n)}</td></tr>`; }).join('')}
@@ -5081,15 +5104,53 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
           <p class="pudar kecil">✓ hadir · ✗ tidak hadir · B bersebab (tidak dikira hadir) · <sup>s</sup> disalin daripada unit lain (perjumpaan gabungan). Skor kehadiran PAJSK: 12 kali = 40.</p>
           <a class="btn" href="#/takwim/cetak?doc=kehadiran&unit=${encodeURIComponent(u.kod)}&tahun=${F().tahun}">${IKON.cetak} Cetak rekod kehadiran</a></div>`;
     }
+    // Menu salin kehadiran ke bidang lain (perjumpaan yang melibatkan beberapa bidang; tarikh boleh berbeza)
+    function borangSalin(u, p, rekP) {
+      const lain = URUT_S.filter((k) => k !== p.kategori);
+      const lalai = (k) => { const ps = perjumpaanKat(k); return (ps.find((y) => y.tarikh === p.tarikh) || ps.find((y) => y.bil === p.bil) || {}).id; };
+      const asli = [...rekP.values()].filter((k) => !k.disalin_dari).length;
+      return `<details class="panel salin-hadir" style="margin-top:14px">
+        <summary><b>Salin kehadiran ke bidang lain</b> <span class="pudar kecil">· perjumpaan yang melibatkan ${lain.join(' / ')}</span></summary>
+        <form class="borang" id="borang-f2-salin" data-unit="${e(u.kod)}" data-p="${p.id}" style="margin-top:10px">
+          <p class="kecil" style="margin:0">Kehadiran ${asli} ahli ${e(u.kod)} bagi perjumpaan ${p.bil} (${e(fmtT(p.tarikh))}) disalin ke unit ${lain.join(' / ')} setiap murid, pada perjumpaan yang dipilih di bawah.</p>
+          ${lain.map((k) => { const ps = perjumpaanKat(k), d = lalai(k); return `<div class="dua salin-baris"><label class="cek"><input type="checkbox" name="ke_${k}" ${ps.length ? 'checked' : 'disabled'}> ${cipKat(k)} ${KAT[k]}</label>
+            <select name="p_${k}" aria-label="Perjumpaan ${KAT[k]}" ${ps.length ? '' : 'disabled'}>${ps.length ? ps.map((y) => `<option value="${y.id}" ${y.id === d ? 'selected' : ''}>Perjumpaan ${y.bil} · ${e(fmtT(y.tarikh))}${y.tarikh === p.tarikh ? ' (tarikh sama)' : ''}</option>`).join('') : '<option>Tiada tarikh perjumpaan</option>'}</select></div>`; }).join('')}
+          <div class="medan"><span>Murid yang sudah direkod oleh guru unit sasaran</span>
+            <label class="cek"><input type="radio" name="timpa" value="0" checked> Kekalkan rekod mereka (disyorkan)</label>
+            <label class="cek"><input type="radio" name="timpa" value="1"> Gantikan dengan kehadiran ${e(u.kod)}</label></div>
+          ${penyelaras() ? `<label class="cek"><input type="checkbox" name="semua"> Salin untuk <b>semua unit ${KAT[p.kategori]}</b> bagi perjumpaan ini (penyelaras)</label>` : ''}
+          <div class="baris-btn"><button class="btn" type="submit">Salin kehadiran</button></div>
+          <p class="pudar kecil" style="margin:0">Hanya rekod yang sudah disimpan disalin. Rekod salinan ditanda <i>disalin daripada ${e(u.kod)}</i> di unit sasaran dan boleh diubah oleh guru unit itu.</p>
+        </form></details>`;
+    }
+    async function salinHadir(f) {
+      const d = new FormData(f), pid = +f.dataset.p, kod = f.dataset.unit, p = F().perjumpaan.find((y) => y.id === pid);
+      const ke = URUT_S.filter((k) => k !== p.kategori && d.get('ke_' + k) && d.get('p_' + k)).map((k) => +d.get('p_' + k));
+      if (!ke.length) { roti('Pilih sekurang-kurangnya satu bidang.', true); return; }
+      const semua = d.get('semua') === 'on', timpa = d.get('timpa') === '1';
+      const sasaran = ke.map((id) => { const y = F().perjumpaan.find((z) => z.id === id); return `${KAT[y.kategori]} perjumpaan ${y.bil} (${fmtT(y.tarikh)})`; }).join('\n');
+      if (!(await sahkan(`Salin kehadiran ${semua ? 'SEMUA unit ' + KAT[p.kategori] : kod} perjumpaan ${p.bil} ke:\n${sasaran}\n\n${timpa ? 'Rekod yang sudah diisi oleh guru unit sasaran akan DIGANTIKAN.' : 'Rekod yang sudah diisi oleh guru unit sasaran dikekalkan.'}`, { ok: 'Salin', bahaya: timpa }))) return;
+      const btn = f.querySelector('button[type=submit]'); btn.disabled = true;
+      try {
+        const n = await S.db.f2SalinKehadiran({ dari: pid, unit: semua ? null : kod, ke, timpa });
+        Object.keys(F().kehUnit).forEach((k) => { if (k !== kod) delete F().kehUnit[k]; });
+        try { S.f2.hadir = await S.db.f2HadirRingkas(F().tahun); S.f2.hadirMap = new Map(S.f2.hadir.map((x) => [x.murid_id + '|' + x.kategori, x])); } catch (err) { /* abaikan */ }
+        roti(n ? `${n} rekod kehadiran disalin` : 'Tiada rekod disalin (semua sudah direkod oleh guru unit sasaran)');
+      } finally { btn.disabled = false; }
+    }
     function kiraHadirBorang() {
       const f = $('#borang-f2-hadir'), out = $('#kiraan-hadir'); if (!f || !out) return;
       const v = $$('#borang-f2-hadir input[type=radio]:checked').map((x) => x.value);
-      out.textContent = `${v.filter((x) => x === 'H').length} hadir · ${v.filter((x) => x === 'T').length} tidak · ${v.filter((x) => x === 'B').length} bersebab`;
+      const belum = $$('#borang-f2-hadir .seg').filter((g) => !g.querySelector('input:checked')).length;
+      out.textContent = `${v.filter((x) => x === 'H').length} hadir · ${v.filter((x) => x === 'T').length} tidak · ${v.filter((x) => x === 'B').length} bersebab${belum ? ` · ${belum} belum direkod` : ''}`;
     }
     async function simpanHadir(f) {
-      const kod = f.dataset.unit, pid = +f.dataset.p, rows = [];
-      $$('#borang-f2-hadir input[type=radio]:checked').forEach((x) => rows.push({ perjumpaan_id: pid, murid_id: x.name.slice(2), unit_kod: kod, status: x.value }));
-      if (!rows.length) return;
+      const kod = f.dataset.unit, pid = +f.dataset.p, semua = [];
+      $$('#borang-f2-hadir input[type=radio]:checked').forEach((x) => semua.push({ perjumpaan_id: pid, murid_id: x.name.slice(2), unit_kod: kod, status: x.value }));
+      // hanya murid yang berubah disimpan: salinan perjumpaan gabungan kekal salinan (pembetulan guru perekod utama masih sampai)
+      const lama = new Map((F().kehUnit[kod] || []).filter((k) => k.perjumpaan_id === pid).map((k) => [k.murid_id, k]));
+      const rows = semua.filter((r) => { const x = lama.get(r.murid_id); return !x || x.status !== r.status; });
+      if (!rows.length) { roti(semua.length ? 'Tiada perubahan untuk disimpan' : 'Tiada murid ditanda', !semua.length); return; }
       const btn = f.querySelector('button[type=submit]'); if (btn) btn.disabled = true;
       try {
         const hasil = await S.db.f2SimpanKehadiran(rows);
@@ -5104,7 +5165,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         keh.forEach((k) => { const x = kira.get(k.murid_id) || { murid_id: k.murid_id, kategori: kat, hadir: 0, direkod: 0 }; x.direkod++; if (k.status === 'H') x.hadir++; kira.set(k.murid_id, x); });
         S.f2.hadir = S.f2.hadir.filter((x) => !(x.kategori === kat && kira.has(x.murid_id))).concat([...kira.values()]);
         S.f2.hadirMap = new Map(S.f2.hadir.map((x) => [x.murid_id + '|' + x.kategori, x]));
-        roti(`Kehadiran disimpan: ${rows.filter((r) => r.status === 'H').length}/${rows.length} hadir`);
+        roti(rows.length === semua.length ? `Kehadiran disimpan: ${rows.filter((r) => r.status === 'H').length}/${rows.length} hadir` : `${rows.length} perubahan disimpan`);
         S.kekalSkrol = true; render();
       } finally { if (btn) btn.disabled = false; }
     }
@@ -5936,6 +5997,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         case 'borang-f2-aktiviti': await simpanAktiviti(f); return true;
         case 'borang-f2-rancangan': await simpanRancangan(f); return true;
         case 'borang-f2-hadir': await simpanHadir(f); return true;
+        case 'borang-f2-salin': await salinHadir(f); return true;
         case 'borang-f2-opr': await simpanOpr(f); return true;
         case 'borang-f2-pajsk': await simpanPajsk(f, lagi); return true;
         case 'borang-f2-pukal': await simpanPukal(f); return true;
