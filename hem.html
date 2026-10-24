@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PANTAS HEM</title>
+<meta name="theme-color" content="#1a2433">
+<link rel="icon" href="logo-petagas.png">
+<link rel="stylesheet" href="pantas.css">
+</head>
+<body>
+<header class="kepala">
+  <img src="logo-petagas.png" alt="">
+  <div class="tajuk"><b>PANTAS HEM</b><small id="siapa">SMK Petagas</small></div>
+  <button id="bKeluar" class="tersembunyi">Keluar</button>
+</header>
+
+<main class="lebar">
+  <section id="vMasuk" class="kad tersembunyi" style="max-width:460px;margin:0 auto">
+    <h2>Log masuk pentadbir</h2>
+    <p class="nota">Guna akaun yang sama seperti PANTAS Guru. Akaun baharu didaftarkan melalui <a href="guru.html">PANTAS Guru</a>.</p>
+    <form id="fMasuk">
+      <label for="emel">E-mel</label><input id="emel" type="email" autocomplete="username" required>
+      <label for="kata">Kata laluan</label><input id="kata" type="password" autocomplete="current-password" required>
+      <div id="mMasuk"></div>
+      <button class="btn utama penuh" id="bMasuk">Log masuk</button>
+    </form>
+  </section>
+
+  <section id="vTiada" class="kad tersembunyi">
+    <h2>Akses terhad</h2>
+    <p class="nota">Papan pemuka ini untuk HEM, petugas idMe dan pentadbir sahaja.</p>
+    <a class="btn utama" href="guru.html">Buka PANTAS Guru</a>
+  </section>
+
+  <section id="vApp" class="tersembunyi">
+    <div class="tab" id="tabUtama">
+      <button class="aktif" data-v="harian">Harian</button>
+      <button data-v="idme">Senarai idMe</button>
+      <button data-v="surat" class="hem">Surat amaran</button>
+      <button data-v="ponteng" class="hem">Ponteng kelas</button>
+      <button data-v="laporan" class="hem">Laporan</button>
+      <button data-v="tetapan" class="hem">Tetapan</button>
+    </div>
+
+    <div class="kad alat">
+      <div id="kTarikh"><label for="tarikh">Tarikh</label><input id="tarikh" type="date"></div>
+      <div id="kBulan" class="tersembunyi"><label for="bulan">Bulan</label><input id="bulan" type="month"></div>
+      <div><label for="sesi">Sesi</label><select id="sesi"><option value="">Semua</option><option value="PAGI">Pagi</option><option value="PETANG">Petang</option></select></div>
+      <div class="alat-btn"><button class="btn garis" id="bMuat" title="Muat semula" aria-label="Muat semula">↻</button></div>
+    </div>
+
+    <!-- HARIAN -->
+    <div id="pHarian">
+      <div class="statistik" id="statistik"></div>
+      <div class="kad">
+        <h2>Status kelas</h2>
+        <p class="nota">Hijau: kehadiran sudah dihantar. Merah: belum dihantar (dengan guru waktu pertama ikut jadual).</p>
+        <div class="grid-kelas" id="gridKelas"></div>
+      </div>
+    </div>
+
+    <!-- SENARAI IDME -->
+    <div id="pIdme" class="tersembunyi">
+      <div class="kad">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2>Senarai untuk diisi dalam idMe</h2><p class="nota" style="margin:0">Murid tidak hadir sahaja (murid lewat dikira hadir).</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn garis kecil" id="bPilihSemua">Pilih semua</button>
+            <button class="btn garis kecil" id="bCsv">Eksport CSV</button>
+            <button class="btn utama kecil" id="bSiap">Tanda terpilih: siap idMe</button>
+          </div>
+        </div>
+        <div class="ringkasan" id="ringkasIdme"></div>
+        <div class="jadual-bungkus"><table class="kad-mobile">
+          <thead><tr><th><input type="checkbox" id="pilihSemua" aria-label="Pilih semua"></th><th>Kelas</th><th>Murid</th><th>Kategori idMe</th><th>Sebab idMe</th><th>Keadaan</th><th>idMe</th></tr></thead>
+          <tbody id="jIdme"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SURAT AMARAN -->
+    <div id="pSurat" class="tersembunyi">
+      <div class="kad">
+        <h2>Calon surat amaran</h2>
+        <p class="nota">Dikira automatik daripada hari tidak hadir tanpa sebab (termasuk Ponteng). Berterusan: 3 / 10 / 17 hari. Berkala: 10 / 20 / 40 hari. Cuti dalam Takwim tidak dikira.</p>
+        <div class="jadual-bungkus"><table class="kad-mobile">
+          <thead><tr><th>Murid</th><th>Kelas</th><th>Jenis</th><th>Surat</th><th class="angka">Hari</th><th>Tarikh tidak hadir</th><th></th></tr></thead>
+          <tbody id="jCalon"></tbody></table></div>
+      </div>
+      <div class="kad">
+        <h2>Surat telah dikeluarkan (tahun ini)</h2>
+        <div class="jadual-bungkus"><table class="kad-mobile">
+          <thead><tr><th>Ruj. Kami</th><th>Tarikh</th><th>Murid</th><th>Kelas</th><th>Jenis</th><th>Surat</th><th>Susulan</th><th></th></tr></thead>
+          <tbody id="jSurat"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PONTENG KELAS -->
+    <div id="pPonteng" class="tersembunyi">
+      <div class="kad">
+        <h2>Laporan ponteng kelas</h2>
+        <p class="nota">Murid hadir ke sekolah tetapi tiada dalam kelas, dilapor oleh guru mata pelajaran. Kemas kini status selepas disiasat.</p>
+        <div class="ringkasan" id="ringkasPonteng"></div>
+        <div class="jadual-bungkus"><table class="kad-mobile">
+          <thead><tr><th>Waktu</th><th>Kelas</th><th>Murid</th><th>Subjek</th><th>Dilapor oleh</th><th>Status</th><th></th></tr></thead>
+          <tbody id="jPonteng"></tbody></table></div>
+      </div>
+      <div class="kad">
+        <h2>Kekerapan tahun ini</h2>
+        <p class="nota">Murid yang paling kerap ponteng kelas atau lewat. Ambil tindakan mengikut peraturan sekolah.</p>
+        <div class="jadual-bungkus"><table class="kad-mobile">
+          <thead><tr><th>Murid</th><th>Kelas</th><th class="angka">Ponteng kelas</th><th class="angka">Lewat</th></tr></thead>
+          <tbody id="jKekerapan"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- LAPORAN BULANAN -->
+    <div id="pLaporan" class="tersembunyi">
+      <div class="statistik" id="statLaporan"></div>
+      <div class="kad">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2 id="tajukLaporan">Laporan kehadiran bulanan</h2>
+            <p class="nota" style="margin:0">Peratus kehadiran = 1 − (hari tidak hadir ÷ (enrolmen × hari ditanda)).</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap" class="tiada-cetak">
+            <button class="btn garis kecil" id="bCsvKelas">CSV kelas</button>
+            <button class="btn garis kecil" id="bCsvMurid">CSV murid</button>
+            <button class="btn utama kecil" id="bCetak">Cetak / PDF</button>
+          </div>
+        </div>
+        <div class="jadual-bungkus" style="margin-top:10px"><table class="kad-mobile">
+          <thead><tr><th>Kelas</th><th>Guru kelas</th><th class="angka">Enrolmen</th><th class="angka">Hari ditanda</th><th class="angka">TH</th><th class="angka">Tanpa sebab</th><th class="angka">Lewat</th><th class="angka">% Hadir</th></tr></thead>
+          <tbody id="jLapKelas"></tbody></table></div>
+      </div>
+      <div class="kad">
+        <h2>Murid yang perlu perhatian</h2>
+        <p class="nota">Murid yang tidak hadir, lewat atau ponteng kelas pada bulan ini. Disusun mengikut hari tanpa sebab.</p>
+        <div class="jadual-bungkus"><table class="kad-mobile">
+          <thead><tr><th>Murid</th><th>Kelas</th><th class="angka">TH</th><th class="angka">Tanpa sebab</th><th class="angka">Lewat</th><th class="angka">Ponteng kelas</th></tr></thead>
+          <tbody id="jLapMurid"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- TETAPAN -->
+    <div id="pTetapan" class="tersembunyi">
+      <div class="kad">
+        <h2>Pengguna sistem</h2>
+        <p class="nota">Luluskan guru yang mendaftar, dan tetapkan peranan. Guru kelas perlu dipadankan dengan kelasnya. Hanya ADMIN boleh mengubah.</p>
+        <div class="jadual-bungkus"><table>
+          <thead><tr><th>Nama</th><th>Peranan</th><th>Kelas (guru kelas)</th><th></th></tr></thead>
+          <tbody id="jPengguna"></tbody></table></div>
+      </div>
+      <div class="kad">
+        <h2>Takwim cuti</h2>
+        <p class="nota">Hari cuti umum / cuti sekolah tidak dikira dalam surat amaran. Sabtu & Ahad sudah dikecualikan secara automatik.</p>
+        <div class="alat">
+          <div><label for="cTarikh">Dari</label><input id="cTarikh" type="date"></div>
+          <div><label for="cAkhir">Hingga (pilihan)</label><input id="cAkhir" type="date"></div>
+          <div style="flex:2"><label for="cKet">Keterangan</label><input id="cKet" placeholder="cth Cuti Deepavali"></div>
+          <div class="alat-btn"><button class="btn utama" id="bCuti">Tambah</button></div>
+        </div>
+        <div class="jadual-bungkus"><table><tbody id="jCuti"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="pantas.js"></script>
+<script src="surat.js"></script>
+<script>
+(() => {
+  const P = PANTAS, $ = s => document.querySelector(s);
+  let saya = null, kelas = [], paparan = "harian", senaraiIdme = [];
+  const PERINGKAT = { 1: "Amaran 1", 2: "Amaran 2", 3: "Amaran Terakhir" };
+  const KEADAAN = {
+    ADA_SEBAB: `<span class="cip ok">Ada sebab</span>`, BELUM_ADA_SEBAB: `<span class="cip th">Belum ada sebab</span>`,
+    PERLU_GURU_KELAS: `<span class="cip lw">Guru kelas</span>`, PERLU_SEMAKAN: `<span class="cip info">Semakan</span>`, LEWAT: `<span class="cip lw">Lewat</span>` };
+  const tunjuk = id => ["vMasuk", "vTiada", "vApp"].forEach(x => $("#" + x).classList.toggle("tersembunyi", x !== id));
+  const huruf = s => String(s || "").toLowerCase().replace(/(^|[\s(/])\S/g, c => c.toUpperCase());
+  const ralat = (sel, e, cols = 7) => { $(sel).innerHTML = `<tr><td colspan="${cols}"><div class="mesej ralat">${P.esc(e.message || e)}</div></td></tr>`; };
+
+  $("#fMasuk").addEventListener("submit", async e => {
+    e.preventDefault(); $("#bMasuk").disabled = true; $("#mMasuk").innerHTML = "";
+    try { await P.auth.masuk($("#emel").value, $("#kata").value); await mula(); }
+    catch (err) { $("#mMasuk").innerHTML = `<div class="mesej ralat">${P.esc(err.message)}</div>`; }
+    finally { $("#bMasuk").disabled = false; }
+  });
+  $("#bKeluar").addEventListener("click", async () => { await P.auth.keluar(); location.reload(); });
+
+  // ---------- susulan ----------
+  const JENIS_SUS = { PANGGILAN: "Panggilan telefon", WHATSAPP: "WhatsApp", LAMPIRAN_DITERIMA: "Jawapan / lampiran diterima",
+    JUMPA_GURU_KELAS: "Jumpa Guru Kelas", JUMPA_PK_HEM: "Jumpa PK HEM", JUMPA_PENGETUA: "Jumpa Pengetua",
+    ZIARAH_RUMAH: "Ziarah rumah", KAUNSELING: "Kaunseling", LAIN: "Lain-lain" };
+  const JUMPA_IKUT_PERINGKAT = { 1: "JUMPA_GURU_KELAS", 2: "JUMPA_PK_HEM", 3: "JUMPA_PENGETUA" };
+  function labelSusulan(list) {
+    if (!list.length) return `<span class="cip th">Belum ada</span>`;
+    const t = list[0];
+    return `<span class="cip ok">${P.esc(JENIS_SUS[t.jenis])}</span><br><small style="color:var(--teks-2)">${P.tarikhCantik(t.tarikh)}</small>`;
+  }
+  function bukaSusulan(s) {
+    const tr = $("#sus-" + s.id), td = tr.firstElementChild;
+    tr.classList.toggle("tersembunyi");
+    const sej = ($("#jSurat")._sus || []).filter(x => x.murid_id === s.murid_id);
+    td.innerHTML = `<div style="background:var(--latar);border-radius:12px;padding:12px">
+      <b>Susulan: ${P.esc(s.murid && s.murid.nama)}</b>
+      <p class="nota" style="margin:4px 0 8px">Selepas ${PERINGKAT[s.peringkat]}, murid & ibu bapa sepatutnya berjumpa ${{ 1: "Guru Kelas", 2: "PK HEM", 3: "Pengetua (bersama ibu bapa)" }[s.peringkat]}.</p>
+      <div class="baris"><div><label>Tindakan</label><select class="s-jenis">${Object.entries(JENIS_SUS).map(([k, v]) => `<option value="${k}" ${k === JUMPA_IKUT_PERINGKAT[s.peringkat] ? "selected" : ""}>${v}</option>`).join("")}</select></div>
+        <div><label>Tarikh</label><input type="date" class="s-tarikh" value="${P.hariIni()}" max="${P.hariIni()}"></div></div>
+      <label>Catatan</label><input class="s-catatan" maxlength="300" placeholder="cth Bapa hadir, murid berjanji hadir setiap hari">
+      <button class="btn utama kecil s-simpan" data-surat="${s.id}" data-murid="${P.esc(s.murid_id)}" style="margin-top:10px">Simpan susulan</button>
+      <div style="margin-top:12px">${sej.length ? sej.map(x => `<div class="murid" style="padding:6px 0"><span class="nama">${P.esc(JENIS_SUS[x.jenis])}
+        <small style="color:var(--teks-2)">${P.tarikhCantik(x.tarikh)}${x.catatan ? " · " + P.esc(x.catatan) : ""}</small></span></div>`).join("") : `<small class="nota">Belum ada rekod susulan untuk murid ini.</small>`}</div></div>`;
+  }
+  async function simpanSusulan(b) {
+    const box = b.closest("td");
+    b.disabled = true;
+    try {
+      await P.db.tambah("tindakan_susulan", [{ murid_id: b.dataset.murid, surat_id: +b.dataset.surat, jenis: box.querySelector(".s-jenis").value,
+        tarikh: box.querySelector(".s-tarikh").value, catatan: box.querySelector(".s-catatan").value.trim() || null, oleh: saya.id }]);
+      P.toast("Susulan direkodkan"); muatSurat();
+    } catch (e) { P.toast(e.message, "ralat"); b.disabled = false; }
+  }
+
+  // ---------- ponteng kelas ----------
+  const STATUS_PK = { DILAPOR: ["Dilapor", "lw"], DIJUMPAI: ["Dijumpai", "info"], PONTENG: ["Ponteng sah", "th"], ADA_SEBAB: ["Ada sebab", "ok"] };
+  async function muatPonteng() {
+    $("#jPonteng").innerHTML = `<tr><td colspan="7" class="muat">Memuatkan…</td></tr>`;
+    try {
+      const [rekod, kerap] = await Promise.all([
+        P.db.pilih("ponteng_kelas", `select=id,waktu,subjek,status,catatan,pada,murid(nama,kelas(nama,sesi)),pelapor:pengguna!ponteng_kelas_dilapor_oleh_fkey(nama)&tarikh=eq.${$("#tarikh").value}&order=waktu,id`),
+        P.db.pilih("v_kekerapan", `select=murid,kelas,sesi,ponteng_kelas,lewat&or=(ponteng_kelas.gt.0,lewat.gt.0)&order=ponteng_kelas.desc,lewat.desc&limit=50`),
+      ]);
+      const sesi = $("#sesi").value;
+      const r = rekod.filter(x => !sesi || (x.murid && x.murid.kelas && x.murid.kelas.sesi === sesi));
+      const k = kerap.filter(x => !sesi || x.sesi === sesi);
+      const n = st => r.filter(x => x.status === st).length;
+      $("#ringkasPonteng").innerHTML = `<span class="cip">Laporan ${r.length}</span><span class="cip lw">Belum disiasat ${n("DILAPOR")}</span><span class="cip th">Ponteng sah ${n("PONTENG")}</span><span class="cip ok">Ada sebab ${n("ADA_SEBAB")}</span>`;
+      $("#jPonteng").innerHTML = r.length ? r.map(x => `<tr data-id="${x.id}">
+        <td data-label="Waktu">${P.esc(x.waktu)}</td><td data-label="Kelas">${P.esc(x.murid && x.murid.kelas && x.murid.kelas.nama)}</td>
+        <td data-label="Murid"><b>${P.esc(x.murid && x.murid.nama)}</b>${x.catatan ? `<br><small style="color:var(--teks-2)">${P.esc(x.catatan)}</small>` : ""}</td>
+        <td data-label="Subjek">${P.esc(x.subjek)}</td>
+        <td data-label="Dilapor oleh">${P.esc(x.pelapor ? P.namaPendek(x.pelapor.nama) : "—")}<br><small style="color:var(--teks-2)">${x.pada ? new Date(x.pada).toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit" }) : ""}</small></td>
+        <td data-label="Status"><select class="pk-status">${Object.entries(STATUS_PK).map(([s, [l]]) => `<option value="${s}" ${s === x.status ? "selected" : ""}>${l}</option>`).join("")}</select></td>
+        <td data-label=""><button class="btn utama kecil pk-simpan">Simpan</button></td></tr>`).join("")
+        : `<tr><td colspan="7" class="muat">Tiada laporan ponteng kelas pada tarikh ini.</td></tr>`;
+      $("#jKekerapan").innerHTML = k.length ? k.map(x => `<tr><td data-label="Murid"><b>${P.esc(x.murid)}</b></td><td data-label="Kelas">${P.esc(x.kelas)}</td>
+        <td class="angka" data-label="Ponteng kelas">${x.ponteng_kelas}</td><td class="angka" data-label="Lewat">${x.lewat}</td></tr>`).join("")
+        : `<tr><td colspan="4" class="muat">Tiada rekod ponteng kelas atau lewat tahun ini.</td></tr>`;
+    } catch (e) { ralat("#jPonteng", e, 7); }
+  }
+  $("#jPonteng").addEventListener("click", async e => {
+    const b = e.target.closest(".pk-simpan"); if (!b) return;
+    const tr = b.closest("tr"); b.disabled = true;
+    try { await P.db.kemaskini("ponteng_kelas", `id=eq.${tr.dataset.id}`, { status: tr.querySelector(".pk-status").value, dikemaskini_oleh: saya.id });
+      P.toast("Status dikemas kini"); muatPonteng(); }
+    catch (err) { P.toast(err.message, "ralat"); b.disabled = false; }
+  });
+
+  // ---------- laporan bulanan ----------
+  let lapKelas = [], lapMurid = [];
+  async function muatLaporan() {
+    const bln = $("#bulan").value || P.hariIni().slice(0, 7), tarikh = bln + "-01";
+    const [y, m] = bln.split("-").map(Number);
+    const NAMA_BULAN = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
+    $("#tajukLaporan").textContent = `Laporan kehadiran ${NAMA_BULAN[m - 1]} ${y}`;
+    $("#jLapKelas").innerHTML = `<tr><td colspan="8" class="muat">Memuatkan…</td></tr>`;
+    try {
+      const [k, mu] = await Promise.all([P.db.rpc("laporan_bulanan_kelas", { p_bulan: tarikh }), P.db.rpc("laporan_bulanan_murid", { p_bulan: tarikh })]);
+      const sesi = $("#sesi").value;
+      lapKelas = k.filter(x => !sesi || x.sesi === sesi); lapMurid = mu.filter(x => !sesi || x.sesi === sesi);
+      const jum = f => lapKelas.reduce((a, x) => a + (x[f] || 0), 0);
+      const hariMurid = lapKelas.reduce((a, x) => a + x.enrolmen * x.hari_ditanda, 0);
+      const purata = hariMurid ? (100 * (1 - jum("tidak_hadir") / hariMurid)).toFixed(1) : "—";
+      $("#statLaporan").innerHTML = `
+        <div class="stat hijau"><b>${purata}${purata === "—" ? "" : "%"}</b><span>Purata kehadiran</span></div>
+        <div class="stat"><b>${lapKelas.filter(x => x.hari_ditanda > 0).length}/${lapKelas.length}</b><span>Kelas ada rekod</span></div>
+        <div class="stat merah"><b>${jum("tidak_hadir")}</b><span>Hari tidak hadir</span></div>
+        <div class="stat merah"><b>${jum("tanpa_sebab")}</b><span>Tanpa sebab</span></div>
+        <div class="stat oren"><b>${jum("lewat")}</b><span>Lewat</span></div>
+        <div class="stat biru"><b>${lapMurid.reduce((a, x) => a + x.ponteng_kelas, 0)}</b><span>Ponteng kelas</span></div>`;
+      $("#jLapKelas").innerHTML = lapKelas.map(x => `<tr>
+        <td data-label="Kelas"><b>${P.esc(x.kelas)}</b></td><td data-label="Guru kelas">${P.esc(P.namaPendek(x.guru_kelas || ""))}</td>
+        <td class="angka" data-label="Enrolmen">${x.enrolmen}</td><td class="angka" data-label="Hari ditanda">${x.hari_ditanda}</td>
+        <td class="angka" data-label="TH">${x.tidak_hadir}</td><td class="angka" data-label="Tanpa sebab">${x.tanpa_sebab}</td>
+        <td class="angka" data-label="Lewat">${x.lewat}</td>
+        <td class="angka" data-label="% Hadir"><b style="color:${x.peratus_hadir === null ? "var(--teks-2)" : x.peratus_hadir < 90 ? "var(--merah)" : x.peratus_hadir < 95 ? "var(--oren)" : "var(--hijau)"}">${x.peratus_hadir === null ? "—" : x.peratus_hadir + "%"}</b></td></tr>`).join("");
+      $("#jLapMurid").innerHTML = lapMurid.length ? lapMurid.map(x => `<tr>
+        <td data-label="Murid"><b>${P.esc(x.murid)}</b></td><td data-label="Kelas">${P.esc(x.kelas)}</td>
+        <td class="angka" data-label="TH">${x.tidak_hadir}</td><td class="angka" data-label="Tanpa sebab">${x.tanpa_sebab ? `<b style="color:var(--merah)">${x.tanpa_sebab}</b>` : 0}</td>
+        <td class="angka" data-label="Lewat">${x.lewat}</td><td class="angka" data-label="Ponteng kelas">${x.ponteng_kelas}</td></tr>`).join("")
+        : `<tr><td colspan="6" class="muat">Tiada rekod bagi bulan ini.</td></tr>`;
+    } catch (e) { ralat("#jLapKelas", e, 8); }
+  }
+  $("#bCsvKelas").addEventListener("click", () => {
+    if (!lapKelas.length) return P.toast("Tiada data", "ralat");
+    P.muatTurunCsv(`laporan_kelas_${$("#bulan").value}.csv`, [["kelas", "sesi", "guru_kelas", "enrolmen", "hari_ditanda", "tidak_hadir", "tanpa_sebab", "lewat", "peratus_hadir"],
+      ...lapKelas.map(x => [x.kelas, x.sesi, x.guru_kelas, x.enrolmen, x.hari_ditanda, x.tidak_hadir, x.tanpa_sebab, x.lewat, x.peratus_hadir])]);
+  });
+  $("#bCsvMurid").addEventListener("click", () => {
+    if (!lapMurid.length) return P.toast("Tiada data", "ralat");
+    P.muatTurunCsv(`laporan_murid_${$("#bulan").value}.csv`, [["id_murid", "nama", "kelas", "sesi", "tidak_hadir", "tanpa_sebab", "lewat", "ponteng_kelas"],
+      ...lapMurid.map(x => [x.murid_id, x.murid, x.kelas, x.sesi, x.tidak_hadir, x.tanpa_sebab, x.lewat, x.ponteng_kelas])]);
+  });
+  $("#bCetak").addEventListener("click", () => window.print());
+
+  async function mula() {
+    if (!P.auth.sesi) return tunjuk("vMasuk");
+    try { saya = await P.auth.pengguna(); } catch (e) { await P.auth.keluar(); return tunjuk("vMasuk"); }
+    $("#bKeluar").classList.remove("tersembunyi");
+    if (!saya || !["HEM", "ADMIN", "PETUGAS"].includes(saya.peranan)) return tunjuk("vTiada");
+    $("#siapa").textContent = `${P.namaPendek(saya.nama)} · ${huruf(saya.peranan)}`;
+    if (saya.peranan === "PETUGAS") document.querySelectorAll("#tabUtama .hem").forEach(b => b.remove());
+    tunjuk("vApp");
+    $("#tarikh").value = P.hariIni();
+    $("#bulan").value = P.hariIni().slice(0, 7);
+    kelas = await P.db.pilih("kelas", "select=id,nama,sesi,guru_kelas&order=nama");
+    muat();
+  }
+
+  document.querySelectorAll("#tabUtama button").forEach(b => b.addEventListener("click", () => {
+    paparan = b.dataset.v;
+    document.querySelectorAll("#tabUtama button").forEach(x => x.classList.toggle("aktif", x === b));
+    $("#kTarikh").classList.toggle("tersembunyi", paparan === "laporan");
+    $("#kBulan").classList.toggle("tersembunyi", paparan !== "laporan");
+    ["harian", "idme", "surat", "ponteng", "laporan", "tetapan"].forEach(v => {
+      const el = $("#p" + v[0].toUpperCase() + v.slice(1)); if (el) el.classList.toggle("tersembunyi", v !== paparan);
+    });
+    muat();
+  }));
+  $("#bulan").addEventListener("change", muat);
+  $("#tarikh").addEventListener("change", muat); $("#sesi").addEventListener("change", muat); $("#bMuat").addEventListener("click", muat);
+
+  function muat() {
+    if (paparan === "harian") return muatHarian();
+    if (paparan === "idme") return muatIdme();
+    if (paparan === "surat") return muatSurat();
+    if (paparan === "tetapan") return muatTetapan();
+    if (paparan === "ponteng") return muatPonteng();
+    if (paparan === "laporan") return muatLaporan();
+  }
+
+  async function ambilTakHadir() {
+    let q = `select=*&tarikh=eq.${$("#tarikh").value}&order=kelas,murid`;
+    if ($("#sesi").value) q += `&sesi=eq.${$("#sesi").value}`;
+    return P.db.pilih("v_tak_hadir", q);
+  }
+
+  // ---------- harian ----------
+  // guru waktu pertama setiap kelas (daripada jadual waktu) — untuk kelas yang belum ditanda
+  const cacheJadual = {};
+  async function guruWaktuPertama(tarikh) {
+    const d = new Date(tarikh + "T00:00:00Z").getUTCDay(), hari = d === 0 ? 7 : d;
+    if (hari > 5) return {};
+    if (!cacheJadual[hari]) {
+      try {
+        const r = await P.db.pilih("jadual_waktu", `select=kelas,waktu,mula,subjek,guru&hari=eq.${hari}&order=waktu`);
+        const m = {}; r.forEach(s => { if (!m[s.kelas]) m[s.kelas] = s; });
+        cacheJadual[hari] = m;
+      } catch { return {}; }
+    }
+    return cacheJadual[hari];
+  }
+
+  async function muatHarian() {
+    $("#statistik").innerHTML = `<div class="muat">Memuatkan…</div>`;
+    try {
+      const [rekod, selesai, pertama] = await Promise.all([ambilTakHadir(), P.db.pilih("kelas_selesai", `select=kelas_id,pada&tarikh=eq.${$("#tarikh").value}`),
+        guruWaktuPertama($("#tarikh").value)]);
+      const th = rekod.filter(r => r.status === "TIDAK_HADIR");
+      const kira = k => th.filter(r => r.keadaan === k).length;
+      const sesi = $("#sesi").value, kls = kelas.filter(k => !sesi || k.sesi === sesi);
+      const siap = new Set(selesai.map(s => s.kelas_id));
+      $("#statistik").innerHTML = `
+        <div class="stat"><b>${kls.filter(k => siap.has(k.id)).length}/${kls.length}</b><span>Kelas sudah ditanda</span></div>
+        <div class="stat merah"><b>${th.length}</b><span>Tidak hadir</span></div>
+        <div class="stat oren"><b>${rekod.length - th.length}</b><span>Lewat</span></div>
+        <div class="stat hijau"><b>${kira("ADA_SEBAB")}</b><span>Ada sebab</span></div>
+        <div class="stat merah"><b>${kira("BELUM_ADA_SEBAB")}</b><span>Belum ada sebab</span></div>
+        <div class="stat biru"><b>${kira("PERLU_GURU_KELAS") + kira("PERLU_SEMAKAN")}</b><span>Perlu guru kelas</span></div>`;
+      $("#gridKelas").innerHTML = kls.map(k => {
+        const n = th.filter(r => r.kelas === k.nama).length;
+        const g = pertama[k.nama];
+        const guru = !siap.has(k.id) && g ? `<small class="guru">W${g.waktu}${g.mula ? " " + g.mula.slice(0, 5) : ""} · ${P.esc(g.guru || g.subjek)}</small>` : "";
+        return `<div class="${siap.has(k.id) ? "siap" : "belum"}">${P.esc(k.nama)}<small>${siap.has(k.id) ? `TH: ${n}` : "Belum ditanda"}</small>${guru}</div>`;
+      }).join("");
+    } catch (e) { $("#statistik").innerHTML = `<div class="mesej ralat">${P.esc(e.message)}</div>`; }
+  }
+
+  // ---------- idMe ----------
+  async function muatIdme() {
+    $("#jIdme").innerHTML = `<tr><td colspan="7" class="muat">Memuatkan…</td></tr>`;
+    try {
+      senaraiIdme = (await ambilTakHadir()).filter(r => r.status === "TIDAK_HADIR");
+      const siap = senaraiIdme.filter(r => r.idme_siap).length;
+      $("#ringkasIdme").innerHTML = `<span class="cip th">Tidak hadir ${senaraiIdme.length}</span><span class="cip ok">Siap idMe ${siap}</span><span class="cip">Belum ${senaraiIdme.length - siap}</span>`;
+      $("#pilihSemua").checked = false; $("#bPilihSemua").textContent = "Pilih semua";
+      $("#jIdme").innerHTML = senaraiIdme.length ? senaraiIdme.map(r => `<tr>
+        <td data-label="Pilih"><input type="checkbox" class="pilih" value="${r.kehadiran_id}" ${r.idme_siap ? "disabled" : ""}></td>
+        <td data-label="Kelas">${P.esc(r.kelas)}</td><td data-label="Murid"><b>${P.esc(r.murid)}</b>${r.catatan ? `<br><small style="color:var(--teks-2)">${P.esc(r.catatan)}</small>` : ""}</td>
+        <td data-label="Kategori">${P.esc(r.kategori || "—")}</td><td data-label="Sebab">${P.esc(r.sebab || "—")}</td><td data-label="Keadaan">${KEADAAN[r.keadaan] || ""}</td>
+        <td data-label="idMe">${r.idme_siap ? "✅ Siap" : "—"}</td></tr>`).join("") : `<tr><td colspan="7" class="muat">Tiada murid tidak hadir direkodkan.</td></tr>`;
+    } catch (e) { ralat("#jIdme", e); }
+  }
+  $("#pilihSemua").addEventListener("change", e => document.querySelectorAll("#jIdme .pilih:not(:disabled)").forEach(c => (c.checked = e.target.checked)));
+  $("#bPilihSemua").addEventListener("click", () => {
+    const k = [...document.querySelectorAll("#jIdme .pilih:not(:disabled)")], semua = k.length && k.every(c => c.checked);
+    k.forEach(c => (c.checked = !semua)); $("#pilihSemua").checked = !semua;
+    $("#bPilihSemua").textContent = semua ? "Pilih semua" : "Nyahpilih";
+  });
+  $("#bSiap").addEventListener("click", async () => {
+    const ids = [...document.querySelectorAll("#jIdme .pilih:checked")].map(c => c.value);
+    if (!ids.length) return P.toast("Pilih sekurang-kurangnya satu murid", "ralat");
+    try { await P.db.kemaskini("kehadiran", `id=in.(${ids.join(",")})`, { idme_siap: true, idme_pada: new Date().toISOString() });
+      P.toast(`${ids.length} rekod ditanda siap idMe`); muatIdme(); }
+    catch (e) { P.toast(e.message, "ralat"); }
+  });
+  $("#bCsv").addEventListener("click", () => {
+    if (!senaraiIdme.length) return P.toast("Tiada data untuk dieksport", "ralat");
+    P.muatTurunCsv(`idme_${$("#tarikh").value}${$("#sesi").value ? "_" + $("#sesi").value : ""}.csv`,
+      [["tarikh", "sesi", "kelas", "id_murid", "nama", "kategori", "sebab", "keadaan", "catatan", "idme_siap"],
+       ...senaraiIdme.map(r => [r.tarikh, r.sesi, r.kelas, r.murid_id, r.murid, r.kategori, r.sebab, r.keadaan, r.catatan, r.idme_siap ? "YA" : ""])]);
+  });
+
+  // ---------- surat amaran ----------
+  async function muatSurat() {
+    $("#jCalon").innerHTML = `<tr><td colspan="7" class="muat">Memuatkan…</td></tr>`;
+    try {
+      const tahun = P.hariIni().slice(0, 4);
+      const [calon, surat] = await Promise.all([
+        P.db.rpc("calon_surat_amaran"),
+        P.db.pilih("surat_amaran", `select=id,murid_id,jenis,peringkat,no_siri,tarikh_surat,tarikh_tidak_hadir,murid(nama,kelas(nama))&tarikh_surat=gte.${tahun}-01-01&order=tarikh_surat.desc,id.desc`),
+      ]);
+      $("#jCalon").innerHTML = calon.length ? calon.map((c, i) => `<tr>
+        <td data-label="Murid"><b>${P.esc(c.murid)}</b></td><td data-label="Kelas">${P.esc(c.kelas)}</td><td data-label="Jenis">${huruf(c.jenis)}</td>
+        <td data-label="Surat"><span class="cip ${c.peringkat === 3 ? "th" : c.peringkat === 2 ? "lw" : "info"}">${PERINGKAT[c.peringkat]}</span></td>
+        <td class="angka" data-label="Hari">${c.bil_hari}</td>
+        <td data-label="Tarikh"><small>${c.tarikh.map(t => P.tarikhCantik(t)).join(", ")}</small></td>
+        <td data-label=""><button class="btn utama kecil b-keluar" data-i="${i}">Rekod & jana surat</button></td></tr>`).join("")
+        : `<tr><td colspan="7" class="muat">Tiada calon surat amaran buat masa ini.</td></tr>`;
+      $("#jCalon")._calon = calon;
+      $("#jSurat")._surat = surat;
+      const idsM = [...new Set(surat.map(s => s.murid_id))];
+      const sus = idsM.length ? await P.db.pilih("tindakan_susulan",
+        `select=id,murid_id,surat_id,jenis,tarikh,catatan&murid_id=in.(${idsM.map(i => `"${i}"`).join(",")})&tarikh=gte.${tahun}-01-01&order=tarikh.desc,id.desc`) : [];
+      $("#jSurat")._sus = sus;
+      $("#jSurat").innerHTML = surat.length ? surat.map((s, i) => `<tr>
+        <td data-label="Ruj.">SMKG.700-7/2/2/${s.peringkat} (${s.no_siri})</td><td data-label="Tarikh">${P.tarikhCantik(s.tarikh_surat)}</td>
+        <td data-label="Murid"><b>${P.esc(s.murid && s.murid.nama)}</b></td><td data-label="Kelas">${P.esc(s.murid && s.murid.kelas && s.murid.kelas.nama)}</td>
+        <td data-label="Jenis">${huruf(s.jenis)}</td><td data-label="Surat">${PERINGKAT[s.peringkat]}</td>
+        <td data-label="Susulan">${labelSusulan(sus.filter(x => x.surat_id === s.id))}</td>
+        <td data-label=""><span style="display:inline-flex;gap:6px;flex-wrap:wrap"><button class="btn garis kecil b-word" data-i="${i}">⬇ Word</button><button class="btn garis kecil b-sus" data-i="${i}">Susulan</button></span></td></tr>
+        <tr class="tersembunyi baris-sus" id="sus-${s.id}"><td colspan="8"></td></tr>`).join("")
+        : `<tr><td colspan="8" class="muat">Belum ada surat dikeluarkan.</td></tr>`;
+    } catch (e) { ralat("#jCalon", e); }
+  }
+  $("#jCalon").addEventListener("click", async e => {
+    const b = e.target.closest(".b-keluar"); if (!b) return;
+    const c = $("#jCalon")._calon[+b.dataset.i];
+    if (!confirm(`Rekod & jana ${PERINGKAT[c.peringkat]} (${huruf(c.jenis)}) untuk ${c.murid}?`)) return;
+    b.disabled = true;
+    try {
+      const siri = await P.db.rpc("no_siri_seterusnya", { p_jenis: c.jenis, p_peringkat: c.peringkat });
+      const rekod = { murid_id: c.murid_id, jenis: c.jenis, peringkat: c.peringkat, no_siri: siri,
+        tarikh_surat: P.hariIni(), tarikh_tidak_hadir: c.tarikh };
+      await P.db.tambah("surat_amaran", [{ ...rekod, dikeluarkan_oleh: saya.id }]);
+      P.toast(`Direkod: SMKG.700-7/2/2/${c.peringkat} (${siri}). Menjana surat…`);
+      await janaSurat(rekod);
+      muatSurat();
+    } catch (err) { P.toast(err.message, "ralat"); b.disabled = false; }
+  });
+  $("#jSurat").addEventListener("click", async e => {
+    const bs = e.target.closest(".b-sus");
+    if (bs) return bukaSusulan($("#jSurat")._surat[+bs.dataset.i]);
+    const bsimpan = e.target.closest(".s-simpan");
+    if (bsimpan) return simpanSusulan(bsimpan);
+    const b = e.target.closest(".b-word"); if (!b) return;
+    const s = $("#jSurat")._surat[+b.dataset.i];
+    b.disabled = true;
+    try { await janaSurat(s); } catch (err) { P.toast(err.message, "ralat"); } finally { b.disabled = false; }
+  });
+
+  async function janaSurat(rekod) {
+    const [m, pj, dulu] = await Promise.all([
+      P.db.pilih("murid", `select=nama,no_kp,alamat,kelas(nama)&id=eq.${P.q(rekod.murid_id)}`),
+      P.db.pilih("murid_penjaga", `select=penjaga(nama,hubungan)&murid_id=eq.${P.q(rekod.murid_id)}`),
+      rekod.peringkat === 3 ? P.db.pilih("surat_amaran",
+        `select=peringkat,no_siri,tarikh_surat&murid_id=eq.${P.q(rekod.murid_id)}&jenis=eq.${rekod.jenis}&peringkat=lt.3&order=tarikh_surat.desc`) : [],
+    ]);
+    if (!m.length) throw new Error("Rekod murid tidak dijumpai.");
+    const penjaga = pj.map(x => x.penjaga).filter(x => x && x.nama);
+    const utama = penjaga.find(x => /BAPA/i.test(x.hubungan || "")) || penjaga[0];
+    const d = { ...rekod, murid: { nama: m[0].nama, no_kp: m[0].no_kp, alamat: m[0].alamat, kelas: m[0].kelas && m[0].kelas.nama },
+      penjaga: utama ? utama.nama : null, terdahulu: dulu };
+    const blob = await SURAT.jana(d);
+    SURAT.muatTurun(blob, SURAT.namaFail(d));
+    P.toast("Surat dimuat turun");
+  }
+
+  // ---------- tetapan ----------
+  async function muatTetapan() {
+    $("#jPengguna").innerHTML = `<tr><td colspan="4" class="muat">Memuatkan…</td></tr>`;
+    const admin = saya.peranan === "ADMIN";
+    try {
+      const [pengguna, cuti] = await Promise.all([
+        P.db.pilih("pengguna", "select=id,nama,peranan,kelas_id&order=peranan,nama"),
+        P.db.pilih("takwim_cuti", `select=tarikh,keterangan&tarikh=gte.${P.hariIni().slice(0, 4)}-01-01&order=tarikh`),
+      ]);
+      const PER = ["MENUNGGU", "GURU", "GURU_KELAS", "PETUGAS", "HEM", "ADMIN"];
+      $("#jPengguna").innerHTML = pengguna.map(u => `<tr data-id="${u.id}">
+        <td>${P.esc(u.nama)}${u.peranan === "MENUNGGU" ? ` <span class="cip th">Baharu</span>` : ""}</td>
+        <td><select class="u-per" ${admin ? "" : "disabled"}>${PER.map(p => `<option ${p === u.peranan ? "selected" : ""}>${p}</option>`).join("")}</select></td>
+        <td><select class="u-kelas" ${admin ? "" : "disabled"}><option value="">—</option>${kelas.map(k => `<option value="${k.id}" ${k.id === u.kelas_id ? "selected" : ""}>${P.esc(k.nama)}${k.guru_kelas ? " · " + P.esc(P.namaPendek(k.guru_kelas)) : ""}</option>`).join("")}</select></td>
+        <td>${admin ? `<button class="btn utama kecil u-simpan">Simpan</button>` : ""}</td></tr>`).join("");
+      $("#jCuti").innerHTML = cuti.length ? cuti.map(c => `<tr><td>${P.tarikhCantik(c.tarikh, true)}</td><td>${P.esc(c.keterangan || "")}</td>
+        <td style="text-align:right"><button class="btn garis kecil c-buang" data-t="${c.tarikh}">Buang</button></td></tr>`).join("")
+        : `<tr><td class="muat">Belum ada hari cuti direkodkan untuk tahun ini.</td></tr>`;
+    } catch (e) { ralat("#jPengguna", e, 4); }
+  }
+  $("#jPengguna").addEventListener("click", async e => {
+    if (!e.target.classList.contains("u-simpan")) return;
+    const tr = e.target.closest("tr"), per = tr.querySelector(".u-per").value, kid = tr.querySelector(".u-kelas").value;
+    if (per === "GURU_KELAS" && !kid) return P.toast("Pilih kelas untuk guru kelas", "ralat");
+    try { await P.db.kemaskini("pengguna", `id=eq.${tr.dataset.id}`, { peranan: per, kelas_id: kid ? +kid : null }); P.toast("Disimpan"); muatTetapan(); }
+    catch (err) { P.toast(err.message, "ralat"); }
+  });
+  $("#bCuti").addEventListener("click", async () => {
+    const d = $("#cTarikh").value, a = $("#cAkhir").value || d, ket = $("#cKet").value.trim();
+    if (!d) return P.toast("Pilih tarikh", "ralat");
+    if (a < d) return P.toast("Tarikh akhir mesti selepas tarikh mula", "ralat");
+    const baris = []; for (let t = d; t <= a; t = P.tambahHari(t, 1)) baris.push({ tarikh: t, keterangan: ket || null });
+    if (baris.length > 60) return P.toast("Maksimum 60 hari sekali tambah", "ralat");
+    try { await P.db.upsert("takwim_cuti", baris, "tarikh"); P.toast(`${baris.length} hari cuti ditambah`); $("#cKet").value = ""; muatTetapan(); }
+    catch (e) { P.toast(e.message, "ralat"); }
+  });
+  $("#jCuti").addEventListener("click", async e => {
+    const b = e.target.closest(".c-buang"); if (!b) return;
+    try { await P.db.padam("takwim_cuti", `tarikh=eq.${b.dataset.t}`); muatTetapan(); } catch (err) { P.toast(err.message, "ralat"); }
+  });
+
+  mula();
+})();
+</script>
+</body>
+</html>
