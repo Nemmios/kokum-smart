@@ -1030,6 +1030,23 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .lagi-kad small { display: block; color: var(--kabus); font-size: .8rem; }
 .rel { overflow-y: auto; }
 @media (max-height: 900px) { .slogan-rel { display: none; } .nav a { padding: 7px 10px; } .nav-tajuk { padding-top: 10px; } }
+/* Utama: Tugasan saya */
+.tugasan { margin-bottom: 18px; border-top: 4px solid var(--hijau); }
+.lencana-tugas { background: var(--hijau); color: var(--atas-hijau); font-weight: 700; font-size: .8rem; border-radius: 999px; padding: 2px 10px; }
+.senarai-tugas { list-style: none; margin: 8px 0 0; padding: 0; display: grid; }
+.senarai-tugas li { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--garis); }
+.senarai-tugas li:first-child { border-top: 0; }
+.senarai-tugas b { display: block; }
+.senarai-tugas small { display: block; color: var(--kabus); font-size: .82rem; }
+.ikon-tugas { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--hijau-latar); color: var(--hijau); }
+.ikon-tugas svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.t-penting .ikon-tugas { background: var(--amaran-latar); color: var(--amaran); }
+.t-pajsk .ikon-tugas { background: var(--kp-latar); color: var(--kp); }
+.t-info .ikon-tugas { background: var(--kertas); color: var(--kabus); }
+.tugas-siap { margin: 4px 0 0; color: var(--hijau); font-weight: 600; }
+.pintasan { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--garis); }
+.pintasan .cip { text-decoration: none; color: var(--dakwat); }
+.tajuk-bahagian { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--kabus); margin: 22px 0 8px; }
 
 </style>
 </head>
@@ -5946,11 +5963,9 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (S.f2.ralat) return '';
       const hi = hariIniIso();
       const akanDatang = entri().filter((x) => (x.tamat || x.mula) >= hi).slice(0, 4);
-      const unitSaya = Array.from(S.unitSaya).map((k) => S.unitPeta.get(k)).filter(Boolean);
-      const perluHadir = unitSaya.map((u) => ({ u, ps: perjumpaanKat(u.kategori).filter((p) => p.tarikh <= hi) })).filter((x) => x.ps.length);
-      return `<div class="panel" style="margin-bottom:18px"><div class="kepala-panel"><h2>Takwim</h2><a class="btn kecil" href="#/takwim/bulan">Buka takwim</a></div>
+      return `<div class="panel" style="margin-bottom:18px"><div class="kepala-panel"><h2>Akan datang</h2><a class="btn kecil" href="#/takwim/bulan">Buka takwim</a></div>
         ${akanDatang.length ? `<ul class="senarai-kecil">${akanDatang.map((x) => `<li><b>${e(fmtT(x.mula, true))}</b> · ${teksEntri(x, true)}</li>`).join('')}</ul>` : `<p class="pudar kecil">Tiada perkara akan datang dalam takwim ${tahun}.${penyelaras() ? ' <a href="#/takwim/jana">Jana tarikh perjumpaan</a>' : ''}</p>`}
-        ${perluHadir.length ? `<p class="kecil" style="margin:10px 0 0">Unit anda: ${perluHadir.map(({ u }) => `<a href="#/unit/${encodeURIComponent(u.kod)}/kehadiran">${e(u.kod)}: rekod kehadiran</a>`).join(' · ')}</p>` : ''}</div>`;
+        </div>`;
     }
 
     /* ============================================================ excel */
@@ -6089,6 +6104,47 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
     function selepasRender() { if ($('#borang-f2-jana')) pratontonJana(); if ($('#borang-f2-hadir')) kiraHadirBorang(); }
 
     // Panel "Kelas saya" di halaman Utama untuk guru kelas
+    // Utama "Tugasan saya": perkara yang perlu dibuat oleh guru ini (null = data masih dimuat)
+    const diUtama = () => { const l = location.hash.replace(/^#\/?/, '').split(/[/?]/)[0]; return !l || l === 'utama'; };
+    function tugasan() {
+      const t = tahunAsal();
+      if (!S.f2 || S.f2.tahun !== t) { if (!S.f2 || !S.f2.ralat) muat(t).then(() => { if (diUtama()) renderLatar(); }); return null; }
+      if (S.f2.ralat) return [];
+      const hi = hariIniIso(), had = tambahHari(hi, -21), out = [];
+      Array.from(S.unitSaya).map((k) => S.unitPeta.get(k)).filter(Boolean).forEach((u) => {
+        const ahli = ahliUnit(u), kod = encodeURIComponent(u.kod); if (!ahli.length) return;
+        const lepas = perjumpaanKat(u.kategori).filter((p) => p.tarikh <= hi), akhir = lepas[lepas.length - 1];
+        const direkod = Math.max(0, ...ahli.map((m) => (F().hadirMap.get(m.id + '|' + u.kategori) || {}).direkod || 0));
+        // hanya perjumpaan baru-baru ini (3 minggu) supaya tugasan tidak dipenuhi perjumpaan lama
+        if (akhir && akhir.tarikh >= had && direkod < lepas.length) out.push({ jenis: 'hadir', tajuk: `Kehadiran ${u.kod}`, ket: `Perjumpaan ${akhir.bil} (${fmtT(akhir.tarikh)}) belum direkod`, href: `#/unit/${kod}/kehadiran?p=${akhir.id}`, btn: 'Rekod' });
+        const belum = ahli.filter((m) => !rekPajsk(m.id, u.kategori)).length;
+        if (belum) out.push({ jenis: 'pajsk', tajuk: `PAJSK ${u.kod}`, ket: `${belum} daripada ${ahli.length} ahli belum diisi`, href: `#/unit/${kod}/pajsk`, btn: 'Isi' });
+      });
+      const k = kelasSaya();
+      if (k) {
+        const murid = aktif().filter((m) => normKelas(m.kelas) === k), namaK = murid[0] ? murid[0].kelas : S.profil.guru_kelas, kls = encodeURIComponent(namaK);
+        const belum = murid.filter((m) => !rekPajsk(m.id, 'EKSTRA')).length, tiada = murid.filter((m) => !m.ub || !m.kp || !m.sp).length;
+        if (belum) out.push({ jenis: 'ekstra', tajuk: `Ekstra kurikulum ${namaK}`, ket: `${belum} daripada ${murid.length} murid belum diisi`, href: `#/pajsk/ekstra?tahun=${t}&kelas=${kls}`, btn: 'Isi' });
+        if (tiada) out.push({ jenis: 'info', tajuk: `Kelas ${namaK}`, ket: `${tiada} murid belum lengkap UB / KP / SP`, href: `#/murid?kelas=${kls}&ting=&keg=&unit=`, btn: 'Lihat' });
+      }
+      if (guruNilam()) {
+        const murid = aktif(), belum = murid.filter((m) => !((rekPajsk(m.id, 'EKSTRA') || {}).data || {}).nilam).length;
+        if (belum) out.push({ jenis: 'ekstra', tajuk: 'Program NILAM', ket: `${belum} daripada ${murid.length} murid belum diisi`, href: `#/pajsk/ekstra?tahun=${t}&mod=nilam`, btn: 'Isi NILAM' });
+      }
+      if (penyelaras()) {
+        const tiada = BIDANG.filter((kat) => !perjumpaanKat(kat).length);
+        if (tiada.length) out.push({ jenis: 'penting', tajuk: `Takwim ${t}`, ket: `Tarikh perjumpaan ${tiada.join(', ')} belum dijana`, href: '#/takwim/jana', btn: 'Jana' });
+      }
+      return out;
+    }
+    // pintasan tetap mengikut peranan (masih kelihatan walaupun semua tugasan selesai)
+    function pintasan() {
+      const t = tahunAsal(), l = [], k = kelasSaya();
+      if (k) { const m = aktif().find((x) => normKelas(x.kelas) === k), kls = encodeURIComponent(m ? m.kelas : S.profil.guru_kelas); l.push([`#/murid?kelas=${kls}&ting=&keg=&unit=`, `Kelas ${m ? m.kelas : S.profil.guru_kelas}`], [`#/pajsk/ekstra?tahun=${t}&kelas=${kls}`, 'Ekstra kelas'], [`#/pajsk/rumusan?tahun=${t}&kelas=${kls}`, 'PAJSK kelas']); }
+      if (guruNilam()) l.push([`#/pajsk/ekstra?tahun=${t}&mod=nilam`, 'Isi NILAM']);
+      Array.from(S.unitSaya).forEach((kod) => l.push([`#/unit/${encodeURIComponent(kod)}/kehadiran`, `Kehadiran ${kod}`]));
+      return l;
+    }
     function panelNilam() {
       if (!guruNilam() || S.hs) return '';
       const t = tahunAsal(), sedia2 = S.f2 && S.f2.tahun === t && !S.f2.ralat;
@@ -6110,7 +6166,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
         <div class="baris-btn"><a class="btn" href="#/murid?kelas=${encodeURIComponent(murid[0] ? murid[0].kelas : nama)}">Senarai murid kelas</a>
           <a class="btn utama" href="#/pajsk/ekstra?tahun=${t}&kelas=${encodeURIComponent(murid[0] ? murid[0].kelas : nama)}">Isi ekstra kurikulum</a></div></div>${panelNilam()}`;
     }
-    return { pcMurid, ekstraMurid, panelKelasSaya, papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, kiraMurid, kiraLuar, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
+    return { pcMurid, ekstraMurid, panelKelasSaya, papar, paparUnit, navUnit, TAB_UNIT, tindakan, ubah, hantar, selepasRender, panelUtama, tugasan, pintasan, kiraMurid, kiraLuar, isiExcel, muatTahun: (t, paksa) => muat(t, paksa), entri: () => entri(), teksEntri,
       _uji: { kiraBidang, kiraEkstra, skorHadir, janaTarikh, fmtT, mingguIso, teksKokum, teksBaris, tanda, barisSekolah } };
   };
 })();
@@ -6514,6 +6570,12 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       return kemTerbuka().map((k) => `<div class="mesej ok tanpa-cetak" style="margin-bottom:12px">Pendaftaran <b>${e(k.nama)} ${k.tahun}</b> dibuka (${e(fmtJulat(k.tarikh_mula, k.tarikh_tamat))}).
         <a href="#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}"><b>${bolehUrus(u.kod) ? 'Daftar peserta' : 'Lihat peserta'}</b></a> · ${pesertaUnit(k, u.kod).length} berdaftar</div>`).join('');
     }
+    function tugasan() {
+      const us = unitUB().filter((u) => bolehUrus(u.kod) && !penyelaras());
+      if (!penyelaras() && !us.length) return [];
+      return kemTerbuka().flatMap((k) => (us.length ? us.map((u) => ({ jenis: 'info', tajuk: `${k.nama} ${k.tahun}`, ket: `${u.kod}: ${pesertaUnit(k, u.kod).length} peserta berdaftar${k.tarikh_tutup ? ` · tutup ${fmtT(k.tarikh_tutup)}` : ''}`, href: `#/kem/${k.id}/${encodeURIComponent(u.kod)}?tahun=${k.tahun}`, btn: 'Daftar' }))
+        : penyelaras() ? [{ jenis: 'info', tajuk: `${k.nama} ${k.tahun}`, ket: `${pesertaKem(k).length} peserta berdaftar${k.tarikh_tutup ? ` · tutup ${fmtT(k.tarikh_tutup)}` : ''}`, href: `#/kem/${k.id}?tahun=${k.tahun}`, btn: 'Buka' }] : []));
+    }
     function panelUtama() {
       const us = unitUB().filter((u) => bolehUrus(u.kod) && !penyelaras());
       if (!penyelaras() && !us.length) return '';
@@ -6582,7 +6644,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       return false;
     }
 
-    return { papar, tindakan, hantar, ubah, bannerUnit, panelUtama, _uji: { kuotaUnit, kira, fmtJulat } };
+    return { papar, tindakan, hantar, ubah, bannerUnit, panelUtama, tugasan, _uji: { kuotaUnit, kira, fmtJulat } };
   };
 })();
 
@@ -7449,6 +7511,12 @@ window.KOKUM_SURAT_ASET = {
         <a class="btn utama" href="#/pembetulan">Buka permohonan</a></div>`;
     }
 
+    function tugasan() {
+      if (!S.data || !('semakan' in (S.data.tetapan || {}))) return [];
+      if (!S.pb) { if (!memuat && S.db.pbMuat) muat().then(() => { const l = location.hash.replace(/^#\/?/, '').split(/[/?]/)[0]; const d = $('#dlg'); if ((!l || l === 'utama') && !(d && d.open)) { S.kekalSkrol = true; render(); } }); return null; }
+      const l = PB().senarai.filter((p) => terbuka(p) && untukSaya(p)), baru = l.filter((p) => p.status === 'baru').length;
+      return l.length ? [{ jenis: 'penting', ikon: 'mesyuarat', tajuk: 'Permohonan pembetulan ibu bapa', ket: `${l.length} belum selesai${baru ? `, ${baru} baharu` : ''}`, href: '#/pembetulan', btn: 'Buka' }] : [];
+    }
     function papar(q) {
       if (!S.pb || memuat) { muat().then(() => { S.kekalSkrol = true; render(); }); return '<p class="pudar">Memuatkan permohonan…</p>'; }
       if (PB().ralat) return `<div class="kepala"><div><h1>Permohonan pembetulan</h1></div></div><div class="mesej ralat">${e(PB().ralat)}. Pastikan fail <b>semakan_ibubapa.sql</b> sudah dijalankan di Supabase.</div>`;
@@ -7571,7 +7639,7 @@ window.KOKUM_SURAT_ASET = {
       return false;
     }
 
-    return { mula, panelUtama, papar, tetapan, slotMurid, tindakan, hantar, muat, _uji: { norm, fmtKod, untukSaya } };
+    return { mula, panelUtama, tugasan, papar, tetapan, slotMurid, tindakan, hantar, muat, _uji: { norm, fmtKod, untukSaya } };
   };
 })();
 
@@ -8080,6 +8148,29 @@ window.KOKUM_SURAT_ASET = {
     S.kekalSkrol = false;
   }
 
+  // ------------------------------------------------------------------ TUGASAN SAYA (Utama)
+  const IKON_TUGAS = { hadir: 'takwim', pajsk: 'pajsk', ekstra: 'murid', penting: 'tetapan', info: 'unit' };
+  function panelTugasan(perluSemak) {
+    const sumber = [F2.tugasan(), SEM && !S.hs ? SEM.tugasan() : [], KEM.tugasan ? KEM.tugasan() : []];
+    const memuat = sumber.some((x) => x == null);
+    const l = [];
+    if (penyelaras()) {
+      const n = S.data.profiles.filter((p) => !p.aktif).length;
+      if (n) l.push({ jenis: 'penting', tajuk: 'Akaun guru baharu', ikon: 'murid', ket: `${n} akaun menunggu pengesahan`, href: '#/tetapan/akaun', btn: 'Sahkan' });
+      if (perluSemak) l.push({ jenis: 'info', tajuk: 'Data murid', ket: `${perluSemak} perkara perlu disemak (unit, MyKad, jawatan)`, href: '#semakan', btn: 'Semak', lompat: true });
+    }
+    sumber.forEach((x) => { if (x) l.push(...x); });
+    const susun = { penting: 0, hadir: 1, ekstra: 2, pajsk: 3, info: 4 };
+    l.sort((a, b) => susun[a.jenis] - susun[b.jenis]);
+    const pin = F2.pintasan();
+    return `<section class="panel tugasan"><div class="kepala-panel"><h2>Tugasan saya</h2>${l.length ? `<span class="lencana-tugas">${l.length}</span>` : ''}</div>
+      ${l.length ? `<ul class="senarai-tugas">${l.map((x) => `<li class="t-${x.jenis}"><span class="ikon-tugas">${IKON[x.ikon || IKON_TUGAS[x.jenis]]}</span><div><b>${e(x.tajuk)}</b><small>${e(x.ket)}</small></div>
+          ${x.lompat ? `<button type="button" class="btn kecil" data-act="lompat" data-sasaran="semakan">${e(x.btn)}</button>` : `<a class="btn kecil ${x.jenis === 'penting' || x.jenis === 'hadir' ? 'utama' : ''}" href="${e(x.href)}">${e(x.btn)}</a>`}</li>`).join('')}</ul>`
+        : memuat ? '<p class="pudar kecil" style="margin:0">Menyemak tugasan…</p>' : '<p class="tugas-siap">✓ Tiada tugasan tertunggak. Terima kasih, cikgu!</p>'}
+      ${memuat && l.length ? '<p class="pudar kecil" style="margin:6px 0 0">Menyemak tugasan lain…</p>' : ''}
+      ${pin.length ? `<div class="pintasan"><span class="pudar kecil">Pintasan:</span>${pin.map(([h, t]) => `<a class="cip" href="${e(h)}">${e(t)}</a>`).join('')}</div>` : ''}</section>`;
+  }
+
   // ------------------------------------------------------------------ LAGI (telefon: semua menu)
   function paparLagi() {
     const sem = SEM && 'semakan' in (S.data.tetapan || {});
@@ -8145,18 +8236,19 @@ window.KOKUM_SURAT_ASET = {
     }).join('');
 
     return `
-      <div class="kepala"><div><h1>Selamat datang, ${e((S.profil.nama || '').split(' ')[0] || 'cikgu')}</h1>
+      <div class="kepala"><div><h1>Selamat datang, ${e((S.profil.nama || '').split(/\s+/).filter((w) => !/^(CIKGU|CG|CGU|EN|ENCIK|PN|PUAN|CIK|TN|TUAN|USTAZ|USTAZAH|UST)\.?$/i.test(w))[0] || 'cikgu')}</h1>
         <p>${e(t.nama_sekolah)} · Kokurikulum ${e(t.tahun)}</p></div>
         <button class="btn kecil" data-act="muat-semula" title="Muat semula data">${IKON.segar} Muat semula</button></div>
-      ${SEM && !S.hs ? SEM.panelUtama() : ''}${F2.panelKelasSaya()}${KEM.panelUtama()}${F2.panelUtama()}
+      ${panelTugasan(perluSemak)}${F2.panelUtama()}
       ${unitSaya.length ? `<div class="panel" style="margin-bottom:18px"><h2>Unit yang anda urus</h2><div class="unit-grid">${unitSaya.map((u) => kadUnit(u, bil)).join('')}</div></div>` : ''}
+      <h2 class="tajuk-bahagian">Ringkasan sekolah</h2>
       <div class="ringkas">
         <a class="kotak" href="#/murid?keg=&ting=&kelas=&unit=&status=aktif"><b>${m.length}</b><span>Murid aktif, ${L} lelaki, ${Pp} perempuan</span></a>
         <a class="kotak" href="#/murid?keg=lengkap&ting=&kelas=&unit="><b>${m.length ? Math.round((lengkap / m.length) * 100) : 0}%</b><span>Ada UB, KP dan SP (${lengkap} murid)</span></a>
         <div class="kotak"><b>${S.data.units.filter((u) => u.aktif !== false).length}</b><span>Unit aktif: ${KATS.map((k) => unitKat(k).length + ' ' + k).join(', ')}</span></div>
-        <button type="button" class="kotak ${perluSemak ? 'isyarat' : ''}" data-act="lompat" data-sasaran="semakan"><b>${perluSemak}</b><span>Perkara perlu disemak</span></button>
+        ${penyelaras() ? `<button type="button" class="kotak ${perluSemak ? 'isyarat' : ''}" data-act="lompat" data-sasaran="semakan"><b>${perluSemak}</b><span>Perkara perlu disemak</span></button>` : ''}
       </div>
-      ${kategori}
+      ${penyelaras() ? `${kategori}
       <div class="grid2" style="margin-top:28px">
         <div class="panel semakan" id="semakan"><h2>Perlu disemak</h2>
           ${semak.map(([k, l, n]) => `<a href="#/murid?keg=${k}&ting=&kelas=&unit=&status=aktif"><span>${l}</span><b class="${n ? 'ada' : 'sifar'}">${n}</b></a>`).join('')}
@@ -8167,7 +8259,7 @@ window.KOKUM_SURAT_ASET = {
           <tbody>${ikutTing}</tbody><tfoot><tr><th>Jumlah</th><th class="n">${L}</th><th class="n">${Pp}</th><th class="n">${m.length}</th><th class="n">${kelasSenarai('').length}</th></tr></tfoot></table>
           <p class="pudar kecil" style="margin-top:10px">Dikemas kini ${tarikh(S.dimuatPada)}. ${S.data.murid.length - m.length} murid berstatus keluar tidak dikira.</p>
         </div>
-      </div>`;
+      </div>` : ''}`;
   }
 
   // ------------------------------------------------------------------ MURID
