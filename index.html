@@ -8310,7 +8310,7 @@ window.KOKUM_SURAT_ASET = {
   function paparUnitSenarai() {
     const bil = bilanganUnit();
     return `<div class="kepala"><div><h1>Unit kokurikulum</h1><p>${S.data.units.length} unit dalam tiga kategori. Pilih unit untuk melihat dan mengurus ahli.</p></div>
-      ${penyelaras() ? `<div class="baris-btn"><a class="btn" href="#/lantikan">Surat lantikan guru</a><a class="btn" href="#/tetapan/unit">Urus senarai unit</a></div>` : ''}</div>
+      <div class="baris-btn"><a class="btn utama" href="#/pajsk/ringkasan">PAJSK sekolah</a><a class="btn" href="#/pajsk/pencapaian">Pencapaian murid</a>${penyelaras() ? '<a class="btn" href="#/lantikan">Surat lantikan guru</a><a class="btn" href="#/tetapan/unit">Urus senarai unit</a>' : ''}</div></div>
       ${KATS.map((kat) => `<section class="kategori ${kat}"><div class="kategori-kepala"><h2>${KAT[kat]}</h2>${kat === 'UB' ? `<a class="btn kecil" href="#/kem">${IKON.kem} Perkhemahan Perdana</a>` : ''}</div>
         <div class="unit-grid">${unitKat(kat, true).map((u) => kadUnit(u, bil)).join('')}</div></section>`).join('')}`;
   }
