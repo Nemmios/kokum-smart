@@ -122,7 +122,7 @@ p { margin: 0 0 .75rem; }
   .atas-mudah b { font-size: .98rem; }
   .isi { padding: 18px 16px 96px; }
   .nav-bawah {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
     background: var(--permukaan); border-top: 1px solid var(--garis); padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
   }
   .nav-bawah a { flex-direction: column; gap: 2px; padding: 6px 0; font-size: .66rem; justify-content: center; text-align: center; min-width: 0; }
@@ -1018,6 +1018,18 @@ a.cip small { display: block; font-size: .64rem; font-weight: 500; opacity: .75;
 .ringkas-pc td, .ringkas-pc th { white-space: nowrap; }
 .ringkas-pc tr.jumlah td { border-top: 2px solid var(--garis-kuat); font-weight: 600; }
 .senarai-pc-murid td { vertical-align: top; }
+/* menu berkumpulan (laptop) dan halaman Lagi (telefon) */
+.nav-tajuk { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--kabus); padding: 14px 10px 4px; }
+.lagi-kump { margin-bottom: 18px; }
+.lagi-kump h2 { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--kabus); margin: 0 0 8px; }
+.lagi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.lagi-kad { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--garis); border-radius: var(--jejari); background: var(--permukaan); color: var(--dakwat); text-decoration: none; min-width: 0; }
+.lagi-kad:hover { border-color: var(--hijau); }
+.lagi-kad svg { width: 24px; height: 24px; flex: none; stroke: var(--hijau); fill: none; stroke-width: 1.8; }
+.lagi-kad b { display: block; }
+.lagi-kad small { display: block; color: var(--kabus); font-size: .8rem; }
+.rel { overflow-y: auto; }
+@media (max-height: 900px) { .slogan-rel { display: none; } .nav a { padding: 7px 10px; } .nav-tajuk { padding-top: 10px; } }
 
 </style>
 </head>
@@ -5415,7 +5427,7 @@ window.KOKUM_AIS_BENIH = {"acara":[["100 m","P15","balapan","s",1,407,2,"1440",3
       if (!tabs.some((t) => t[0] === tab)) tab = 'ringkasan';
       const kepala = `<div class="kepala tanpa-cetak"><div><h1>PAJSK ${tahun}</h1><p>Markah kokurikulum (Pentaksiran Aktiviti Jasmani, Sukan dan Kokurikulum) daripada data aplikasi.</p></div>
         <div class="baris-btn">${[tahunAsal() - 1, tahunAsal(), tahunAsal() + 1].map((t) => `<a class="cip ${t === tahun ? 'pilih' : ''}" href="#/pajsk/${tab}?tahun=${t}">${t}</a>`).join('')}</div></div>
-        <nav class="tab tanpa-cetak">${tabs.map(([k, l]) => `<a href="#/pajsk/${k}?tahun=${tahun}" ${k === tab ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
+        <nav class="tab tanpa-cetak">${tabs.map(([k, l]) => `<a href="#/pajsk/${k}?tahun=${tahun}" ${k === tab ? 'aria-current="page"' : ''}>${l}</a>`).join('')}${'semakan' in T() ? '<a href="#/pembetulan">Permohonan pembetulan</a>' : ''}</nav>`;
       const x = sedia(tahun); if (x) return kepala + x;
       return kepala + { ringkasan: pjRingkasan, rumusan: pjRumusan, ekstra: pjEkstra, pencapaian: pjPencapaian, murid: pjMurid }[tab](q);
     }
@@ -7447,7 +7459,8 @@ window.KOKUM_SURAT_ASET = {
       const tab = [['buka', 'Belum selesai'], ['selesai', 'Selesai'], ['ditolak', 'Ditolak'], ['semua', 'Semua']];
       return `<div class="kepala"><div><h1>Permohonan pembetulan</h1><p>Dihantar oleh ibu bapa atau murid melalui halaman Semakan Kokurikulum. ${penyelaras() ? 'Penyelaras melihat semua permohonan.' : 'Anda melihat permohonan bagi unit anda, kelas anda' + (S.profil.guru_nilam ? ' dan NILAM' : '') + '.'}</p></div>
           <div class="baris-btn"><button class="btn" data-act="sem-segar">${IKON.segar} Segar</button></div></div>
-        <nav class="tab">${tab.map(([k, t]) => `<a href="#/pembetulan?s=${k}" ${k === tapis ? 'aria-current="page"' : ''}>${t} (${kira(k)})</a>`).join('')}</nav>
+        <nav class="tab tanpa-cetak">${[['ringkasan', 'Ringkasan unit'], ['rumusan', 'Rumusan murid'], ['pencapaian', 'Pencapaian & tambahan'], ['ekstra', 'Ekstra kurikulum'], ['murid', 'Profil murid']].map(([k, l]) => `<a href="#/pajsk/${k}">${l}</a>`).join('')}<a href="#/pembetulan" aria-current="page">Permohonan pembetulan</a></nav>
+        <div class="cip-set" style="margin:0 0 12px">${tab.map(([k, t]) => `<a class="cip ${k === tapis ? 'pilih' : ''}" href="#/pembetulan?s=${k}">${t} (${kira(k)})</a>`).join('')}</div>
         ${l.length ? `<div class="panel" style="padding:0"><ul class="senarai sem-pb">${l.map((p) => { const m = murid(p.murid_id) || { nama: '(murid tiada)', kelas: '' };
           return `<li><div class="sem-pb-isi"><div class="sem-pb-kep"><span class="sem-status ${p.status}">${STATUS[p.status]}</span><b>${e(JENIS[p.jenis] || p.jenis)}${p.bidang ? ` · ${p.bidang}` : ''}${p.unit_kod ? ` (${e(p.unit_kod)})` : ''}</b></div>
             <div><button type="button" class="pautan" data-murid="${e(p.murid_id)}">${e(m.nama)}</button> <span class="pudar kecil">${e(m.kelas)}</span></div>
@@ -7612,6 +7625,9 @@ window.KOKUM_SURAT_ASET = {
     juruhebah: P('<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>'),
     papan: P('<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M7 13v-3M11 13V8M15 13v-5"/>'),
     hs: P('<rect x="4" y="4" width="16" height="11" rx="1.5"/><path d="M2 19h20M9 8h6M9 11h4"/>'),
+    pajsk: P('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/><path d="M14 7l2 2 4-4"/>'),
+    lagi: P('<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>'),
+    lantikan: P('<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h4"/>'),
     takwim: P('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2"/>'),
   };
 
@@ -7905,8 +7921,17 @@ window.KOKUM_SURAT_ASET = {
   }
 
   // ------------------------------------------------------------------ rangka & penghala
-  const MENU = [['utama', 'Utama'], ['murid', 'Murid'], ['unit', 'Unit'], ['takwim', 'Takwim'], ['mesyuarat', 'Mesyuarat'], ['olahraga', 'Olahraga'], ['kem', 'Perkhemahan'], ['cetak', 'Cetak'], ['tetapan', 'Tetapan']];
-  const MENU_BAWAH = ['utama', 'murid', 'unit', 'takwim', 'olahraga', 'tetapan'];  // Cetak ada dalam setiap halaman
+  // Menu dikumpulkan: Data (kerja harian), Program (aktiviti sekolah), Dokumen, Sistem
+  const KUMPULAN = [
+    ['', [['utama', 'Utama', 'Tugasan dan ringkasan']]],
+    ['Data', [['murid', 'Murid', 'Daftar dan profil murid'], ['unit', 'Unit', 'Ahli, kehadiran, OPR, laporan'], ['pajsk', 'PAJSK', 'Markah, ekstra, pencapaian, permohonan']]],
+    ['Program', [['takwim', 'Takwim', 'Tarikh perjumpaan dan aktiviti'], ['mesyuarat', 'Mesyuarat', 'Agenda dan minit'], ['olahraga', 'Olahraga', 'Kejohanan olahraga tahunan'], ['kem', 'Perkhemahan', 'Perkhemahan perdana UB']]],
+    ['Dokumen', [['cetak', 'Cetak', 'Senarai dan dokumen bercetak'], ['lantikan', 'Surat lantikan', 'Surat lantikan guru', 'penyelaras']]],
+    ['Sistem', [['tetapan', 'Tetapan', 'Profil, sekolah, akaun guru, semakan ibu bapa']]],
+  ];
+  const kumpulanSaya = () => KUMPULAN.map(([t, l]) => [t, l.filter((x) => x[3] !== 'penyelaras' || penyelaras())]).filter(([, l]) => l.length);
+  const MENU = KUMPULAN.flatMap(([, l]) => l);
+  const MENU_BAWAH = ['utama', 'murid', 'unit', 'pajsk', 'lagi'];  // telefon: menu lain dalam "Lagi"
   const AIS = window.KokumAIS({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(),
     eksport, KI, susunMurid, tetapLokasi, hariIni, LOGO, BINGKAI });
   const F2 = window.KokumFasa2({ S, e, $, $$, IKON, roti, sahkan, gagal, render: () => render(), penyelaras, aktif: () => aktif(), bukaMurid: (id) => bukaMurid(id),
@@ -7941,8 +7966,12 @@ window.KOKUM_SURAT_ASET = {
   function rangka(aktifMenu, isi) {
     const t = S.data.tetapan || {};
     const SENARAI = S.hs ? MENU_HS : MENU;
-    const nav = (kelas) => `<nav class="nav ${kelas}" aria-label="Menu utama" ${S.hs ? `style="--bil:${SENARAI.length}"` : ''}>${SENARAI.filter(([k]) => S.hs || kelas !== 'nav-bawah' || MENU_BAWAH.includes(k)).map(([k, l]) =>
-      `<a href="#/${k}" ${k === aktifMenu ? 'aria-current="page"' : ''}>${IKON[k]}<span>${l}</span></a>`).join('')}</nav>`;
+    const pautan = ([k, l]) => `<a href="#/${k}" ${k === aktifMenu || (k === 'lagi' && !MENU_BAWAH.includes(aktifMenu)) ? 'aria-current="page"' : ''}>${IKON[k]}<span>${l}</span></a>`;
+    const nav = (kelas) => {
+      if (S.hs) return `<nav class="nav ${kelas}" aria-label="Menu utama" style="--bil:${SENARAI.length}">${SENARAI.map(pautan).join('')}</nav>`;
+      if (kelas === 'nav-bawah') return `<nav class="nav nav-bawah" aria-label="Menu utama">${MENU_BAWAH.map((k) => pautan([k, k === 'lagi' ? 'Lagi' : MENU.find((x) => x[0] === k)[1]])).join('')}</nav>`;
+      return `<nav class="nav" aria-label="Menu utama">${kumpulanSaya().map(([t, l]) => `${t ? `<div class="nav-tajuk">${t}</div>` : ''}${l.map(pautan).join('')}`).join('')}</nav>`;
+    };
     return `
       <div class="rangka">
         <aside class="rel">
@@ -8025,7 +8054,8 @@ window.KOKUM_SURAT_ASET = {
         html = paparMurid();
       } else if (laluan === 'unit') html = a1 ? paparUnit(a1, a2 || 'ahli', q) : paparUnitSenarai();
       else if (laluan === 'takwim') html = F2.papar('takwim', a1, q);
-      else if (laluan === 'pajsk') { menu = 'unit'; html = F2.papar('pajsk', a1, q); }
+      else if (laluan === 'pajsk') { menu = 'pajsk'; html = F2.papar('pajsk', a1, q); }
+      else if (laluan === 'lagi' && !S.hs) html = paparLagi();
       else if (laluan === 'cetak') {
         if (q.has('unit')) S.cetak = { ...S.cetak, mod: 'unit', pilih: q.get('unit') };
         if (q.has('kelas')) S.cetak = { ...S.cetak, mod: 'kelas', pilih: q.get('kelas') };
@@ -8034,8 +8064,8 @@ window.KOKUM_SURAT_ASET = {
       else if (laluan === 'olahraga') html = AIS.papar(a1 || 'ringkasan', q);
       else if (laluan === 'kem') html = KEM.papar(a1, a2, q);
       else if (laluan === 'mesyuarat') html = MSY.papar(a1, a2, q);
-      else if (laluan === 'lantikan') { menu = 'unit'; html = LG.papar(a1, q); }
-      else if (laluan === 'pembetulan' && SEM && !S.hs) { menu = 'utama'; html = SEM.papar(q); }
+      else if (laluan === 'lantikan') { menu = penyelaras() ? 'lantikan' : 'unit'; html = LG.papar(a1, q); }
+      else if (laluan === 'pembetulan' && SEM && !S.hs) { menu = 'pajsk'; html = SEM.papar(q); }
       else if (S.hs && laluan === 'juruhebah') html = HS.juruhebah(q);
       else if (S.hs && laluan === 'hs') html = HS.pusat();
       else { menu = 'utama'; html = paparUtama(); }
@@ -8048,6 +8078,17 @@ window.KOKUM_SURAT_ASET = {
     F2.selepasRender();
     const isi = $('#isi'); if (isi && !S.kekalSkrol) window.scrollTo(0, 0);
     S.kekalSkrol = false;
+  }
+
+  // ------------------------------------------------------------------ LAGI (telefon: semua menu)
+  function paparLagi() {
+    const sem = SEM && 'semakan' in (S.data.tetapan || {});
+    return `<div class="kepala"><div><h1>Menu</h1><p>${e(S.profil.nama || S.profil.email || '')} · ${penyelaras() ? 'Penyelaras' : S.unitSaya.size ? 'Guru penasihat' : 'Guru'}${S.profil.guru_kelas ? ` · Guru kelas ${e(S.profil.guru_kelas)}` : ''}</p></div></div>
+      ${kumpulanSaya().filter(([t]) => t).map(([t, l]) => [t, l.filter(([k]) => !MENU_BAWAH.includes(k))]).filter(([, l]) => l.length).map(([t, l]) => `<section class="lagi-kump"><h2>${t}</h2><div class="lagi-grid">${l.map(([k, n, ket]) => `<a class="lagi-kad" href="#/${k}">${IKON[k]}<span><b>${n}</b><small>${e(ket)}</small></span></a>`).join('')}</div></section>`).join('')}
+      <section class="lagi-kump"><h2>Ibu bapa</h2><div class="lagi-grid">
+        <a class="lagi-kad" href="#/semak" target="_blank" rel="noopener">${IKON.murid}<span><b>Halaman semakan ibu bapa</b><small>Pautan untuk dikongsi dengan ibu bapa</small></span></a>
+        ${sem ? `<a class="lagi-kad" href="#/pembetulan">${IKON.pajsk}<span><b>Permohonan pembetulan</b><small>Daripada ibu bapa dan murid</small></span></a>` : ''}</div></section>
+      <div class="baris-btn" style="margin-top:18px"><button class="btn" data-act="keluar">Log keluar</button></div>`;
   }
 
   // ------------------------------------------------------------------ UTAMA
@@ -8310,7 +8351,7 @@ window.KOKUM_SURAT_ASET = {
   function paparUnitSenarai() {
     const bil = bilanganUnit();
     return `<div class="kepala"><div><h1>Unit kokurikulum</h1><p>${S.data.units.length} unit dalam tiga kategori. Pilih unit untuk melihat dan mengurus ahli.</p></div>
-      <div class="baris-btn"><a class="btn utama" href="#/pajsk/ringkasan">PAJSK sekolah</a><a class="btn" href="#/pajsk/pencapaian">Pencapaian murid</a>${penyelaras() ? '<a class="btn" href="#/lantikan">Surat lantikan guru</a><a class="btn" href="#/tetapan/unit">Urus senarai unit</a>' : ''}</div></div>
+      ${penyelaras() ? '<div class="baris-btn"><a class="btn" href="#/lantikan">Surat lantikan guru</a><a class="btn" href="#/tetapan/unit">Urus senarai unit</a></div>' : ''}</div>
       ${KATS.map((kat) => `<section class="kategori ${kat}"><div class="kategori-kepala"><h2>${KAT[kat]}</h2>${kat === 'UB' ? `<a class="btn kecil" href="#/kem">${IKON.kem} Perkhemahan Perdana</a>` : ''}</div>
         <div class="unit-grid">${unitKat(kat, true).map((u) => kadUnit(u, bil)).join('')}</div></section>`).join('')}`;
   }
